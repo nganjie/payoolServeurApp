@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Http;
 use App\Constants\PaymentGatewayConst;
 use App\Models\Admin\AdminNotification;
 use App\Models\Admin\BasicSettings;
+use App\Models\User;
 use App\Notifications\User\AddMoney\ApprovedMail;
 use Illuminate\Support\Facades\Config;
 use Jenssegers\Agent\Agent;
@@ -152,7 +153,7 @@ trait SoleaspayTrait
     public function createTransactionSoleaspay($output)
     {
         $basic_setting = BasicSettings::first();
-        $user = auth()->user();
+        $user = User::where('id',auth()->user()->id)->first();
         $trx_id = 'AM'.getTrxNum();
         $inserted_id = $this->insertRecordSoleaspay($output, $trx_id);
         $this->insertChargesSoleaspay($output, $inserted_id);
