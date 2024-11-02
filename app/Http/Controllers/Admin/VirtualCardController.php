@@ -58,7 +58,7 @@ class VirtualCardController extends Controller
     public function cardApiUpdate(Request $request){
         //dump($request);
         $validator = Validator::make($request->all(), [
-            'api_method'                => 'required|in:flutterwave,sudo,stripe,strowallet',
+            'api_method'                => 'required|in:flutterwave,sudo,stripe,strowallet,soleaspay',
             'flutterwave_secret_key'    => 'required_if:api_method,flutterwave',
             'flutterwave_secret_hash'   => 'required_if:api_method,flutterwave',
             'flutterwave_url'           => 'required_if:api_method,flutterwave',
@@ -73,6 +73,9 @@ class VirtualCardController extends Controller
             'strowallet_public_key'     => 'required_if:api_method,strowallet',
             'strowallet_secret_key'     => 'required_if:api_method,strowallet',
             'strowallet_url'            => 'required_if:api_method,strowallet',
+            'soleaspay_public_key'     => 'required_if:api_method,soleaspay',
+            'soleaspay_secret_key'     => 'required_if:api_method,soleaspay',
+            'soleaspay_url'            => 'required_if:api_method,soleaspay',
             'image'                     => "nullable|mimes:png,jpg,jpeg,webp,svg",
             'card_limit' => [
                 'required',

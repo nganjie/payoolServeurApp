@@ -6,6 +6,7 @@ use App\Constants\NotificationConst;
 use App\Constants\PaymentGatewayConst;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\Response;
+use App\Models\Admin\Admin;
 use App\Models\Admin\Currency;
 use App\Models\Admin\TransactionSetting;
 use App\Models\Transaction;
@@ -16,6 +17,7 @@ use App\Models\SoleaspayVirtualCard;
 use App\Models\VirtualCardApi;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -26,7 +28,7 @@ class SoleaspayVirtualCardController extends Controller
     protected $card_limit;
     public function __construct()
     {
-        $cardApi = VirtualCardApi::first();
+        $cardApi = VirtualCardApi::where('name',Auth::check()?auth()->user()->name_api:Admin::first()->name_api)->first();
         $this->api =  $cardApi;
         $this->card_limit =  $cardApi->card_limit;
     }

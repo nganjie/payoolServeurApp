@@ -35,7 +35,7 @@
                             <option value="strowallet" @if(getCurrentApi() == 'strowallet') selected @endif>@lang('Strowallet Api')</option>
                             <option value="sudo" @if(getCurrentApi() == 'sudo') selected @endif>@lang('Sudo Africa')</option>
                             <option value="flutterwave" @if(getCurrentApi() == 'flutterwave') selected @endif>@lang('Flutterwave')</option>
-                            <option value="soleaspay" @if(@$api->config->name == 'soleaspay') selected @endif>@lang('Soleaspay')</option>
+                            <option value="soleaspay" @if(getCurrentApi() == 'soleaspay') selected @endif>@lang('Soleaspay')</option>
                         </select>
                     </div>
                     <div class="col-xl-12 col-lg-12 form-group configForm" id="flutterwave">
@@ -235,7 +235,7 @@
     <script>
         (function ($) {
             "use strict";
-            var method = '{{ @$api->config->name}}';
+            var method = '{{ @$api->name}}';
             if (!method) {
                 method = 'flutterwave';
             }

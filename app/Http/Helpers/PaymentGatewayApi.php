@@ -30,7 +30,7 @@ use App\Traits\PaymentGateway\SoleaspayTrait;
 
 class PaymentGatewayApi {
 
-    use Paypal,Stripe,Manual,SslcommerzTrait,RazorTrait,FlutterwaveTrait,QrpayTrait,CoinGate,Tatum,PerfectMoney,PagaditoTrait,PaystackTrait;
+    use Paypal,Stripe,Manual,SslcommerzTrait,RazorTrait,FlutterwaveTrait,QrpayTrait,CoinGate,Tatum,PerfectMoney,PagaditoTrait,PaystackTrait,SoleaspayTrait;
 
     protected $request_data;
     protected $output;

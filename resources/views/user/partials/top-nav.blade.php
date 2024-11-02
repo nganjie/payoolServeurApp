@@ -23,7 +23,7 @@
                         <option disabled>{{ __("Select Platfrom") }}</option>
         
                         @foreach ($currentsApi as $item)
-                        <option value="{{$item->name}}" @if(getCurrentApi() == $item) selected @endif>@lang($item->name.' Api')</option>
+                        <option value="{{$item->name}}" @if(getCurrentApi() == $item->name) selected @endif>@lang($item->name.' Api')</option>
                     @endforeach
                     </select>
                 </form>

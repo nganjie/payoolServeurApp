@@ -44,17 +44,23 @@ class AddMoneyController extends Controller
         $payment_gateways_currencies = PaymentGatewayCurrency::whereHas('gateway', function ($gateway) {
             $gateway->where('slug', PaymentGatewayConst::add_money_slug());
             $gateway->where('status', 1);
+           // dump($gateway);
         })->get();
+        //dump($payment_gateways_currencies);
+        //dump($gateway->where('slug', PaymentGatewayConst::add_money_slug()));
         $transactions = Transaction::auth()->addMoney()->latest()->take(5)->get();
-        return view('user.sections.add-money.index',compact("page_title","payment_gateways_currencies","transactions"));
+       return view('user.sections.add-money.index',compact("page_title","payment_gateways_currencies","transactions"));
     }
     public function submit(Request $request) {
         try{
           $instance = PaymentGatewayHelper::init($request->all())->type(PaymentGatewayConst::TYPEADDMONEY)->gateway()->render();
+          //dump($instance);
+          return $instance;
         }catch(Exception $e) {
             return back()->with(['error' => [$e->getMessage()]]);
         }
-        return $instance;
+        //dump($instance);
+        
     }
     public function success(Request $request, $gateway){
         $requestData = $request->all();

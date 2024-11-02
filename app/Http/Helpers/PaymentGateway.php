@@ -25,12 +25,11 @@ use Illuminate\Support\Facades\Route;
 use App\Traits\PaymentGateway\Tatum;
 use App\Traits\PaymentGateway\PerfectMoney;
 use App\Traits\PaymentGateway\PagaditoTrait;
-use App\Traits\PaymentGateway\PaystackTrait;
 use App\Traits\PaymentGateway\SoleaspayTrait;
 
 class PaymentGateway {
 
-    use Paypal,Stripe,Manual,FlutterwaveTrait,RazorTrait,SslcommerzTrait,QrpayTrait,CoinGate,Tatum,PerfectMoney,PagaditoTrait,PaystackTrait;
+    use Paypal,Stripe,Manual,FlutterwaveTrait,RazorTrait,SslcommerzTrait,QrpayTrait,CoinGate,Tatum,PerfectMoney,PagaditoTrait,SoleaspayTrait;
 
     protected $request_data;
     protected $output;
@@ -47,6 +46,7 @@ class PaymentGateway {
     }
 
     public static function init(array $data) {
+        //dump($data);
         return new PaymentGateway($data);
     }
     public function gateway() {
@@ -339,10 +339,6 @@ class PaymentGateway {
             if(method_exists(PagaditoTrait::class,$method_name)) {
                 return $this->$method_name($this->output);
             }
-        }elseif($type == 'paystack'){
-            if(method_exists(PaystackTrait::class,$method_name)) {
-                return $this->$method_name($this->output);
-            }
         }else if($type == 'soleaspay'){
             if(method_exists(SoleaspayTrait::class,$method_name)) {
                 return $this->$method_name($this->output);
@@ -555,9 +551,6 @@ class PaymentGateway {
                 break;
             case PaymentGatewayConst::PAGADITO:
                 return $response['param1'] ?? "";
-                break;
-            case PaymentGatewayConst::PAYSTACK:
-                return $response['reference'] ?? "";
                 break;
             default:
                 throw new Exception("Oops! Gateway not registered in getToken method");

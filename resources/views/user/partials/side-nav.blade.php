@@ -78,6 +78,13 @@
                                     <span class="menu-title">{{ __("My Card") }}</span>
                                 </a>
                             </li>
+                            @elseif(virtual_card_system('soleaspay'))
+                    <li class="sidebar-menu-item">
+                        <a href="{{ setRoute('user.soleaspay.virtual.card.index') }}">
+                            <i class="menu-icon fas fa-credit-card"></i>
+                            <span class="menu-title">{{ __("My Card") }}</span>
+                        </a>
+                    </li>
                         @endif
                     @endif
                     <li class="sidebar-menu-item">
