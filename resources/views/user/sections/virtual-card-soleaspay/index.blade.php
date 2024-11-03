@@ -270,8 +270,9 @@
                                                     'label'         => __("Category"),
                                                     'name'          => "card_category",
                                                     'value'         => "PERSONAL",
-                                                    'options'       => [ 'Personal' => 'PERSONAL', 'Business' => 'BUSINESS'],
-                                                    'multiple'      => false
+                                                    'options'       => ['Personal' => 'PERSONAL'],
+                                                    'multiple'      => false,
+                                                    'class'     => "form--control"
                                                 ])
                                     </div>
                                     <div class="col-md-6 col-lg-6">
@@ -280,7 +281,8 @@
                                                     'name'          => "card_type",
                                                     'value'         => "VISA",
                                                     'options'       => [ 'Visa' => 'VISA', 'Mastercard' => 'MASTERCARD'],
-                                                    'multiple'      => false
+                                                    'multiple'      => false,
+                                                    'class'     => "form--control"
                                                 ])
                                     </div>
                                     @if (!@$user->soleaspay_customer)

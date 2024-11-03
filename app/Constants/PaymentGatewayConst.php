@@ -45,9 +45,7 @@ class PaymentGatewayConst {
     const STATUSPENDING     = 2;
     const STATUSHOLD        = 3;
     const STATUSREJECTED    = 4;
-    const STATUSWAITING     = 5;
-    const STATUSFAILD       = 6;
-    const STATUSPROCESSING  = 7;
+    const STATUSWAITING             = 5;
 
     const PAYPAL                    = 'paypal';
     const FLUTTER_WAVE              = 'flutterwave';
@@ -60,7 +58,7 @@ class PaymentGatewayConst {
     const TATUM                     = 'tatum';
     const PERFECT_MONEY             = 'perfect-money';
     const PAGADITO                  = 'pagadito';
-    const PAYSTACK                  = "paystack";
+    const SOLEASPAY                 = 'soleaspay';
 
 
     const SEND = "SEND";
@@ -89,7 +87,7 @@ class PaymentGatewayConst {
             self::TATUM         => 'tatumInit',
             self::PERFECT_MONEY => 'perfectMoneyInit',
             self::PAGADITO      => 'pagaditoInit',
-            self::PAYSTACK      => 'paystackInit'
+            self::SOLEASPAY => 'soleaspayInit',
         ];
 
         if($alias == null) {
@@ -120,7 +118,7 @@ class PaymentGatewayConst {
             'isPerfectMoney'    => self::PERFECT_MONEY,
             'isRazorpay'        => self::RAZORPAY,
             'isPagadito'        => self::PAGADITO,
-            'isPayStack'        => self::PAYSTACK,
+            'isSoleaspay'       => self::SOLEASPAY,
         ];
     }
 

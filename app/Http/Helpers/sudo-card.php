@@ -2,6 +2,7 @@
 
 //sudo virtual card system
 
+use App\Models\Admin\Admin;
 use App\Models\SudoVirtualCard;
 use App\Models\VirtualCardApi;
 use Illuminate\Support\Facades\Auth;
