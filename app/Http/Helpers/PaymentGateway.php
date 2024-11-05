@@ -26,10 +26,11 @@ use App\Traits\PaymentGateway\Tatum;
 use App\Traits\PaymentGateway\PerfectMoney;
 use App\Traits\PaymentGateway\PagaditoTrait;
 use App\Traits\PaymentGateway\SoleaspayTrait;
+use App\Traits\PaymentGateway\PaiementProTrait;
 
 class PaymentGateway {
 
-    use Paypal,Stripe,Manual,FlutterwaveTrait,RazorTrait,SslcommerzTrait,QrpayTrait,CoinGate,Tatum,PerfectMoney,PagaditoTrait,SoleaspayTrait;
+    use Paypal,Stripe,Manual,FlutterwaveTrait,RazorTrait,SslcommerzTrait,QrpayTrait,CoinGate,Tatum,PerfectMoney,PagaditoTrait,SoleaspayTrait,PaiementProTrait;
 
     protected $request_data;
     protected $output;
@@ -51,6 +52,7 @@ class PaymentGateway {
     }
     public function gateway() {
         $request_data = $this->request_data;
+        //dump($request_data);
         if(empty($request_data)) throw new Exception(__("Gateway Information is not available. Please provide payment gateway currency alias"));
         $validated = $this->validator($request_data)->validate();
         $gateway_currency = PaymentGatewayCurrency::where("alias",$validated[$this->currency_input_name])->first();
@@ -76,6 +78,11 @@ class PaymentGateway {
             $this->output['amount']     = $this->amount();
             $this->output['wallet']     = $user_wallet;
             $this->output['distribute'] = $this->gatewayDistribute($gateway_currency->gateway);
+            //dump($request_data);
+        if (isset($request_data['paiementmode'])){
+            //dump($request_data);
+            $this->output['paiementmode']     =$request_data['paiementmode'];
+        }
         }elseif($gateway_currency->gateway->isManual()){
             $this->output['gateway']    = $gateway_currency->gateway;
             $this->output['currency']   = $gateway_currency;
@@ -140,6 +147,7 @@ class PaymentGateway {
         }elseif($gateway->type == PaymentGatewayConst::MANUAL){
             $method = PaymentGatewayConst::register(strtolower($gateway->type));
         }
+        //dump($method);
 
         if(method_exists($this,$method)) {
             return $method;
@@ -302,7 +310,7 @@ class PaymentGateway {
         $this->request_data = $validator_data;
         $this->gateway();
         $this->output['tempData'] = $tempData;
-
+       // dump($method_name);
        if($type == 'stripe'){
             if(method_exists(Stripe::class,$method_name)) {
                 return $this->$method_name($this->output);
@@ -343,6 +351,10 @@ class PaymentGateway {
             if(method_exists(SoleaspayTrait::class,$method_name)) {
                 return $this->$method_name($this->output);
             }
+        }else if($type == 'paiementpro'){
+            if(method_exists(PaiementProTrait::class,$method_name)) {
+                return $this->$method_name($this->output);
+            }
         }else{
             if(method_exists(Paypal::class,$method_name)) {
                 return $this->$method_name($this->output);
@@ -352,6 +364,7 @@ class PaymentGateway {
     }
 
     public function type($type) {
+        //dump($type);
         $this->output['type']  = $type;
         return $this;
     }

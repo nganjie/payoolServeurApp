@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\AdminNotifications\AuthNotifications;
-
+use Illuminate\Support\Facades\Route;
 
 class DashboardController extends Controller
 {
@@ -49,7 +49,7 @@ class DashboardController extends Controller
     }
     public function changeApi(Request $request){
         $validator = Validator::make($request->all(),[
-            'api_method_app'=> 'required|in:flutterwave,sudo,stripe,strowallet,soleaspay'
+            'api_method_app'=> 'required|in:flutterwave,sudo,stripe,strowallet,soleaspay,eversend'
         ]);
         $user =User::where('id',auth()->user()->id)->first();
         
@@ -59,8 +59,16 @@ class DashboardController extends Controller
         }
         $user->name_api=$request->api_method_app;
         $user->save();
-        //dump($user);
-        return redirect()->back();
+        /*dump(Route::currentRouteName());
+        if (str_contains(Route::currentRouteName(), 'virtual.card')) {
+            //echo "La chaîne contient 'virtual.card.index'.";
+            //return redirect()->route('user.dashboard');
+        } else {
+            //echo "La chaîne ne contient pas 'virtual.card.index'.";
+        //return redirect()->back();
+
+        }*/
+        return redirect()->route('user.dashboard');
     }
 
     public function logout(Request $request) {

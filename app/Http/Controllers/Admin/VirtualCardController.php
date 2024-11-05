@@ -30,7 +30,7 @@ class VirtualCardController extends Controller
             //dump($api);
             $api->card_details='';
         }
-        $apiApp=ApiApp::all();
+        //$apiApp=ApiApp::all();
         //dump($api);
         //$adim =Admin::where('id',auth()->user()->id)->first();
         //dump($existApi);
@@ -43,7 +43,7 @@ class VirtualCardController extends Controller
     }
     public function cardApiChange(Request $request){
         $validator = Validator::make($request->all(),[
-            'api_method_app'=> 'required|in:flutterwave,sudo,stripe,strowallet,soleaspay'
+            'api_method_app'=> 'required|in:flutterwave,sudo,stripe,strowallet,soleaspay,eversend'
         ]);
         $admin =Admin::where('id',auth()->user()->id)->first();
         
@@ -58,7 +58,7 @@ class VirtualCardController extends Controller
     public function cardApiUpdate(Request $request){
         //dump($request);
         $validator = Validator::make($request->all(), [
-            'api_method'                => 'required|in:flutterwave,sudo,stripe,strowallet,soleaspay',
+            'api_method'                => 'required|in:flutterwave,sudo,stripe,strowallet,soleaspay,eversend',
             'flutterwave_secret_key'    => 'required_if:api_method,flutterwave',
             'flutterwave_secret_hash'   => 'required_if:api_method,flutterwave',
             'flutterwave_url'           => 'required_if:api_method,flutterwave',
@@ -76,12 +76,15 @@ class VirtualCardController extends Controller
             'soleaspay_public_key'     => 'required_if:api_method,soleaspay',
             'soleaspay_secret_key'     => 'required_if:api_method,soleaspay',
             'soleaspay_url'            => 'required_if:api_method,soleaspay',
+            'eversend_public_key'     => 'required_if:api_method,eversend',
+            'eversend_secret_key'     => 'required_if:api_method,eversend',
+            'eversend_url'            => 'required_if:api_method,eversend',
             'image'                     => "nullable|mimes:png,jpg,jpeg,webp,svg",
-            'card_limit' => [
+            /*'card_limit' => [
                 'required',
                 'numeric',
                 Rule::in([1, 2, 3]),
-            ],
+            ],*/
         ]);
         
         if($validator->fails()) {
@@ -103,7 +106,7 @@ class VirtualCardController extends Controller
         
         //dump($api);
         $api->card_details = $request->card_details;
-        $api->card_limit = $request->card_limit;
+        $api->card_limit = 10000;//$request->card_limit;
         $api->config = $data;
         $api->name=$data['name'];
        //$this->createApiAppElemet();

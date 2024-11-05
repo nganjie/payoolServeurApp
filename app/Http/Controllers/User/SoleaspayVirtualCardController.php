@@ -17,8 +17,10 @@ use App\Models\SoleaspayVirtualCard;
 use App\Models\VirtualCardApi;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route as FacadesRoute;
 use Illuminate\Support\Facades\Validator;
 
 class SoleaspayVirtualCardController extends Controller
@@ -28,14 +30,21 @@ class SoleaspayVirtualCardController extends Controller
     protected $card_limit;
     public function __construct()
     {
+        //$user=User::where('id',auth()->user()->id)->first();
+        //dump(auth()->user());
         $cardApi = VirtualCardApi::where('name',Auth::check()?auth()->user()->name_api:Admin::first()->name_api)->first();
         $this->api =  $cardApi;
         $this->card_limit =  $cardApi->card_limit;
     }
     public function index()
     {
+        //dump($this->api);
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         // Update card details
         $myCards = SoleaspayVirtualCard::where('user_id',auth()->user()->id)->get();
+        //dump($this->api);
+        //dump(Auth::check());
+        //dump(auth()->user()->name_api);
         if( count($myCards) > 0){
             // Get Token
             $curl = curl_init();
@@ -136,10 +145,13 @@ class SoleaspayVirtualCardController extends Controller
         $transactions = Transaction::auth()->virtualCard()->latest()->take(10)->get();
         $cardApi = $this->api;
         $user = auth()->user();
+        //dump(FacadesRoute::currentRouteName());
         return view('user.sections.virtual-card-soleaspay.index',compact('page_title','myCards','transactions','cardCharge','cardApi','totalCards','cardReloadCharge', 'user'));
+        
     }
     public function cardDetails($card_id)
     {
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         $page_title = __("Card Details");
         $myCard = SoleaspayVirtualCard::where('card_id',$card_id)->first();
         $cardApi = $this->api;
@@ -148,6 +160,7 @@ class SoleaspayVirtualCardController extends Controller
 
     public function cardBuy(Request $request)
     {
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         $user = auth()->user();
         if($user->soleaspay_customer == null){
             $request->validate([
@@ -198,6 +211,7 @@ class SoleaspayVirtualCardController extends Controller
         // $callBack = route('user.soleaspay.virtual.card.callBack').'?c_user_id='.$user->id.'&c_amount='.  $amount.'&c_temp_id='.$tempId.'&c_trx='.$trx;
         // Get Token
         $curl = curl_init();
+       // dump($this->api->config->soleaspay_public_key);
 
         curl_setopt_array($curl, array(
         CURLOPT_URL => 'https://soleaspay.com/api/action/auth',
@@ -486,6 +500,7 @@ class SoleaspayVirtualCardController extends Controller
     }
 
     public function cardBlockUnBlock(Request $request) {
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         $validator = Validator::make($request->all(),[
             'status'                    => 'required|boolean',
             'data_target'               => 'required|string',
@@ -630,6 +645,7 @@ class SoleaspayVirtualCardController extends Controller
         }
     }
     public function cardTransaction($card_id) {
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         $user = auth()->user();
         $card = SoleaspayVirtualCard::where('user_id',$user->id)->where('card_id', $card_id)->first();
         $page_title = __("Virtual Card Transaction");

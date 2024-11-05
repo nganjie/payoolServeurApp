@@ -36,6 +36,7 @@
                             <option value="sudo" @if(getCurrentApi() == 'sudo') selected @endif>@lang('Sudo Africa')</option>
                             <option value="flutterwave" @if(getCurrentApi() == 'flutterwave') selected @endif>@lang('Flutterwave')</option>
                             <option value="soleaspay" @if(getCurrentApi() == 'soleaspay') selected @endif>@lang('Soleaspay')</option>
+                            <option value="eversend" @if(getCurrentApi() == 'eversend') selected @endif>@lang('Eversend')</option>
                         </select>
                     </div>
                     <div class="col-xl-12 col-lg-12 form-group configForm" id="flutterwave">
@@ -190,14 +191,47 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-12 col-lg-12 form-group">
+                    <div class="col-xl-12 col-lg-12 form-group configForm" id="eversend">
+                        <div class="row" >
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                                <label>{{ __("Public Key") }}*</label>
+                                <div class="input-group append">
+                                    <span class="input-group-text"><i class="las la-key"></i></span>
+                                    <input type="text" class="form--control" name="eversend_public_key" value="{{ @$api->config->eversend_public_key }}">
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                                <label>{{ __("Secret Key") }}*</label>
+                                <div class="input-group append">
+                                    <span class="input-group-text"><i class="las la-key"></i></span>
+                                    <input type="text" class="form--control" name="eversend_secret_key" value="{{ @$api->config->eversend_secret_key }}">
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                                <label>{{ __("Base Url") }}*</label>
+                                <div class="input-group append">
+                                    <span class="input-group-text"><i class="las la-link"></i></span>
+                                    <input type="text" class="form--control" name="eversend_url" value="{{ @$api->config->eversend_url }}">
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                                @include('admin.components.form.switcher', [
+                                    'label'         => __('Mode'),
+                                    'value'         => old('strowallet_mode',@$api->config->strowallet_mode),
+                                    'name'          => "strowallet_mode",
+                                    'options'       => [__('Live') => global_const()::LIVE,__('Sandbox') => global_const()::SANDBOX]
+                                ])
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div class="col-xl-12 col-lg-12 form-group">
                         @include('admin.components.form.input',[
                             'label'         =>__( 'Card Limit Within (1 to 3)'),
                             'name'          => 'card_limit',
                             'value'         => old('card_limit',@$api->card_limit),
                             'placeholder'   => "Enter 1-3 Only."
                         ])
-                    </div>
+                    </div>-->
                     <div class="col-xl-12 col-lg-12 form-group">
                         @include('admin.components.form.input-text-rich',[
                             'label'         => __('Card Details').'*',

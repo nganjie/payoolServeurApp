@@ -10,6 +10,7 @@ use App\Http\Controllers\User\AddMoneyController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\TransactionController;
 use App\Http\Controllers\User\AuthorizationController;
+use App\Http\Controllers\User\EversendVirtualCardController;
 use App\Http\Controllers\User\GiftCardController;
 use App\Http\Controllers\User\SecurityController;
 use App\Http\Controllers\User\StripeVirtualController;
@@ -61,6 +62,9 @@ Route::prefix("user")->name("user.")->group(function(){
             //soleaspay
             Route::get('soleaspay/success', 'soleaspaySuccess')->name('soleaspay.success');
             Route::get('soleaspay/fails', 'soleaspayFails')->name('soleaspay.fails');
+            //PAIEMENTPRO
+            Route::get('paiementpro/success', 'paiementproSuccess')->name('paiementpro.success');
+            Route::get('paiementpro/fails', 'paiementproFails')->name('paiementpro.fails');
             //QRPay
             Route::get('qrpay/success', 'qrPaySuccess')->name('qrpay.success');
             Route::get('qrpay/cancel/{trx}', 'qrPayCancel')->name('qrpay.cancel');
@@ -153,6 +157,18 @@ Route::prefix("user")->name("user.")->group(function(){
             Route::put('change/status','cardBlockUnBlock')->name('change.status');
             Route::post('make/default/remove/default','makeDefaultOrRemove')->name('make.default.or.remove');
             Route::post('soleaspay-card-callback','cardCallBack')->name('callBack');
+        });
+    });
+    Route::middleware('virtual_card_method:eversend')->group(function(){
+        Route::controller(EversendVirtualCardController::class)->prefix('eversend-virtual-card')->name('eversend.virtual.card.')->group(function(){
+            Route::get('/','index')->name('index');
+            Route::post('create','cardBuy')->name('create');
+            Route::post('fund','cardFundConfirm')->name('fund');
+            Route::get('details/{card_id}','cardDetails')->name('details');
+            Route::get('transaction/{card_id}','cardTransaction')->name('transaction');
+            Route::put('change/status','cardBlockUnBlock')->name('change.status');
+            Route::post('make/default/remove/default','makeDefaultOrRemove')->name('make.default.or.remove');
+            Route::post('eversend-card-callback','cardCallBack')->name('callBack');
         });
     });
         //virtual card strowallet

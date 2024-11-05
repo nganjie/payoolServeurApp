@@ -29,6 +29,7 @@ class KycVerificationGuard
                 return redirect()->route('user.authorize.kyc')->with(['error' => [__('Admin rejected your kyc information, Please re-submit again')]]);
             }
         }
+        dump($request);
         return $next($request);
     }
 }

@@ -67,6 +67,7 @@ class User extends Authenticatable
         'sudo_account'              => 'object',
         'strowallet_customer'       => 'object',
         'soleaspay_customer'       => 'object',
+        'eversend_customer'       => 'object',
         'deleted_at'                => 'datetime',
         'created_at'                => 'datetime',
         'updated_at'                => 'datetime',

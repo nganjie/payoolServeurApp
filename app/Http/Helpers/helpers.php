@@ -25,6 +25,7 @@ use App\Models\Admin\ModuleSetting;
 use App\Models\Admin\PaymentGateway;
 use App\Models\Admin\SiteSections;
 use App\Models\ApiApp;
+use App\Models\EversendVirtualCard;
 use App\Models\SoleaspayVirtualCard;
 use App\Models\StripeVirtualCard;
 use App\Models\StrowalletVirtualCard;
@@ -1640,7 +1641,9 @@ if(!function_exists('dateFormat')){
 function virtual_card_system($name)
 {
     $method = VirtualCardApi::where('name',Auth::check()?auth()->user()->name_api:Admin::first()->name_api)->first();
-   // dump($method);
+    //dump($method);
+    //dump($name);
+    //dump(( $method->config->name == $name));
     if( $method->config->name == $name){
         return  $method->config->name;
     }else{
@@ -1803,6 +1806,8 @@ function activeCardSystem(){
         $active_virtual_system = "strowallet";
     }elseif(virtual_card_system('soleaspay') == "soleaspay"){
         $active_virtual_system = "soleaspay";
+    }elseif(virtual_card_system('eversend') == "eversend"){
+        $active_virtual_system = "eversend";
     }
 
     return  $active_virtual_system??"";
@@ -1828,6 +1833,10 @@ function activeCardSystem(){
         $virtual_cards = SoleaspayVirtualCard::where('user_id',auth()->user()->id)->count();
         $active_cards =  SoleaspayVirtualCard::where('user_id',auth()->user()->id)->where('is_active',1)->count();
         $inactive_cards = SoleaspayVirtualCard::where('user_id',auth()->user()->id)->where('is_active',0)->count();
+    }elseif(virtual_card_system('eversend') == "eversend"){
+        $virtual_cards = EversendVirtualCard::where('user_id',auth()->user()->id)->count();
+        $active_cards =  EversendVirtualCard::where('user_id',auth()->user()->id)->where('is_non_subscription',1)->count();
+        $inactive_cards = EversendVirtualCard::where('user_id',auth()->user()->id)->where('is_non_subscription',0)->count();
     }
     $virtual_card_info =[
         'virtual_cards'  =>  $virtual_cards,

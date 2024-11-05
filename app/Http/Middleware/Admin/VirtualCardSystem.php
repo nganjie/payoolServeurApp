@@ -17,6 +17,7 @@ class VirtualCardSystem
     public function handle(Request $request, Closure $next,$name)
     {
         $permission = virtual_card_system($name);
+        //dump($permission);
         if($permission == false){
             abort(404);
         }

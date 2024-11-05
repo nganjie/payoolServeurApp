@@ -45,7 +45,7 @@ class VirtualCardController extends Controller
         $user = auth()->user();
         $basic_settings = BasicSettings::first();
         $card_basic_info = [
-            'card_create_limit' => @$this->api->card_limit,
+            //'card_create_limit' => @$this->api->card_limit,
             'card_back_details' => @$this->api->card_details,
             'card_bg'           => get_image(@$this->api->image,'card-api'),
             'site_title'        => @$basic_settings->site_name,
@@ -426,10 +426,10 @@ class VirtualCardController extends Controller
         }
         $user = User::where('id',auth()->user()->id)->first();
         $totalCards = VirtualCard::where('user_id', $user->id)->count();
-        if($totalCards >= $this->card_limit){
+        /*if($totalCards >= $this->card_limit){
             $error = ['error'=>[__("Sorry! You can not create more than")." ".$this->card_limit ." ".__("card using the same email address.")]];
             return Helpers::error($error);
-        }
+        }*/
         $amount = $request->card_amount;
         $wallet = UserWallet::where('user_id',$user->id)->first();
         if(!$wallet){

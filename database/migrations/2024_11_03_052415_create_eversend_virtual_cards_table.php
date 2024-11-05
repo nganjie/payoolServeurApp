@@ -17,17 +17,23 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->string('card_id')->nullable();
-            //$table->string('firstName');
-            //$table->string('lastName');
-            //$table->string('email')->unique();
-            //$table->string('phone');
-            $table->string('country', 2); // 'country' avec le code pays sur 2 caractères
-            $table->string('state');
-            $table->string('city');
-            $table->string('address');
-            $table->string('zipCode');
-            $table->string('idType'); // Type d’identification
-            $table->string('idNumber');
+            $table->string('security_code');
+            $table->string('expiration');
+            $table->string('currency', 3); // Code devise (ISO)
+            $table->string('status');
+            $table->boolean('is_physical');
+            $table->string('title');
+            $table->string('color');
+            $table->string('name');
+            $table->decimal('amount', 15, 2); // Montant avec 2 décimales
+            //$table->string('card_id')->unique(); // Identifiant unique pour la carte
+            $table->string('brand');
+            $table->string('mask');
+            $table->string('number');
+            $table->string('owner_id');
+            $table->boolean('is_non_subscription');
+            $table->timestamp('last_used_on')->nullable();
+            $table->json('billing_address')->nullable(); 
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
         });

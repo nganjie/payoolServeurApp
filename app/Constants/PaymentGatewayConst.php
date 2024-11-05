@@ -59,6 +59,7 @@ class PaymentGatewayConst {
     const PERFECT_MONEY             = 'perfect-money';
     const PAGADITO                  = 'pagadito';
     const SOLEASPAY                 = 'soleaspay';
+    const PAIEMENTPRO                 = 'paiementpro';
 
 
     const SEND = "SEND";
@@ -88,6 +89,7 @@ class PaymentGatewayConst {
             self::PERFECT_MONEY => 'perfectMoneyInit',
             self::PAGADITO      => 'pagaditoInit',
             self::SOLEASPAY => 'soleaspayInit',
+            self::PAIEMENTPRO => 'paiementproInit',
         ];
 
         if($alias == null) {

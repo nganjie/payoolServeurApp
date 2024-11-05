@@ -57,10 +57,12 @@
                                         <p>{{ get_default_currency_code() }}</p>
                                     </div>
                                 </div>
+                                <div id="paiementselect"></div>
                                 <div class="note-area d-flex justify-content-between">
                                     <div class="d-block limit-show">--</div>
                                     <div class="d-block fees-show">--</div>
                                 </div>
+                                
                                   <div class="button pt-3">
                                     <button type="submit" class="btn--base w-100 btn-loading sendBtn">{{ __("Confirm") }}</i></button>
                                   </div>
@@ -153,7 +155,39 @@
          var defualCurrencyRate = "{{ get_default_currency_rate() }}";
          var presion = 4;
 
-        $('select[name=currency]').on('change',function(){
+        $('select[name=currency]').on('change',function(e){
+            //console.log("un monde de fous ici",)
+            let appi=$(this).val();
+            let selectField=`<label>Méthode de Paiement<span>*</span></label> <select class="form--control nice-select gateway-select" id="payment-channel" name="paiementmode" required="true">
+            <option value="">Choisir</option>
+            <option value="AIRTELNG">🇳🇬 Airtel - Nigeria</option>
+            <option value="FLOOZ">🇨🇮 Moov - Côte d'Ivoire</option>
+            <option value="FLOOZBJ">🇧🇯 Moov - Bénin</option>
+            <option value="MOMOBJ">🇧🇯 Mobile Money - Bénin</option>
+            <option value="MOMOCI">🇨🇮 Mobile Money - Côte d'Ivoire</option>
+            <option value="OMBF">🇧🇫 Orange Money - Burkina Faso</option>
+            <option value="OMCIV2">🇨🇮 Orange Money - Côte d'Ivoire</option>
+            <option value="OMCM">🇨🇲 Orange Money - Cameroun</option>
+            <option value="OMGN">🇬🇳 Orange Money - Guinée</option>
+            <option value="OMML">🇲🇱 Orange Money - Mali</option>
+            <option value="OMSN">🇸🇳 Orange Money - Sénégal</option>
+            <option value="WAVECI">🌊 Wave - Côte d'Ivoire</option>
+            <option value="PAYPAL">💳 PayPal</option>
+            <option value="CARD">💳 Paiement par Carte</option>
+            <option value="MOMOUG">🇺🇬 Mobile Money - Uganda</option>
+            <option value="OMSN">🇸🇳 Orange Money - Sénégal</option>
+            <option value="OMTG">🇹🇬 Orange Money - Togo</option>
+            <option value="MTNNG">🇳🇬 MTN Mobile Money - Nigeria</option>
+            <option value="MTNCIV">🇨🇮 MTN Mobile Money - Côte d'Ivoire</option>
+            <option value="MTNBJ">🇧🇯 MTN Mobile Money - Bénin</option>
+            <option value="WAVESN">🌊 Wave - Sénégal</option>
+            <option value="WAVETG">🌊 Wave - Togo</option>
+        </select>`
+            if(appi==="add-money-paiementpro-cfa-automatic")
+        {
+            console.log(appi)
+            $("#paiementselect").append(selectField);
+        }
             if(acceptVar().cryptoType == 1 ){
                 presion = 8;
             }else{

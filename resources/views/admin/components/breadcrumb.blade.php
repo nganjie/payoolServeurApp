@@ -11,6 +11,7 @@
                 <option value="sudo" @if(getCurrentApi() == 'sudo') selected @endif>@lang('Sudo Africa')</option>
                 <option value="flutterwave" @if(getCurrentApi() == 'flutterwave') selected @endif>@lang('Flutterwave')</option>
                 <option value="soleaspay" @if(getCurrentApi() == 'soleaspay') selected @endif>@lang('Soleaspay')</option>
+                <option value="eversend" @if(getCurrentApi() == 'eversend') selected @endif>@lang('Eversend')</option>
             </select>
         </form>
         @push('script')

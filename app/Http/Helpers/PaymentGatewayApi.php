@@ -27,10 +27,11 @@ use App\Traits\PaymentGateway\PerfectMoney;
 use App\Traits\PaymentGateway\PagaditoTrait;
 use App\Traits\PaymentGateway\PaystackTrait;
 use App\Traits\PaymentGateway\SoleaspayTrait;
+use App\Traits\PaymentGateway\PaiementProTrait;
 
 class PaymentGatewayApi {
 
-    use Paypal,Stripe,Manual,SslcommerzTrait,RazorTrait,FlutterwaveTrait,QrpayTrait,CoinGate,Tatum,PerfectMoney,PagaditoTrait,PaystackTrait,SoleaspayTrait;
+    use Paypal,Stripe,Manual,SslcommerzTrait,RazorTrait,FlutterwaveTrait,QrpayTrait,CoinGate,Tatum,PerfectMoney,PagaditoTrait,PaystackTrait,SoleaspayTrait,PaiementProTrait;
 
     protected $request_data;
     protected $output;
@@ -375,6 +376,10 @@ class PaymentGatewayApi {
             }
         }else if($type == 'soleaspay'){
             if(method_exists(SoleaspayTrait::class,$method_name)) {
+                return $this->$method_name($this->output);
+            }
+        }else if($type == 'paiementpro'){
+            if(method_exists(PaiementProTrait::class,$method_name)) {
                 return $this->$method_name($this->output);
             }
         }else{

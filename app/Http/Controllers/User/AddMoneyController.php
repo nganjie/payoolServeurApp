@@ -23,9 +23,11 @@ use App\Models\Admin\CryptoTransaction;
 use App\Models\UserNotification;
 use KingFlamez\Rave\Facades\Rave as Flutterwave;
 use App\Traits\PaymentGateway\FlutterwaveTrait;
+use App\Traits\PaymentGateway\PaiementProTrait;
 use App\Traits\PaymentGateway\RazorTrait;
 use App\Traits\PaymentGateway\SslcommerzTrait;
 use App\Traits\PaymentGateway\QrpayTrait;
+use App\Traits\PaymentGateway\SoleaspayTrait;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -34,7 +36,7 @@ use Illuminate\Http\RedirectResponse;
 
 class AddMoneyController extends Controller
 {
-    use Stripe,Manual,FlutterwaveTrait,RazorTrait,SslcommerzTrait,QrpayTrait;
+    use Stripe,Manual,FlutterwaveTrait,RazorTrait,SslcommerzTrait,QrpayTrait,SoleaspayTrait,PaiementProTrait;
 
     public function index() {
         $page_title = __("Add Money");
@@ -53,8 +55,33 @@ class AddMoneyController extends Controller
     }
     public function submit(Request $request) {
         try{
+           /* $data = array(
+                'merchantId' => "MARCHAND ID",
+                'amount' => 1000,
+                'description' => "Api PHP",
+                'channel' => "CARD",
+                'countryCurrencyCode' => "952",
+                'referenceNumber' => "REF-".time(),
+                'customerEmail' => "test@gmail.com",
+                'customerFirstName' => "Ishola",
+                'customerLastname' => "Lamine",
+                'customerPhoneNumber' => "01234567",
+                'notificationURL' => "callback_url",
+                'returnURL' => "callback_url",
+                'returnContext' => '{"data":"data 1","data2":"data 2"}',
+            );*/
+        
+            if ($request->has('paiementmode') && !is_null($request->input('paiementmode'))) {
+                // Le champ est présent et n'est pas nul
+                // Logique supplémentaire ici
+            } else {
+                return back()->with(['error' => ['Veillez renseigner La Méthode de Paiement']]);
+            }
+            
+            //dump($request);
+            //dump($request->all());
           $instance = PaymentGatewayHelper::init($request->all())->type(PaymentGatewayConst::TYPEADDMONEY)->gateway()->render();
-          //dump($instance);
+         //dump($instance);
           return $instance;
         }catch(Exception $e) {
             return back()->with(['error' => [$e->getMessage()]]);
@@ -143,6 +170,108 @@ class AddMoneyController extends Controller
         else{
             return redirect()->route('user.add.money.index')->with(['error' => [__("Transaction failed")]]);
         }
+    }
+    public function soleaspaySuccess(Request $request)
+    {
+        $data = json_decode($request->query('soleaspay_data')) ;
+
+        $orderId = $data->orderId;
+        $payId = $data->payId;
+
+        $checkTempData = TemporaryData::where("type",'soleaspay')->where("identifier",$orderId)->first();
+
+        if(!$checkTempData) return redirect()->route('user.add.money.index')->with(['error' => [__('Transaction failed. Record didn\'t saved properly. Please try again')]]);
+
+        $checkTempData = $checkTempData->toArray();
+
+        try{
+            PaymentGatewayHelper::init($checkTempData)->type(PaymentGatewayConst::TYPEADDMONEY)->responseReceive('soleaspay');
+        }catch(Exception $e) {
+            return back()->with(['error' => [$e->getMessage()]]);
+        }
+        return redirect()->route("user.add.money.index")->with(['success' => [__('Successfully Added Money')]]);
+
+    }
+    public function soleaspayFails(Request $request)
+    {
+        $data = json_decode($request->query('soleaspay_data')) ;
+
+        $orderId = $data->orderId;
+        // $payId = $data['payId'];
+
+        $checkTempData = TemporaryData::where("type",'soleaspay')->where("identifier",$orderId)->first();
+
+        if(!$checkTempData) return redirect()->route('user.add.money.index')->with(['error' => [__('Transaction failed. Record didn\'t saved properly. Please try again')]]);
+
+        $checkTempData = $checkTempData->toArray();
+        TemporaryData::destroy($checkTempData['id']);
+        return redirect()->route("user.add.money.index")->with(['success' => [__('Added Money Failed')]]);
+
+    }
+    public function paiementproSuccess(Request $request)
+    {
+        //$data = json_decode($request->query('paiementpro_data')) ;
+
+        //$orderId = $data->orderId;
+        //$payId = $data->payId;
+        //dump($request);
+        if(isset($request['responsecode'])&&$request['responsecode']==-1){
+            // $payId = $data['payId'];
+            $email=$request['identifier'];
+
+        $checkTempData = TemporaryData::where("type",'paiementpro')->where("identifier",$email)->first();
+
+        if(!$checkTempData) return redirect()->route('user.add.money.index')->with(['error' => [__('Transaction failed. Record didn\'t saved properly. Please try again')]]);
+
+        $checkTempData = $checkTempData->toArray();
+        TemporaryData::destroy($checkTempData['id']);
+        return redirect()->route("user.add.money.index")->with(['success' => [__('Added Money Failed')]]);
+        }else{
+            $email=$request['identifier'];
+            $checkTempData = TemporaryData::where("type",'paiementpro')->where("identifier",$email)->first();
+
+        if(!$checkTempData) return redirect()->route('user.add.money.index')->with(['error' => [__('Transaction failed. Record didn\'t saved properly. Please try again')]]);
+
+        $checkTempData = $checkTempData->toArray();
+
+        try{
+            PaymentGatewayHelper::init($checkTempData)->type(PaymentGatewayConst::TYPEADDMONEY)->responseReceive('paiementpro');
+        }catch(Exception $e) {
+            return back()->with(['error' => [$e->getMessage()]]);
+        }
+        return redirect()->route("user.add.money.index")->with(['success' => [__('Successfully Added Money')]]);
+        }
+
+        /*$checkTempData = TemporaryData::where("type",'paiementpro')->where("identifier",$orderId)->first();
+
+        if(!$checkTempData) return redirect()->route('user.add.money.index')->with(['error' => [__('Transaction failed. Record didn\'t saved properly. Please try again')]]);
+
+        $checkTempData = $checkTempData->toArray();
+
+        try{
+            PaymentGatewayHelper::init($checkTempData)->type(PaymentGatewayConst::TYPEADDMONEY)->responseReceive('paiementpro');
+        }catch(Exception $e) {
+            return back()->with(['error' => [$e->getMessage()]]);
+        }
+        return redirect()->route("user.add.money.index")->with(['success' => [__('Successfully Added Money')]]);*/
+
+    }
+    public function paiementproFails(Request $request)
+    {
+        //$data = json_decode($request->query('paiementpro_data')) ;
+        dump($request);
+
+       /* $orderId = $data->orderId;
+        // $payId = $data['payId'];
+
+        $checkTempData = TemporaryData::where("type",'paiementpro')->where("identifier",$orderId)->first();
+
+        if(!$checkTempData) return redirect()->route('user.add.money.index')->with(['error' => [__('Transaction failed. Record didn\'t saved properly. Please try again')]]);
+
+        $checkTempData = $checkTempData->toArray();
+        TemporaryData::destroy($checkTempData['id']);
+        return redirect()->route("user.add.money.index")->with(['success' => [__('Added Money Failed')]]);*/
+
     }
     //sslcommerz success
     public function sllCommerzSuccess(Request $request){
