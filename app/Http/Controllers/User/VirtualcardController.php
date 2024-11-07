@@ -45,7 +45,7 @@ class VirtualcardController extends Controller
         $page_title = __("Virtual Card");
         $myCards = VirtualCard::where('user_id',auth()->user()->id)->get();
         $totalCards = VirtualCard::where('user_id',auth()->user()->id)->count();
-        $cardCharge = TransactionSetting::where('slug','virtual_card')->where('status',1)->first();
+        $cardCharge = TransactionSetting::where('slug','virtual_card'.auth()->user()->name_api)->where('status',1)->first();
         $cardReloadCharge = TransactionSetting::where('slug','reload_card')->where('status',1)->first();
         $transactions = Transaction::auth()->virtualCard()->latest()->take(10)->get();
         $cardApi = $this->api;
@@ -73,7 +73,7 @@ class VirtualcardController extends Controller
         if(!$wallet){
             return back()->with(['error' => [__('User wallet not found')]]);
         }
-        $cardCharge = TransactionSetting::where('slug','virtual_card')->where('status',1)->first();
+        $cardCharge = TransactionSetting::where('slug','virtual_card'.auth()->user()->name_api)->where('status',1)->first();
         $baseCurrency = Currency::default();
         $rate = $baseCurrency->rate;
         if(!$baseCurrency){

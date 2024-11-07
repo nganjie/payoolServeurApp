@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\User\LoggedInUsers;
-
+use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
@@ -123,6 +123,11 @@ class LoginController extends Controller
         ]);
         $this->refreshUserWallets($user);
         $this->createLoginLog($user);
+        //session(['user_id'=>$user->id]);
+        Session::put(['user_id'=>$user->id]);
+        //dd($user);
+        //dd(session('user_id'));
+        //session('user_id',$user->id);
         return redirect()->intended(route('user.dashboard'));
     }
 }

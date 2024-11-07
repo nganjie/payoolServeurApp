@@ -51,7 +51,7 @@
                                             <div class="chip-line"></div>
                                             <div class="chip-main"></div>
                                         </div>
-                                        @if(!$myCard->is_active)
+                                        @if(!($myCard->status=="active"))
                                         <div class="chip-line" style="margin:auto; background-color:#000;z-index:1000;">
                                             <p>{{__("Card has been blocked previously")}}</p>
                                         </div>
@@ -68,6 +68,10 @@
                                         </svg>
                                         @php
                                             $card_pan = str_split($myCard->number, 4);
+                                            $stv=strval($myCard->expiration);
+                                            $month=substr($stv,0,2);
+                                            $annee=substr($stv,2,4);
+                                            $expiration=$month.'/'.$annee;
                                         @endphp
                                         <div class="card-number">
                                             @foreach($card_pan as $key => $value)
@@ -75,10 +79,10 @@
                                             @endforeach
                                         </div>
 
-                                        <div class="end"><span class="end-text">{{__("exp. end")}}:</span><span class="end-date"> {{ $myCard->expiration }}</span>
+                                        <div class="end"><span class="end-text">{{__("exp. end")}}:</span><span class="end-date"> {{ $expiration }}</span>
                                         </div>
                                         <div class="card-holder">{{ auth()->user()->fullname }}</div>
-                                        @if($myCard->brand === "VISA")
+                                        @if($myCard->brand === "Visa")
                                         <div class="master">
                                             <img  src="{{ URL::to('/') }}/public/frontend/images/card/visa-logo.png"/>
                                         </div>
@@ -119,7 +123,7 @@
                                     </a>
                                 </div>
                                 <div class="card-details">
-                                    @if($myCard->is_non_subscription == true )
+                                    @if($myCard->status=="active" )
                                         <a href="javascript:void(0)" class=" active-deactive-btn" data-id="{{ $myCard->id }}">
                                         <div class="details-icon">
                                             <i class="fas fa-times-circle me-1"></i>
@@ -318,6 +322,40 @@
                                             'required'       => true,
                                         ])
                                     </div>
+                                    <!--<div class="col-md-12 col-lg-12">
+                                        @include('admin.components.form.radio-button-eversend',[
+                                            'label'         => __("Subscription Type"),
+                                            'name'          => "isNonSubscription",
+                                            'labelname'=>__("Subscription Type"),
+                                            'value'=>'final',
+                                            'options'   =>[__("One-time Payment Pay a one-time fee for unlimited card use with no monthly charges")=>"final",__("Monthly Fee Pay a small 1 USD fee each month for ongoing card management")=>"month"],
+                                            'required'       => true,
+                                        ])
+                                    </div>-->
+                                    <br><br>
+                                    <div class="col-md-12 col-lg-12  subscription-container">
+                                        <br>
+                                        <div class="d-flex">
+                                            <div class="option">
+                                                <input type="radio" id="oneTime" name="isNonSubscription" value="final" checked>
+                                                <label for="oneTime">
+                                                    <span class="title">$3 {{__("One-time Payment")}}</span>
+                                                    <span class="description">{{__("Pay a one-time fee for unlimited card use with no monthly charges")}}</span>
+                                                </label>
+                                            </div>
+                                        
+                                            <div class="option">
+                                                <input type="radio" id="monthly" name="isNonSubscription" value="month">
+                                                <label for="monthly">
+                                                    <span class="title">$1 {{__("Monthly Fee")}}</span>
+                                                    <span class="description">{{__("Pay a small 1 USD fee each month for ongoing card management")}}.</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                    
+                                   
                                     <!-- <div class="col-md-6 col-lg-6">
                                         @include('admin.components.form.input',[
                                             'label'         => __("Country Code"),
@@ -756,3 +794,43 @@
         });
     </script>
 @endpush
+<style>
+    .subscription-container {
+        font-family: Arial, sans-serif;
+        width: 300px;
+        margin: 20px;
+    }
+    .subscription-container h3 {
+        font-size: 1.1em;
+        margin-bottom: 10px;
+    }
+    .option {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 2px;
+        margin-bottom: 10px;
+        margin-right: 10px;
+        display: flex;
+        align-items: flex-start;
+        cursor: pointer;
+    }
+    .option:hover {
+        border-color: #007bff;
+    }
+    .option input[type="radio"] {
+        margin-right: 10px;
+        cursor: pointer;
+    }
+    .option label {
+        display: flex;
+        flex-direction: column;
+    }
+    .option .title {
+        font-weight: bold;
+        font-size: 0.95em;
+    }
+    .option .description {
+        font-size: 0.85em;
+        color: #555;
+    }
+</style>

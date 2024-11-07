@@ -15,6 +15,8 @@ class TransactionSetting extends Model
         'title' => 'string',
         'fixed_charge' => 'double',
         'percent_charge' => 'double',
+        'fixed_final_charge' => 'double',
+        'fixed_month_charge' => 'double',
         'min_limit' => 'double',
         'max_limit' => 'double',
         'monthly_limit' => 'double',

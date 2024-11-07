@@ -76,6 +76,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::controller(TrxSettingsController::class)->prefix('trx-settings')->name('trx.settings.')->group(function () {
         Route::get('index', 'index')->name('index');
         Route::put('charges/update', 'trxChargeUpdate')->name('charges.update');
+        Route::put('chargeseversend/update', 'trxChargeEversendUpdate')->name('charges.eversend.update');
     });
     // Exchange rate
     Route::controller(ExchangeRateController::class)->prefix('exchange-rate')->name('exchange.rate.')->group(function () {

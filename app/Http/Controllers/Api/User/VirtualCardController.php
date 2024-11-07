@@ -436,7 +436,7 @@ class VirtualCardController extends Controller
             $error = ['error'=>[__('User wallet not found')]];
             return Helpers::error($error);
         }
-        $cardCharge = TransactionSetting::where('slug','virtual_card')->where('status',1)->first();
+        $cardCharge = TransactionSetting::where('slug','virtual_card'.auth()->user()->name_api)->where('status',1)->first();
         $baseCurrency = Currency::default();
         $rate = $baseCurrency->rate;
         if(!$baseCurrency){

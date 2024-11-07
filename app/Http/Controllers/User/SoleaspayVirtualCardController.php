@@ -71,6 +71,10 @@ class SoleaspayVirtualCardController extends Controller
             if(!isset($response) && !array_key_exists('access_token', $response)){
                 return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
             }
+           // dd($this->api);
+           //dump($this->api->config->soleaspay_secret_key);
+            //dd($this->api->config->soleaspay_public_key);
+            //dd($response);
             $token = $response['access_token'];
 
             curl_close($curl);
@@ -140,7 +144,7 @@ class SoleaspayVirtualCardController extends Controller
         $page_title = __("Virtual Card");
         $myCards = SoleaspayVirtualCard::where('user_id',auth()->user()->id)->get();
         $totalCards = SoleaspayVirtualCard::where('user_id',auth()->user()->id)->count();
-        $cardCharge = TransactionSetting::where('slug','virtual_card')->where('status',1)->first();
+        $cardCharge = TransactionSetting::where('slug','virtual_card'.auth()->user()->name_api)->where('status',1)->first();
         $cardReloadCharge = TransactionSetting::where('slug','reload_card')->where('status',1)->first();
         $transactions = Transaction::auth()->virtualCard()->latest()->take(10)->get();
         $cardApi = $this->api;
@@ -185,7 +189,7 @@ class SoleaspayVirtualCardController extends Controller
         if(!$wallet){
             return back()->with(['error' => [__('User wallet not found')]]);
         }
-        $cardCharge = TransactionSetting::where('slug','virtual_card')->where('status',1)->first();
+        $cardCharge = TransactionSetting::where('slug','virtual_card'.auth()->user()->name_api)->where('status',1)->first();
         $baseCurrency = Currency::default();
         $rate = $baseCurrency->rate;
         if(!$baseCurrency){

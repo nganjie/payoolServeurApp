@@ -1,6 +1,10 @@
 <div class="custom-card mb-10">
     <div class="card-header">
+        @if($title=="Virtual Card Charges")
+           <h6 class="title">{{ __($title).' '.getCurrentApi() ?? "" }}</h6>
+        @else
         <h6 class="title">{{ __($title) ?? "" }}</h6>
+        @endif
     </div>
     <div class="card-body">
         <form class="card-form" method="POST" action="{{ $route ?? "" }}">
@@ -9,7 +13,7 @@
 
             <input type="hidden" value="{{ $item->slug }}" name="slug">
                  @php
-                    if($item->slug == 'virtual_card' || $item->slug == 'virtual_card_withdraw'){
+                    if($item->slug == 'virtual_card_'.getCurrentApi() || $item->slug == 'virtual_card_withdraw'.getCurrentApi()){
                         $colLg = 'col-xl-6';
                         $colXl = 'col-lg-6';
                     }else{
@@ -39,6 +43,15 @@
                                         <span class="input-group-text">%</span>
                                     </div>
                                 </div>
+                                @if($item->slug == 'virtual_card_eversend'&&getCurrentApi()=="eversend")
+                                    <div class="col-xxl-12 col-xl-6 col-lg-6 form-group">
+                                        <label>{{ __("One-time Payment") }}*</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form--control" value="{{ old($data->slug.'_fixed_month_charge',$data->fixed_month_charge) }}" name="{{$data->slug}}_fixed_month_charge">
+                                            <span class="input-group-text"></span>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -65,6 +78,15 @@
                                         <span class="input-group-text">{{ get_default_currency_code($default_currency) }}</span>
                                     </div>
                                 </div>
+                                @if($item->slug == 'virtual_card_eversend'&&getCurrentApi()=="eversend")
+                                    <div class="col-xxl-12 col-xl-6 col-lg-6 form-group">
+                                        <label>{{ __("Monthly Fee") }}*</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form--control" value="{{ old($data->slug.'_fixed_final_charge',$data->fixed_final_charge) }}" name="{{$data->slug}}_fixed_final_charge">
+                                            <span class="input-group-text"></span>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>

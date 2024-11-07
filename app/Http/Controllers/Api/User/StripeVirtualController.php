@@ -75,7 +75,7 @@ class StripeVirtualController extends Controller
             ];
         });
         $totalCards = StripeVirtualCard::where('user_id',auth()->user()->id)->count();
-        $cardCharge = TransactionSetting::where('slug','virtual_card')->where('status',1)->get()->map(function($data){
+        $cardCharge = TransactionSetting::where('slug','virtual_card'.auth()->user()->name_api)->where('status',1)->get()->map(function($data){
             return [
                 'id' => $data->id,
                 'slug' => $data->slug,
@@ -358,7 +358,7 @@ class StripeVirtualController extends Controller
             $error = ['error'=>[__('User wallet not found')]];
             return Helpers::error($error);
         }
-        $cardCharge = TransactionSetting::where('slug','virtual_card')->where('status',1)->first();
+        $cardCharge = TransactionSetting::where('slug','virtual_card'.auth()->user()->name_api)->where('status',1)->first();
         $baseCurrency = Currency::default();
 
         if(!$baseCurrency){

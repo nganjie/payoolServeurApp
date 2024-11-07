@@ -1644,6 +1644,7 @@ function virtual_card_system($name)
     //dump($method);
     //dump($name);
     //dump(( $method->config->name == $name));
+    //dd($method);
     if( $method->config->name == $name){
         return  $method->config->name;
     }else{
@@ -1838,6 +1839,7 @@ function activeCardSystem(){
         $active_cards =  EversendVirtualCard::where('user_id',auth()->user()->id)->where('is_non_subscription',1)->count();
         $inactive_cards = EversendVirtualCard::where('user_id',auth()->user()->id)->where('is_non_subscription',0)->count();
     }
+    //dd($virtual_cards);
     $virtual_card_info =[
         'virtual_cards'  =>  $virtual_cards,
         'active_cards'  => $active_cards,

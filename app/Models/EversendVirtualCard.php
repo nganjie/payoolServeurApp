@@ -21,11 +21,11 @@ class EversendVirtualCard extends Model
         "title"=> "string",
         "color"=> "string",
         "name"=> "string",
-        "amount"=> "number",
+        "amount"=> "double",
         "brand"=> "string",
         "mask"=> "string",
         "number"=> "string",
-        "ownerId"=> "string",
+        "owner_id"=> "string",
         "is_non_subscription"=> "boolean",
         "last_used_on"=> "timestamp",
         "billing_address"=> "json"

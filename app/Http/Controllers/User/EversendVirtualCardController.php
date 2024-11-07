@@ -37,7 +37,7 @@ class EversendVirtualCardController extends Controller
         // Update card details
         $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         $myCards = EversendVirtualCard::where('user_id',auth()->user()->id)->get();
-        if( count($myCards) > 0){
+        if( count($myCards) ==0){
             // Get Token
             $public_key=$this->api->config->eversend_public_key;
             $secret_key=$this->api->config->eversend_secret_key;
@@ -90,8 +90,9 @@ class EversendVirtualCardController extends Controller
                 //dd($response);
                 if ( isset($response) && key_exists('success', $response) && $response['success'] == true ) {
                     //$myCard=new EversendVirtualCard();
+                    $myCard->user_id=auth()->user()->id;
 
-                    $card = $response['data']['data']['card'];
+                    $card = $response['data']['card'];
                     $myCard->security_code = $card['securityCode'];
                     $myCard->expiration = $card['expiration'];
                     $myCard->currency = $card['currency'];
@@ -100,11 +101,11 @@ class EversendVirtualCardController extends Controller
                     $myCard->title = $card['title'];
                     $myCard->color = $card['color'];
                     $myCard->name = $card['name'];
-                    $myCard->amount = $card['amount'];
+                    $myCard->amount = $card['balance'];
                     $myCard->brand = $card['brand'];
                     $myCard->mask = $card['mask'];
                     $myCard->number = $card['number'];
-                    $myCard->ownerId = $card['ownerId'];
+                    $myCard->owner_id = $card['ownerId'];
                     $myCard->is_non_subscription = $card['isNonSubscription'];
                     $myCard->last_used_on = $card['lastUsedOn'];
                     $myCard->billing_address = $card['billingAddress'];
@@ -150,7 +151,7 @@ class EversendVirtualCardController extends Controller
         $page_title = __("Virtual Card");
         $myCards = EversendVirtualCard::where('user_id',auth()->user()->id)->get();
         $totalCards = EversendVirtualCard::where('user_id',auth()->user()->id)->count();
-        $cardCharge = TransactionSetting::where('slug','virtual_card')->where('status',1)->first();
+        $cardCharge = TransactionSetting::where('slug','virtual_card'.auth()->user()->name_api)->where('status',1)->first();
         $cardReloadCharge = TransactionSetting::where('slug','reload_card')->where('status',1)->first();
         $transactions = Transaction::auth()->virtualCard()->latest()->take(10)->get();
         $cardApi = $this->api;
@@ -177,6 +178,7 @@ class EversendVirtualCardController extends Controller
                 'email'    => 'required|string',
                 'dob' => 'required|string',
                 'id_number' => 'required|numeric|max:9',
+                'isNonSubscription' => 'required|string',
             ], [
                 'first_name.regex'  => 'The First Name field should only contain letters and cannot start with a number or special character.',
                 'last_name.regex'   => 'The Last Name field should only contain letters and cannot start with a number or special character.',
@@ -186,15 +188,17 @@ class EversendVirtualCardController extends Controller
                 'card_amount' => 'required|numeric|gt:0|min:1',
             ]);
         }
-        //dump($request);
+        //dd($request);
         $amount = $request->card_amount;
         $wallet = UserWallet::where('user_id',$user->id)->first();
+
         if(!$wallet){
             return back()->with(['error' => [__('User wallet not found')]]);
         }
-        $cardCharge = TransactionSetting::where('slug','virtual_card')->where('status',1)->first();
+        $cardCharge = TransactionSetting::where('slug','virtual_card'.auth()->user()->name_api)->where('status',1)->first();
         $baseCurrency = Currency::default();
         $rate = $baseCurrency->rate;
+        dd($cardCharge);
         if(!$baseCurrency){
             return back()->with(['error' => [__('Default Currency Not Setup Yet')]]);
         }
@@ -272,12 +276,12 @@ class EversendVirtualCardController extends Controller
                 'firstName' => $request->first_name,
                 'lastName' => $request->last_name,
                 'email' => $request->email,
-                'phone' => '+2347039099804',
-                'country' => 'NG',
-                'state' => 'Lagos',
-                'city' => 'Ikeja',
-                'address' => 'No 5 pound road Aba',
-                'zipCode' => '1000001',
+                'phone' => $user->full_mobile,
+                'country' => 'US',
+                'state' => 'NY',
+                'city' => 'New Work',
+                'address' => '447 Broadway, 2nd Floor',
+                'zipCode' => '10013',
                 'idType' => 'Driving_License',
                 'idNumber' => $request->id_number.'1290282882'
               ]),
@@ -296,7 +300,8 @@ class EversendVirtualCardController extends Controller
                 $userRepo = User::where('id', $user->id)->first();
                 $userRepo->eversend_customer = $ref;
                 $userRepo->save();
-                //dump()
+                dump($response);
+                dump($userRepo);
                 //echo 'on ici maintenant';
             }else{
                 //dump($response);
@@ -309,6 +314,7 @@ class EversendVirtualCardController extends Controller
         }
 
         // $cardId = $response['data']['id'];
+        //dd($user);
         $cardId = '';
         $trx_id =  'CB'.getTrxNum();
         $sender = $this->insertCadrBuy( $trx_id,$user,$wallet,$amount, $cardId ,$payable);
@@ -333,7 +339,7 @@ class EversendVirtualCardController extends Controller
                 'userId' => 'CUI2',
                 'currency' => 'USD',
                 'brand' => $request->card_type,
-                'isNonSubscription' => false
+                'isNonSubscription' => $request->isNonSubscription=='final'?false:true
             ]),
             CURLOPT_HTTPHEADER => [
                 "accept: application/json",
@@ -376,7 +382,7 @@ class EversendVirtualCardController extends Controller
                 //$cardUser = $result->data->data->card->virtual_card_user;
                 //Save Card
                 $v_card = new eversendVirtualCard();
-                $card = $response['data']['data']['card'];
+                $card = $response['data']['card'];
                     $v_card->security_code = $card['securityCode'];
                     $v_card->expiration = $card['expiration'];
                     $v_card->currency = $card['currency'];
@@ -385,11 +391,11 @@ class EversendVirtualCardController extends Controller
                     $v_card->title = $card['title'];
                     $v_card->color = $card['color'];
                     $v_card->name = $card['name'];
-                    $v_card->amount = $card['amount'];
+                    $v_card->amount = $card['balance'];
                     $v_card->brand = $card['brand'];
                     $v_card->mask = $card['mask'];
                     $v_card->number = $card['number'];
-                    $v_card->ownerId = $card['ownerId'];
+                    $v_card->owner_id = $card['ownerId'];
                     $v_card->isNonSubscription = $card['isNonSubscription'];
                     $v_card->lastUsedOn = $card['lastUsedOn'];
                     $v_card->billingAddress = $card['billingAddress'];

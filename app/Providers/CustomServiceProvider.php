@@ -19,6 +19,8 @@ use App\Models\ApiApp;
 use App\Providers\Admin\CurrencyProvider;
 use App\Providers\Admin\BasicSettingsProvider;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 class CustomServiceProvider extends ServiceProvider
 {
@@ -29,7 +31,24 @@ class CustomServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        //dd("un monde de fou");
+        //dd(Session::get('user_id'));
         $this->startingPoint();
+        view()->composer('*', function ($view) 
+    {
+       // $cart = Cart::where('user_id', Auth::user()->id);
+       if(Auth::check())
+       {
+        $view_card=[];
+        $view_card['card_details']= VirtualCardApi::where('name',Auth::user()->name_api)->first();
+        $view_card['card_limit'] = VirtualCardApi::where('name',Auth::user()->name_api)->first()->card_limit;
+        $view_card['card_api'] = VirtualCardApi::where('name',Auth::user()->name_api)->first();
+        $view_card['cardCharge'] = TransactionSetting::where('slug','virtual_card_'.Auth::user()->name_api)->where('status',1)->first();
+        //...with this variable
+        $view->with($view_card);   
+       }
+         
+    });
     }
 
     /**
@@ -41,10 +60,21 @@ class CustomServiceProvider extends ServiceProvider
     {
         try{
             //where('name',$name_api)->
-            $name_api=Auth::check()?auth()->user()->name_api:ApiApp::where('status',true)->first()->name;
+            $user_id=Session::get('user_id');
+            $name_api='';
+            //dd(Request::ip());
+            if($user_id){
+                $user= User::where('id',$user_id)->first();
+                $name_api=$user->name_api;
+            }else{
+                $name_api=Auth::check()?auth()->user()->name_api:ApiApp::where('status',true)->first()->name;
+            }
+            
+            //dd('virtual_card'.$name_api);
+            //dd(TransactionSetting::where('slug','virtual_card_'.$name_api)->where('status',1)->first());
             $view_share = [];
            $view_share['basic_settings']               = BasicSettings::first();
-            $view_share['card_details']                 = VirtualCardApi::where('name',$name_api)->first();
+            //$view_share['card_details']                 = VirtualCardApi::where('name',$name_api)->first();
             $view_share['default_currency']             = Currency::default();
             $view_share['__languages']                  = Language::get();
             $view_share['all_user_count']               = User::count();
@@ -53,10 +83,10 @@ class CustomServiceProvider extends ServiceProvider
             $view_share['default_currency']             = Currency::default();
             $view_share['__extensions']                 = Extension::get();
             $view_share['pending_ticket_count']         = UserSupportTicket::pending()->get()->count();
-            $view_share['cardCharge']                   = TransactionSetting::where('slug','virtual_card')->where('status',1)->first();
+            //$view_share['cardCharge']                   = TransactionSetting::where('slug','virtual_card_'.$name_api)->where('status',1)->first();
             $view_share['cardReloadCharge']             = TransactionSetting::where('slug','reload_card')->where('status',1)->first();
-            $view_share['card_limit']                   = VirtualCardApi::where('name',$name_api)->first()->card_limit;
-            $view_share['card_api']                     = VirtualCardApi::where('name',$name_api)->first();
+            //$view_share['card_limit']                   = VirtualCardApi::where('name',$name_api)->first()->card_limit;
+            //$view_share['card_api']                     = VirtualCardApi::where('name',$name_api)->first();
             $view_share['module']                       = ModuleSetting::get();
             $view_share['system_maintenance']           = SystemMaintenance::first();
             //$view_share['basic_settings']               = BasicSettings::first();

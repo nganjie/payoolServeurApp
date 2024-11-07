@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\AdminNotifications\AuthNotifications;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
 class DashboardController extends Controller
 {
@@ -33,8 +34,11 @@ class DashboardController extends Controller
         $totalAddMoney = Transaction::auth()->addMoney()->where('status',1)->sum('request_amount');
         $virtualCards = activeCardData()['active_cards'];
         $totalGiftCards = GiftCard::auth()->count();
-
+        //session(['test'=>120]);
+        $ses =Session::get('user_id');
         $active_tickets = UserSupportTicket::authTickets()->active()->count();
+        //dd($ses);
+
 
         return view('user.dashboard',compact(
             "page_title",
