@@ -288,6 +288,7 @@
                     <form class="card-form row g-4" action="{{ route('user.virtual.card.fund') }}" method="POST">
                         @csrf
                         <input type="hidden" name="id">
+                        <p id="cardName">{{$cardCharge->slug}}</p>
                     <div class="col-12">
                         <div class="row">
                             <div class="form-group">
@@ -393,6 +394,9 @@
                 var currencyMaxAmount = "{{getAmount($cardCharge->max_limit)}}";
                 var currencyFixedCharge = "{{getAmount($cardCharge->fixed_charge)}}";
                 var currencyPercentCharge = "{{getAmount($cardCharge->percent_charge)}}";
+                var cardName ="{{$cardCharge->slug}}";
+                var currencyFixedFinalCharge ="{{getAmount($cardCharge->fixed_final_charge)}}";
+                var currencyFixedMonthCharge ="{{getAmount($cardCharge->fixed_month_charge)}}";
 
 
                 return {
@@ -402,6 +406,8 @@
                     currencyMaxAmount:currencyMaxAmount,
                     currencyFixedCharge:currencyFixedCharge,
                     currencyPercentCharge:currencyPercentCharge,
+                    currencyFixedFinalCharge:currencyFixedFinalCharge,
+                    currencyFixedMonthCharge:currencyFixedMonthCharge
 
 
                 };
@@ -414,6 +420,9 @@
 
                 var fixed_charge = acceptVar().currencyFixedCharge;
                 var percent_charge = acceptVar().currencyPercentCharge;
+                var motnth_charge=acceptVar().currencyFixedMonthCharge;
+                var final_charge=acceptVar();currencyFixedFinalCharge;
+                console.log(motnth_charge,' : 'final_charge)
 
                 if ($.isNumeric(percent_charge) && $.isNumeric(fixed_charge) && $.isNumeric(sender_amount)) {
                     // Process Calculation

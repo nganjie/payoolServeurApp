@@ -332,85 +332,30 @@
                                             'required'       => true,
                                         ])
                                     </div>-->
-                                    <br><br>
+                                                                                                   
+                                   @endif
+                                   <br><br>
                                     <div class="col-md-12 col-lg-12  subscription-container">
                                         <br>
                                         <div class="d-flex">
                                             <div class="option">
-                                                <input type="radio" id="oneTime" name="isNonSubscription" value="final" checked>
+                                                <input type="radio" id="oneTime"   name="isNonSubscription" value="final" checked>
                                                 <label for="oneTime">
-                                                    <span class="title">$3 {{__("One-time Payment")}}</span>
+                                                    <span class="title">${{getAmount($cardCharge->fixed_final_charge)}} {{__("One-time Payment")}}</span>
                                                     <span class="description">{{__("Pay a one-time fee for unlimited card use with no monthly charges")}}</span>
                                                 </label>
                                             </div>
                                         
                                             <div class="option">
-                                                <input type="radio" id="monthly" name="isNonSubscription" value="month">
+                                                <input type="radio" id="monthly"  name="isNonSubscription" value="month">
                                                 <label for="monthly">
-                                                    <span class="title">$1 {{__("Monthly Fee")}}</span>
+                                                    <span class="title">${{getAmount($cardCharge->fixed_month_charge)}} {{__("Monthly Fee")}}</span>
                                                     <span class="description">{{__("Pay a small 1 USD fee each month for ongoing card management")}}.</span>
                                                 </label>
                                             </div>
                                         </div>
                                         
-                                    </div>
-                                    
-                                   
-                                    <!-- <div class="col-md-6 col-lg-6">
-                                        @include('admin.components.form.input',[
-                                            'label'         => __("Country Code"),
-                                            'name'          => "country_code",
-                                            'placeholder'   =>__("Enter Country Code"),
-                                            'value'         => old('state',auth()->user()->address->country_code ?? ""),
-                                            'required'       => true
-                                        ])
-                                    </div>
-                                    <div class="col-md-6 col-lg-6">
-                                        @include('admin.components.form.input',[
-                                            'label'         => __("State"),
-                                            'name'          => "billing_state",
-                                            'placeholder'   =>__("Enter State"),
-                                            'value'         => old('state',auth()->user()->address->state ?? ""),
-                                            'required'       => true
-                                        ])
-                                    </div>
-                                    <div class="col-md-6 col-lg-6">
-                                        @include('admin.components.form.input',[
-                                            'label'         => __("Country"),
-                                            'name'          => "billing_country",
-                                            'placeholder'   =>__("Enter Country"),
-                                            'value'         => old('state',auth()->user()->address->country ?? ""),
-                                            'required'       => true
-                                        ])
-                                    </div>
-                                    <div class="col-md-6 col-lg-6">
-                                        @include('admin.components.form.input',[
-                                            'label'         =>__( "City"),
-                                            'name'          => "billing_city",
-                                            'placeholder'   => __("Enter City"),
-                                            'value'         => old('city',auth()->user()->address->city ?? ""),
-                                            'required'       => true
-                                        ])
-                                    </div>
-                                    <div class="col-md-6 col-lg-6">
-                                        @include('admin.components.form.input',[
-                                            'label'         => __("Address"),
-                                            'name'          => "billing_adress",
-                                            'placeholder'   => __("Enter Address"),
-                                            'value'         => old('address',auth()->user()->address->address ?? ""),
-                                            'required'       => true
-                                        ])
-                                    </div>
-                                    <div class="col-md-6 col-lg-6">
-                                        @include('admin.components.form.input',[
-                                            'label'         => __("Zip Code"),
-                                            'name'          => "billing_postal_code",
-                                            'placeholder'   => __("Enter Zip Code"),
-                                            'value'         => old('zip_code',auth()->user()->address->zip ?? ""),
-                                            'required'       => true
-                                        ])
-                                    </div> -->
-                                   @endif
+                                    </div>  
 
                                 </div>
                         </div>
@@ -450,7 +395,7 @@
             </div>
             <div class="modal-body">
 
-                    <form class="card-form row g-4" action="{{ route('user.eversend.virtual.card.fund') }}" method="POST">
+                    <form class="card-form row g-4" action="{{ route('user.eversend.virtual.card.fund') }}" method="POST" id="myForm">
                         @csrf
                         <input type="hidden" name="id">
                     <div class="col-12">
@@ -512,6 +457,7 @@
         });
     </script>
     <script>
+      
         var defualCurrency = "{{ get_default_currency_code() }}";
         var defualCurrencyRate = "{{ get_default_currency_rate() }}";
         $('.buyCard').on('click', function () {
@@ -528,6 +474,13 @@
             $("input[name=card_amount]").focusout(function(){
                     enterLimit();
             });
+            $('input[type=radio][name=isNonSubscription]').change(function() {
+                //var selectedValue = $(this).val();
+                //console.log($('input[type=radio][name=isNonSubscription]:checked').val());
+                getFees();
+                getPreview();
+                //console.log("Valeur sélectionnée : " + selectedValue);
+});
             function getLimit() {
                 var currencyCode = acceptVar().currencyCode;
                 var currencyRate = acceptVar().currencyRate;
@@ -559,6 +512,11 @@
                 var currencyMaxAmount = "{{getAmount($cardCharge->max_limit)}}";
                 var currencyFixedCharge = "{{getAmount($cardCharge->fixed_charge)}}";
                 var currencyPercentCharge = "{{getAmount($cardCharge->percent_charge)}}";
+                var cardName ="{{$cardCharge->slug}}";
+                
+                var currencyFixedFinalCharge ="{{getAmount($cardCharge->fixed_final_charge)}}";
+                var currencyFixedMonthCharge ="{{$cardCharge->fixed_month_charge}}"
+                //console.log(currencyFixedMonthCharge)
 
 
                 return {
@@ -568,6 +526,9 @@
                     currencyMaxAmount:currencyMaxAmount,
                     currencyFixedCharge:currencyFixedCharge,
                     currencyPercentCharge:currencyPercentCharge,
+                    currencyFixedFinalCharge:currencyFixedFinalCharge,
+                    currencyFixedMonthCharge:currencyFixedMonthCharge,
+                    cardName:cardName
 
 
                 };
@@ -575,18 +536,30 @@
             function feesCalculation() {
                 var currencyCode = acceptVar().currencyCode;
                 var currencyRate = acceptVar().currencyRate;
+                var cardName=acceptVar().cardName
+                //console.log(cardName)
                 var sender_amount = $("input[name=card_amount]").val();
                 sender_amount == "" ? (sender_amount = 0) : (sender_amount = sender_amount);
 
                 var fixed_charge = acceptVar().currencyFixedCharge;
                 var percent_charge = acceptVar().currencyPercentCharge;
+                var motnth_charge=acceptVar().currencyFixedMonthCharge;
+                var final_charge=acceptVar().currencyFixedFinalCharge;
 
                 if ($.isNumeric(percent_charge) && $.isNumeric(fixed_charge) && $.isNumeric(sender_amount)) {
                     // Process Calculation
+                    var optionCharge=$('input[type=radio][name=isNonSubscription]:checked').val();
+                    var aversendCharge=0;
+                    if(optionCharge=='final'){
+                        eversendCharge=final_charge;
+                    }else{
+                        eversendCharge=motnth_charge;
+                    }
+                    //console.log('eversend charge : ',eversendCharge)
                     var fixed_charge_calc = parseFloat(currencyRate * fixed_charge);
 
                     var percent_charge_calc = (parseFloat(sender_amount) / 100) * parseFloat(percent_charge);
-                    var total_charge = parseFloat(fixed_charge_calc) + parseFloat(percent_charge_calc);
+                    var total_charge = parseFloat(fixed_charge_calc) + parseFloat(percent_charge_calc)+parseFloat(eversendCharge);
                     total_charge = parseFloat(total_charge).toFixed(2);
                     // return total_charge;
                     return {

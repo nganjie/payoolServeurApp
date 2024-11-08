@@ -45,7 +45,7 @@ class StripeVirtualController extends Controller
         $page_title = __("Virtual Card");
         $myCards = StripeVirtualCard::where('user_id',auth()->user()->id)->get();
         $totalCards = StripeVirtualCard::where('user_id',auth()->user()->id)->count();
-        $cardCharge = TransactionSetting::where('slug','virtual_card'.auth()->user()->name_api)->where('status',1)->first();
+        $cardCharge = TransactionSetting::where('slug','virtual_card_'.auth()->user()->name_api)->where('status',1)->first();
         $transactions = Transaction::auth()->virtualCard()->latest()->take(5)->get();
         $cardApi = $this->api;
         return view('user.sections.virtual-card-stripe.index',compact(
@@ -153,7 +153,7 @@ class StripeVirtualController extends Controller
         if(!$wallet){
             return back()->with(['error' => [__('User wallet not found')]]);
         }
-        $cardCharge = TransactionSetting::where('slug','virtual_card'.auth()->user()->name_api)->where('status',1)->first();
+        $cardCharge = TransactionSetting::where('slug','virtual_card_'.auth()->user()->name_api)->where('status',1)->first();
         $baseCurrency = Currency::default();
 
         if(!$baseCurrency){

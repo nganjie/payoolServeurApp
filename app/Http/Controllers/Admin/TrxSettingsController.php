@@ -25,10 +25,10 @@ class TrxSettingsController extends Controller
         if(!($transaction_charges))
         {
             //echo "un monde de fou";
-            $transaction_charges = TransactionSetting::whereIn('slug',['transfer-money','reload_card','gift_card','virtual_card'])->get();
+            $transaction_charges = TransactionSetting::whereIn('slug',['transfer-money','reload_card_'.auth()->user()->name_api,'gift_card','virtual_card'])->get();
         }else{
             
-            $transaction_charges = TransactionSetting::where('slug','virtual_card_'.$admin->name_api)->orWhereIn('slug',['transfer-money','reload_card','gift_card'])->get();
+            $transaction_charges = TransactionSetting::where('slug','virtual_card_'.$admin->name_api)->orWhereIn('slug',['transfer-money','reload_card_'.auth()->user()->name_api,'gift_card'])->get();
         }
         //dd($transaction_charges);
         
@@ -49,10 +49,10 @@ class TrxSettingsController extends Controller
         $admin =Admin::where('id',auth()->user()->id)->first();
         $slug =$request->slug;
         
-        if(Str::contains($request->slug,"virtual_card"))
+        if(Str::contains($request->slug,"virtual_card")||$request->slug==='reload_card')
         {
             $transaction_setting = TransactionSetting::where('slug',$request->slug.'_'.$admin->name_api)->first();
-            if(!$transaction_setting&&$slug=="virtual_card"){
+            if(!$transaction_setting&&($slug=="virtual_card"||$slug=="reload_card")){
                 $slug=$request->slug.'_'.$admin->name_api;
             }
             

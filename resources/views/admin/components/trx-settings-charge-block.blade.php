@@ -1,6 +1,6 @@
 <div class="custom-card mb-10">
     <div class="card-header">
-        @if($title=="Virtual Card Charges")
+        @if($title=="Virtual Card Charges"||$title=="Card Reload Charges")
            <h6 class="title">{{ __($title).' '.getCurrentApi() ?? "" }}</h6>
         @else
         <h6 class="title">{{ __($title) ?? "" }}</h6>
@@ -47,7 +47,7 @@
                                     <div class="col-xxl-12 col-xl-6 col-lg-6 form-group">
                                         <label>{{ __("One-time Payment") }}*</label>
                                         <div class="input-group">
-                                            <input type="number" class="form--control" value="{{ old($data->slug.'_fixed_month_charge',$data->fixed_month_charge) }}" name="{{$data->slug}}_fixed_month_charge">
+                                            <input type="number" class="form--control" value="{{ old($data->slug.'_fixed_final_charge',$data->fixed_final_charge) }}" name="{{$data->slug}}_fixed_final_charge">
                                             <span class="input-group-text"></span>
                                         </div>
                                     </div>
@@ -82,7 +82,7 @@
                                     <div class="col-xxl-12 col-xl-6 col-lg-6 form-group">
                                         <label>{{ __("Monthly Fee") }}*</label>
                                         <div class="input-group">
-                                            <input type="number" class="form--control" value="{{ old($data->slug.'_fixed_final_charge',$data->fixed_final_charge) }}" name="{{$data->slug}}_fixed_final_charge">
+                                            <input type="number" class="form--control" value="{{ old($data->slug.'_fixed_month_charge',$data->fixed_month_charge) }}" name="{{$data->slug}}_fixed_month_charge">
                                             <span class="input-group-text"></span>
                                         </div>
                                     </div>

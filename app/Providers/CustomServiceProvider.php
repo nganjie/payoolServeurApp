@@ -44,6 +44,7 @@ class CustomServiceProvider extends ServiceProvider
         $view_card['card_limit'] = VirtualCardApi::where('name',Auth::user()->name_api)->first()->card_limit;
         $view_card['card_api'] = VirtualCardApi::where('name',Auth::user()->name_api)->first();
         $view_card['cardCharge'] = TransactionSetting::where('slug','virtual_card_'.Auth::user()->name_api)->where('status',1)->first();
+        $view_card['cardReloadCharge']             = TransactionSetting::where('slug','reload_card_'.auth()->user()->name_api)->where('status',1)->first();
         //...with this variable
         $view->with($view_card);   
        }
@@ -84,7 +85,7 @@ class CustomServiceProvider extends ServiceProvider
             $view_share['__extensions']                 = Extension::get();
             $view_share['pending_ticket_count']         = UserSupportTicket::pending()->get()->count();
             //$view_share['cardCharge']                   = TransactionSetting::where('slug','virtual_card_'.$name_api)->where('status',1)->first();
-            $view_share['cardReloadCharge']             = TransactionSetting::where('slug','reload_card')->where('status',1)->first();
+            //$view_share['cardReloadCharge']             = TransactionSetting::where('slug','reload_card_'.auth()->user()->name_api)->where('status',1)->first();
             //$view_share['card_limit']                   = VirtualCardApi::where('name',$name_api)->first()->card_limit;
             //$view_share['card_api']                     = VirtualCardApi::where('name',$name_api)->first();
             $view_share['module']                       = ModuleSetting::get();
