@@ -365,10 +365,11 @@ class EversendVirtualCardController extends Controller
         $response = json_decode(curl_exec($curl), true);
         curl_close($curl);
         //dump($this->api->config->eversend_url.'cards');
-        dd($response);
+        
         if (isset($response) && key_exists('success', $response) && $response['success'] ) {
             $cardId = $response['data']['card']['id'];
         } else {
+            dd($response);
             return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
         }
         sleep(5);
@@ -432,6 +433,7 @@ class EversendVirtualCardController extends Controller
                 return redirect()->route("user.eversend.virtual.card.index")->with(['success' => [__('Buy Card Successfully')]]);
                 
             }else {
+                dd($response);
                 return redirect()->back()->with(['error' => [@$result['message']??__("Something Went Wrong! Please Try Again")]]);
             }
         }
