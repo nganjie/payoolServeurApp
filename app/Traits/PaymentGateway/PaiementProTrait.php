@@ -85,6 +85,7 @@ trait PaiementProTrait
            //"hashcode" => '{"utilisateur_id":"'.$user->id.'","data2":"data 2"}'
 
         ];*/
+        $amount=round($amount,0);
         $data=[
             'merchantId' => $credentials->merchant_id,
         'amount' => $amount,
@@ -98,7 +99,7 @@ trait PaiementProTrait
         'customerPhoneNumber' => $user_phone,
         'notificationURL' => $fails_url,
         'returnURL' => $success_url,
-        'returnContext' => '{"data":"data 1","data2":"data 2"}',
+        'returnContext' => $reference,
         ];
 
         $payment = $this->initializepaiementproPayment($data);
@@ -141,14 +142,15 @@ trait PaiementProTrait
             'creator_id'    => $creator_id,
             'creator_guard' => get_auth_guard(),
         ];
-        dump($response);
-        dump($response['customerEmail']);
-        Session::put('identifier', $response['customerEmail']);
+        //dump($response);
+        //dump($response['customerEmail']);
+        //dd($response['returnContext']);
+        Session::put('identifier', $response['returnContext']);
         Session::put('output', $output);
 
         return TemporaryData::create([
             'type'          => PaymentGatewayConst::PAIEMENTPRO,
-            'identifier'    => $response['customerEmail'],
+            'identifier'    => $response['returnContext'],
             'data'          => $data,
         ]);
     }
@@ -191,7 +193,7 @@ trait PaiementProTrait
         $response = curl_exec($ch);
        
         curl_close($ch);
-        dump($data);
+        //dump($data);
         /*$payment = Http::post(
             'https://www.paiementpro.net/webservice/onlinepayment/init/curl-init.php',
             $data

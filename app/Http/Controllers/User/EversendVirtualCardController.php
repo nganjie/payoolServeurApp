@@ -38,7 +38,7 @@ class EversendVirtualCardController extends Controller
         // Update card details
         $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         $myCards = EversendVirtualCard::where('user_id',auth()->user()->id)->get();
-        if( count($myCards) ==0){
+        if( count($myCards) >0){
             // Get Token
             $public_key=$this->api->config->eversend_public_key;
             $secret_key=$this->api->config->eversend_secret_key;
@@ -68,6 +68,7 @@ class EversendVirtualCardController extends Controller
 
             curl_close($curl);
             
+            
            foreach ($myCards as $myCard) {
                 $curl = curl_init();
                 curl_setopt_array($curl, array(
@@ -91,6 +92,7 @@ class EversendVirtualCardController extends Controller
                 //dd($response);
                 if ( isset($response) && key_exists('success', $response) && $response['success'] == true ) {
                     //$myCard=new EversendVirtualCard();
+                    //dd($response);
                     $myCard->user_id=auth()->user()->id;
 
                     $card = $response['data']['card'];
@@ -157,6 +159,7 @@ class EversendVirtualCardController extends Controller
         $transactions = Transaction::auth()->virtualCard()->latest()->take(10)->get();
         $cardApi = $this->api;
         $user = auth()->user();
+        //dd($myCards);
         //dump(FacadesRoute::currentRouteName());
         return view('user.sections.virtual-card-eversend.index',compact('page_title','myCards','transactions','cardCharge','cardApi','totalCards','cardReloadCharge', 'user'));
     }
@@ -196,6 +199,7 @@ class EversendVirtualCardController extends Controller
         if(!$wallet){
             return back()->with(['error' => [__('User wallet not found')]]);
         }
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         $cardCharge = TransactionSetting::where('slug','virtual_card_'.auth()->user()->name_api)->where('status',1)->first();
         $baseCurrency = Currency::default();
         $rate = $baseCurrency->rate;
@@ -230,6 +234,7 @@ class EversendVirtualCardController extends Controller
         // $callBack = route('user.eversend.virtual.card.callBack').'?c_user_id='.$user->id.'&c_amount='.  $amount.'&c_temp_id='.$tempId.'&c_trx='.$trx;
         // Get Token
         $curl = curl_init();
+        //dd($this->api);
         $public_key=$this->api->config->eversend_public_key;
         $secret_key=$this->api->config->eversend_secret_key;
 
@@ -329,9 +334,7 @@ class EversendVirtualCardController extends Controller
         // $cardId = $response['data']['id'];
         //dd($user);
         $cardId = '';
-        $trx_id =  'CB'.getTrxNum();
-        $sender = $this->insertCadrBuy( $trx_id,$user,$wallet,$amount, $cardId ,$payable);
-        $this->insertBuyCardCharge( $fixedCharge,$percent_charge, $total_charge,$user,$sender, $cardId);
+       
         
         // Create a card
         //dd($request);
@@ -350,7 +353,7 @@ class EversendVirtualCardController extends Controller
                 'title' => 'GCP Services',
                 'color' => 'blue',
                 'amount' => $request->card_amount,
-                'userId' =>$ref,
+                'userId' =>'AUI1838',
                 'currency' => 'USD',
                 'brand' => strtolower($request->card_type),
                 'isNonSubscription' => $request->isNonSubscription=='final'?true:false
@@ -368,8 +371,14 @@ class EversendVirtualCardController extends Controller
         
         if (isset($response) && key_exists('success', $response) && $response['success'] ) {
             $cardId = $response['data']['card']['id'];
+            $trx_id =  'CB'.getTrxNum();
+            $sender = $this->insertCadrBuy($trx_id,$user,$wallet,$amount, $cardId ,$payable,true);
+            $this->insertBuyCardCharge($fixedCharge,$percent_charge, $total_charge,$user,$sender, $cardId);
         } else {
-            dd($response);
+            $trx_id =  'CB'.getTrxNum();
+            $sender = $this->insertCadrBuy($trx_id,$user,$wallet,$amount, $cardId ,$payable,false);
+            $this->insertBuyCardCharge($fixedCharge,$percent_charge, $total_charge,$user,$sender, $cardId);
+           // dd($response);
             return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
         }
         sleep(5);
@@ -476,29 +485,30 @@ class EversendVirtualCardController extends Controller
         if($payable > $wallet->balance ){
             return back()->with(['error' => [__('Sorry, insufficient balance')]]);
         }
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         $currency =$baseCurrency->code;
         $tempId = 'tempId-'. $user->id . time() . rand(6, 100);
         $trx = 'VC-' . time() . rand(6, 100);
         // Get Token
+        $public_key=$this->api->config->eversend_public_key;
+        $secret_key=$this->api->config->eversend_secret_key;
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://api.eversend.co/v1/auth/token',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'GET',
-        CURLOPT_POSTFIELDS =>'{
-            "clientId" : "'. $this->api->config->eversend_public_key .'",
-            "clientSecret" : "'.$this->api->config->eversend_secret_key.'"
-        }',
-        CURLOPT_HTTPHEADER => array(
-            'accept: application/json',
-        )
-        ));
+            CURLOPT_URL => 'https://api.eversend.co/v1/auth/token',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => [
+                "accept: application/json",
+                "clientId:$public_key",
+                "clientSecret:$secret_key"
+              ],
+            ));
 
         $response = json_decode(curl_exec($curl), true);
         if(!isset($response) || !array_key_exists('token', $response)){
@@ -522,15 +532,16 @@ class EversendVirtualCardController extends Controller
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => "POST",
-        CURLOPT_POSTFIELDS =>'{
-        "amount":"'.$amount.'",
-        "currency":"USD",
-        "cardId":"'.$myCard->card_id.'"
-        }',
-        CURLOPT_HTTPHEADER => array(
+        CURLOPT_POSTFIELDS =>json_encode([
+            "amount"=>$amount,
+           "currency"=>"USD",
+           "cardId"=>$myCard->card_id
+          ]),
+          CURLOPT_HTTPHEADER =>  [
             "accept: application/json",
-            "Authorization: Bearer " .$token
-        )
+            "authorization: Bearer $token",
+            "content-type: application/json"
+          ],
         ));
 
         $result = json_decode(curl_exec($curl), true);
@@ -790,7 +801,7 @@ class EversendVirtualCardController extends Controller
         return back()->with(['success' => [__('Status Updated Successfully')]]);
     }
     //card buy helper
-    public function insertCadrBuy( $trx_id,$user,$wallet,$amount, $v_card ,$payable) {
+    public function insertCadrBuy( $trx_id,$user,$wallet,$amount, $v_card ,$payable,$status=false) {
         $trx_id = $trx_id;
         $authWallet = $wallet;
         $afterCharge = ($authWallet->balance - $payable);
@@ -811,10 +822,14 @@ class EversendVirtualCardController extends Controller
                 'remark'                        => ucwords(remove_speacial_char(PaymentGatewayConst::CARDBUY," ")),
                 'details'                       => json_encode($details),
                 'attribute'                      =>PaymentGatewayConst::RECEIVED,
-                'status'                        => true,
+                'status'                        => $status,
                 'created_at'                    => now(),
             ]);
-            $this->updateSenderWalletBalance($authWallet,$afterCharge);
+            if($status)
+            {
+                $this->updateSenderWalletBalance($authWallet,$afterCharge);
+            }
+            
 
             DB::commit();
         }catch(Exception $e) {

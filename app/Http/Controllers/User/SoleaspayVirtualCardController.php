@@ -702,6 +702,7 @@ class SoleaspayVirtualCardController extends Controller
         ));
 
         $response = json_decode(curl_exec($curl), true);
+        //dd($response);
         curl_close($curl);
         if(!isset($response) || !array_key_exists('data', $response)) {
             return back()->with(['error' => [__("Something went wrong! Please try again.")]]);

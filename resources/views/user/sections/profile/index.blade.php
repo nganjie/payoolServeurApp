@@ -30,7 +30,7 @@
                             <div class="profile-settings-wrapper">
                                 <div class="preview-thumb profile-wallpaper">
                                     <div class="avatar-preview">
-                                        <div class="profilePicPreview bg_img" data-background="{{ asset('public/frontend/') }}/images/element/profile-bg.jpg"></div>
+                                        <div class="profilePicPreview bg_img" data-background="{{ asset('public/frontend/') }}/images/element/carte_bancaire.jpg"></div>
                                     </div>
                                 </div>
                                 <div class="profile-thumb-content">

@@ -70,13 +70,17 @@ class AddMoneyController extends Controller
                 'returnURL' => "callback_url",
                 'returnContext' => '{"data":"data 1","data2":"data 2"}',
             );*/
-        
-            if ($request->has('paiementmode') && !is_null($request->input('paiementmode'))) {
-                // Le champ est présent et n'est pas nul
-                // Logique supplémentaire ici
-            } else {
-                return back()->with(['error' => ['Veillez renseigner La Méthode de Paiement']]);
+            //dd($request);
+            if($request->currency=="add-money-paiementpro-cfa-automatic"){
+                if ($request->has('paiementmode') && !is_null($request->input('paiementmode'))) {
+                    // Le champ est présent et n'est pas nul
+                    // Logique supplémentaire ici
+                } else {
+                    return back()->with(['error' => ['Veillez renseigner La Méthode de Paiement']]);
+                }
             }
+        
+            
             
             //dump($request);
             //dump($request->all());
@@ -217,18 +221,22 @@ class AddMoneyController extends Controller
         //dump($request);
         if(isset($request['responsecode'])&&$request['responsecode']==-1){
             // $payId = $data['payId'];
-            $email=$request['identifier'];
+            $reference=$request['returnContext'];
+           // dump($reference);
 
-        $checkTempData = TemporaryData::where("type",'paiementpro')->where("identifier",$email)->first();
-
+        $checkTempData = TemporaryData::where("type",'paiementpro')->where("identifier",$reference)->first();
+        //dd($checkTempData);
         if(!$checkTempData) return redirect()->route('user.add.money.index')->with(['error' => [__('Transaction failed. Record didn\'t saved properly. Please try again')]]);
 
         $checkTempData = $checkTempData->toArray();
         TemporaryData::destroy($checkTempData['id']);
         return redirect()->route("user.add.money.index")->with(['success' => [__('Added Money Failed')]]);
         }else{
-            $email=$request['identifier'];
-            $checkTempData = TemporaryData::where("type",'paiementpro')->where("identifier",$email)->first();
+            //dd($request);
+            $reference=$request['returnContext'];
+            //dump($reference);
+            $checkTempData = TemporaryData::where("type",'paiementpro')->where("identifier",$reference)->first();
+            //dd($checkTempData);
 
         if(!$checkTempData) return redirect()->route('user.add.money.index')->with(['error' => [__('Transaction failed. Record didn\'t saved properly. Please try again')]]);
 
@@ -236,6 +244,7 @@ class AddMoneyController extends Controller
 
         try{
             PaymentGatewayHelper::init($checkTempData)->type(PaymentGatewayConst::TYPEADDMONEY)->responseReceive('paiementpro');
+            //dd($request);
         }catch(Exception $e) {
             return back()->with(['error' => [$e->getMessage()]]);
         }

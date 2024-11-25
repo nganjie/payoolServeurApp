@@ -88,6 +88,7 @@ trait SoleaspayTrait
         $creator_id = auth()->guard(get_auth_guard())->user()->id;
         $wallet_table = $output['wallet']->getTable();
         $wallet_id = $output['wallet']->id;
+        //dd(json_decode(json_encode($output['amount']), true));
 
         $data = [
             'gateway'      => $output['gateway']->id,
@@ -100,7 +101,7 @@ trait SoleaspayTrait
             'creator_id'    => $creator_id,
             'creator_guard' => get_auth_guard(),
         ];
-
+        //dd($response['orderId']);
         Session::put('identifier', $response['orderId']);
         Session::put('output', $output);
 
