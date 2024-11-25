@@ -35,6 +35,7 @@ class VirtualCardController extends Controller
         //$adim =Admin::where('id',auth()->user()->id)->first();
         //dump($existApi);
         //dump(get_default_language_code());
+       // dd(VirtualCardApi::where('name',$admin->name_api)->first());
         return view('admin.sections.virtual-card.api',compact(
             'page_title',
             'api',
@@ -73,7 +74,7 @@ class VirtualCardController extends Controller
         return redirect()->back();
     }
     public function cardApiUpdate(Request $request){
-        //dump($request);
+        //dd($request);
         $validator = Validator::make($request->all(), [
             'api_method'                => 'required|in:flutterwave,sudo,stripe,strowallet,soleaspay,eversend',
             'flutterwave_secret_key'    => 'required_if:api_method,flutterwave',
@@ -97,6 +98,8 @@ class VirtualCardController extends Controller
             'eversend_secret_key'     => 'required_if:api_method,eversend',
             'eversend_url'            => 'required_if:api_method,eversend',
             'image'                     => "nullable|mimes:png,jpg,jpeg,webp,svg",
+            'is_created_card'=>'nullable|boolean',
+            'is_active'=>'nullable|boolean',
             /*'card_limit' => [
                 'required',
                 'numeric',
@@ -104,10 +107,12 @@ class VirtualCardController extends Controller
             ],*/
         ]);
         
+        //dd($request);
         if($validator->fails()) {
-            //dump($validator);
+            //dd($validator);
             return back()->withErrors($validator)->withInput();
         }
+        //dd($request);
         $admin =Admin::where('id',auth()->user()->id)->first();
         $existApi=VirtualCardApi::where('name',$admin->name_api)->first();
         
@@ -126,6 +131,18 @@ class VirtualCardController extends Controller
         $api->card_limit = 10000;//$request->card_limit;
         $api->config = $data;
         $api->name=$data['name'];
+        if(isset($data['is_active'])){
+            $api->is_active=$data['is_active'];
+        }else{
+            $api->is_active=false;
+        }
+        
+        if(isset($data['is_created_card'])){
+            $api->is_created_card=$data['is_created_card'];
+        }else{
+            $api->is_created_card=false;
+        }
+        
        //$this->createApiAppElemet();
 
         if ($request->hasFile("image")) {

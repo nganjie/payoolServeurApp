@@ -64,6 +64,7 @@ class EversendVirtualCardController extends Controller
             if(isset($response) && key_exists('status', $response) && $response['status']==400){
                 return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
             }
+            //dd($response);
             $token = $response['token'];
 
             curl_close($curl);
@@ -89,7 +90,7 @@ class EversendVirtualCardController extends Controller
 
                 $response = json_decode(curl_exec($curl), true);
                 curl_close($curl);
-                //dd($response);
+                dd($response);
                 if ( isset($response) && key_exists('success', $response) && $response['success'] == true ) {
                     //$myCard=new EversendVirtualCard();
                     //dd($response);
@@ -173,6 +174,10 @@ class EversendVirtualCardController extends Controller
 
     public function cardBuy(Request $request)
     {
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
+        if (!$this->api->is_created_card) {
+            return back()->with(['error' => [__('the card purchase is temporary deactivate for this type of card')]]);
+        }
         $user = auth()->user();
         if($user->eversend_customer == null){
             $request->validate([

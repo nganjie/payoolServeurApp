@@ -14,6 +14,8 @@ class VirtualCardApi extends Model
         'admin_id' => 'integer',
         'config' => 'object',
         'card_details' => 'string',
-        'card_limit' => 'integer'
+        'card_limit' => 'integer',
+        'is_active'=>'boolean',
+        'is_created_card'=>'boolean'
     ];
 }

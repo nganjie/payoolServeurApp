@@ -143,6 +143,10 @@ class StripeVirtualController extends Controller
     }
     public function cardBuy(Request $request)
     {
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
+        if (!$this->api->is_created_card) {
+            return back()->with(['error' => [__('the card purchase is temporary deactivate for this type of card')]]);
+        }
         $request->validate([
             'fund_amount' => 'required|numeric|gt:0',
         ]);

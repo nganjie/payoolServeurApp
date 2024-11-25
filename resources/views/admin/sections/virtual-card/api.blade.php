@@ -105,21 +105,21 @@
                                 <label>{{ __("Public Key") }}*</label>
                                 <div class="input-group append">
                                     <span class="input-group-text"><i class="las la-key"></i></span>
-                                    <input type="text" class="form--control" name="stripe_public_key" value="@if(@$existApi){{ @$api->config->stripe_public_key }}@endif">
+                                    <input type="text" class="form--control" name="stripe_public_key" value="{{ @$api->config->stripe_public_key }}">
                                 </div>
                             </div>
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
                                 <label>{{ __("Secret Key") }}*</label>
                                 <div class="input-group append">
                                     <span class="input-group-text"><i class="las la-key"></i></span>
-                                    <input type="text" class="form--control" name="stripe_secret_key" value="@if(@$existApi){{ @$api->config->stripe_secret_key }}@endif">
+                                    <input type="text" class="form--control" name="stripe_secret_key" value="{{ @$api->config->stripe_secret_key }}">
                                 </div>
                             </div>
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 form-group">
                                 <label>{{ __("Base Url") }}*</label>
                                 <div class="input-group append">
                                     <span class="input-group-text"><i class="las la-link"></i></span>
-                                    <input type="text" class="form--control" name="stripe_url" value="@if(@$existApi){{ @$api->config->stripe_url }}@endif">
+                                    <input type="text" class="form--control" name="stripe_url" value="{{ @$api->config->stripe_url }}">
                                 </div>
                             </div>
                         </div>
@@ -232,6 +232,27 @@
                             'placeholder'   => "Enter 1-3 Only."
                         ])
                     </div>-->
+                    
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                        <label class="form-check-label" for="flexCheckDefault">{{ __("is Created Card") }}*</label>
+                        <div class="input-group append">
+                            <span class="input-group-text"><i class="las la-link"></i></span>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_created_card" value="1" id="flexCheckDefault" @if($api->is_created_card) @checked(true) @endif>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                        <label class="form-check-label" for="flexCheckDefault">{{ __("active Card") }}*</label>
+                        <div class="input-group append">
+                            <span class="input-group-text"><i class="las la-link"></i></span>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_active" value="1" id="flexCheckDefault" @if($api->is_active) @checked(true) @endif>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="col-xl-12 col-lg-12 form-group">
                         @include('admin.components.form.input-text-rich',[
                             'label'         => __('Card Details').'*',
@@ -270,6 +291,7 @@
         (function ($) {
             "use strict";
             var method = '{{ @$api->name}}';
+            console.log('methode :',method);
             if (!method) {
                 method = 'flutterwave';
             }

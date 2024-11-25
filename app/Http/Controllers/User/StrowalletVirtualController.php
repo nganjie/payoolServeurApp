@@ -316,6 +316,10 @@ class StrowalletVirtualController extends Controller
      * Method for strowallet card buy
      */
     public function cardBuy(Request $request){
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
+        if (!$this->api->is_created_card) {
+            return back()->with(['error' => [__('the card purchase is temporary deactivate for this type of card')]]);
+        }
         $user = auth()->user();
         $user = User::where('id',$user->id)->first();
         $request->validate([

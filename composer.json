@@ -12,6 +12,7 @@
         "intervention/image": "^2.7",
         "jenssegers/agent": "^2.6",
         "kingflamez/laravelrave": "^4.2",
+        "laravel-lang/common": "^2.0",
         "laravel/framework": "^9.19",
         "laravel/passport": "^10.4",
         "laravel/sanctum": "^3.0",
@@ -19,14 +20,14 @@
         "laravel/tinker": "^2.7",
         "laravel/ui": "^4.1",
         "maatwebsite/excel": "^3.1",
+        "pragmarx/google2fa": "^8.0",
         "pusher/pusher-php-server": "^7.2",
         "pusher/pusher-push-notifications": "^2.0",
         "shakurov/coinbase": "^0.7.7",
         "srmklive/paypal": "^3.0",
         "stripe/stripe-php": "^10.3",
         "torann/geoip": "^3.0",
-        "unicodeveloper/laravel-paystack": "^1.0",
-        "pragmarx/google2fa": "^8.0"
+        "unicodeveloper/laravel-paystack": "^1.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.7",

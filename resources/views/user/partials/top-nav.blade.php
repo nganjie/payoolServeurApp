@@ -23,10 +23,39 @@
                         <option disabled>{{ __("Select Platfrom") }}</option>
         
                         @foreach ($currentsApi as $item)
-                        <option value="{{$item->name}}" @if(getCurrentApi() == $item->name) selected @endif>@lang($item->name.' Api')</option>
+                        @if($item->is_active)<option value="{{$item->name}}" @if(getCurrentApi() == $item->name) selected @endif>@if($item->name=="soleaspay")
+                            {{__("Carte Basique")}}
+                            @elseif($item->name=="eversend")
+                             {{__("Carte Premium")}}
+                            @else
+                            {{$item->name}}
+                            @endif
+                        </option>
+                        @endif
                     @endforeach
                     </select>
                 </form>
+                <div class="modal fade" id="changeApiModal" tabindex="-1" aria-labelledby="changeApi-modal" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header" id="buycard-modal">
+                                <h4 class="modal-title">{{__("change card type")}}</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="las la-times"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <h3>{{__("This shift implies that")}} :</h3>
+                                <ol>
+                                    <li>{{__("Previous cards will no longer be accessible unless you revert to the other type of card")}}</li>
+                                    <li>{{__("When you switch from one card type to another, only cards matching the selected type will be visible in your account")}}</li>
+                                </ol>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" id ="changeApi" class="btn btn--base w-100 btn-loading fund-btn">{{ __("Confirm") }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 @push('script')
                 <script>
                     (function ($) {
@@ -35,8 +64,19 @@
                         if (!method) {
                             method = 'flutterwave';
                         }
-                        $("#submitButton").click(function() { $("#api_appForm").submit(); });
-                        $("#api_method_app").change(function() { $("#api_appForm").submit(); });
+                        //$("#submitButton").click(function() { $("#api_appForm").submit(); });
+                        $("#api_method_app").change(function() {
+                         //$("#api_appForm").submit();
+                         console.log($("#api_method_app").val())
+                         var apiName =$("#api_method_app").val()
+                         var modal =$('#changeApiModal');
+                         $("#changeApi").click(function(){
+                            $("#api_appForm").submit()
+                         })
+                         console.log(modal)
+                         if(method!==apiName)
+                         modal.modal('show')
+                          });
             
                     })(jQuery);
             

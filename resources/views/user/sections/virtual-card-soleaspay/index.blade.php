@@ -41,6 +41,7 @@
                             <div class="card-custom">
                                 <div class="flip">
                                     <div class="front bg_img" data-background="{{ get_image(@$cardApi->image ,'card-api') }}">
+                                        @if($myCard->is_disabled)
                                         <img class="logo" src="{{ get_fav($basic_settings) }}"
                                         alt="site-logo">
                                         <div class="investor">{{ @$basic_settings->site_name }}</div>
@@ -51,16 +52,18 @@
                                             <div class="chip-line"></div>
                                             <div class="chip-main"></div>
                                         </div>
-                                        @if(!$myCard->is_active)
+                                        @endif
+                                        @if($myCard->is_active)
                                         <div class="chip-line" style="margin:auto; background-color:#000;z-index:1000;">
                                             <p>{{__("Card has been blocked previously")}}</p>
                                         </div>
                                         @endif
-                                        @if($myCard->is_disabled)
-                                        <div class="chip-line" style="margin:auto; background-color:red;z-index:1000;">
-                                            <p>{{__("Disabled")}}</p>
+                                        @if(!$myCard->is_disabled)
+                                        <div class="chiSp-line" style="margin:auto;z-index:1000;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" style="color:red" width="150px" height="150px" viewBox="0 0 448 512"><!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"/></svg>
                                         </div>
                                         @endif
+                                        @if($myCard->is_disabled)
                                         <svg class="wave" viewBox="0 3.71 26.959 38.787" width="26.959" height="38.787" fill="white">
                                             <path d="M19.709 3.719c.266.043.5.187.656.406 4.125 5.207 6.594 11.781 6.594 18.938 0 7.156-2.469 13.73-6.594 18.937-.195.336-.57.531-.957.492a.9946.9946 0 0 1-.851-.66c-.129-.367-.035-.777.246-1.051 3.855-4.867 6.156-11.023 6.156-17.718 0-6.696-2.301-12.852-6.156-17.719-.262-.317-.301-.762-.102-1.121.204-.36.602-.559 1.008-.504z"></path>
                                             <path d="M13.74 7.563c.231.039.442.164.594.343 3.508 4.059 5.625 9.371 5.625 15.157 0 5.785-2.113 11.097-5.625 15.156-.363.422-1 .472-1.422.109-.422-.363-.472-1-.109-1.422 3.211-3.711 5.156-8.551 5.156-13.843 0-5.293-1.949-10.133-5.156-13.844-.27-.309-.324-.75-.141-1.114.188-.367.578-.582.985-.542h.093z"></path>
@@ -74,6 +77,7 @@
                                             <div class="section">{{ $value }}</div>
                                             @endforeach
                                         </div>
+                                        
 
                                         <div class="end"><span class="end-text">{{__("exp. end")}}:</span><span class="end-date"> {{ $myCard->expiration }}</span>
                                         </div>
@@ -88,12 +92,15 @@
                                                 <div class="circle master-yellow"></div>
                                             </div>
                                         @endif
+                                        @endif
                                     </div>
                                     <div class="back">
                                         <div class="strip-black"></div>
                                         <div class="ccv">
+                                            @if($myCard->is_disabled)
                                             <label>{{ __("ccv") }}</label>
                                             <div>{{ $myCard->cvv }}</div>
+                                            @endif
                                         </div>
                                         <div class="terms">
                                             <p>
