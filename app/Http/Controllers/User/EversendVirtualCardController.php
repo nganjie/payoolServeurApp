@@ -64,11 +64,10 @@ class EversendVirtualCardController extends Controller
             if(isset($response) && key_exists('status', $response) && $response['status']==400){
                 return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
             }
-            //dd($response);
+            //dd($this->api);
             $token = $response['token'];
 
             curl_close($curl);
-            
             
            foreach ($myCards as $myCard) {
                 $curl = curl_init();
@@ -90,7 +89,7 @@ class EversendVirtualCardController extends Controller
 
                 $response = json_decode(curl_exec($curl), true);
                 curl_close($curl);
-                dd($response);
+                //dd($response);
                 if ( isset($response) && key_exists('success', $response) && $response['success'] == true ) {
                     //$myCard=new EversendVirtualCard();
                     //dd($response);
@@ -111,32 +110,9 @@ class EversendVirtualCardController extends Controller
                     $myCard->number = $card['number'];
                     $myCard->owner_id = $card['ownerId'];
                     $myCard->is_non_subscription = $card['isNonSubscription'];
+                    if(isset($card['lastUsedOn']))
                     $myCard->last_used_on = $card['lastUsedOn'];
                     $myCard->billing_address = $card['billingAddress'];
-                    /*$myCard->grade = $card['grade'];
-                    $myCard->category = $card['category'];
-                    $myCard->pin = $card['pin'];
-                    $myCard->account_id = $card['ref'];
-                    // $mycard->card_hash = $result->card_hash;
-                    
-                    $myCard->card_pan = $card['card_pan'];
-                    $myCard->masked_card = $card['masked_pan'];
-                    $myCard->cvv = $card['cvv'];
-                    
-                    $myCard->card_type = $card['card_type'];
-                    //$myCard->name_on_card = $card['billing_name'];
-                    // $mycard->callback = $result->callback_url;
-                    $myCard->ref_id = $card['card_id'];
-                    //$mycard->secret = $trx;
-                    //$myCard->bg = "#0E0D2F";
-                    //$mycard->city = $cardUser->billing_city;
-                    //$mycard->state = $cardUser->billing_state;
-                    //$mycard->zip_code = $cardUser->billing_postal_code;
-                    //$mycard->address = $cardUser->billing_address;
-                    $myCard->expiration = $card['expired_at'];
-                    $myCard->amount =  $card['balance'];
-                    $myCard->currency = $card['currency'];*/
-                    // $mycard->charge =  $total_charge;
                     if ($card['isPhysical']) {
                         $myCard->is_Physical = 1;
                     } else {
@@ -179,6 +155,7 @@ class EversendVirtualCardController extends Controller
             return back()->with(['error' => [__('the card purchase is temporary deactivate for this type of card')]]);
         }
         $user = auth()->user();
+        //dd($request);
         if($user->eversend_customer == null){
             $request->validate([
                 'card_amount'       => 'required|numeric|gt:0|min:1',
@@ -277,7 +254,7 @@ class EversendVirtualCardController extends Controller
 
         curl_close($curl);
         // End 
-        //dd($user->eversend_customer);
+        
         if ($user->eversend_customer == null) {
             
             // Create User
@@ -296,11 +273,11 @@ class EversendVirtualCardController extends Controller
                 'firstName' => $request->first_name,
                 'lastName' => $request->last_name,
                 'email' => $request->email,
-                'phone' => '+12068489567',
-                'country' => 'US',
-                'state' => 'NY',
-                'city' => 'New York',
-                'address' => '447 Broadway, 2nd Floor',
+                'phone' => '+2347039099804',
+                'country' => 'NG',
+                'state' => 'Lagos',
+                'city' => 'Ikeja',
+                'address' => 'No 5 pound road Aba',
                 'zipCode' => '10013',
                 'idType' => 'Driving_License',
                 'idNumber' => $request->id_number.'1290282882'
@@ -326,7 +303,7 @@ class EversendVirtualCardController extends Controller
                // dd($userRepo);
                 //echo 'on ici maintenant';
             }else{
-                //dump($response);
+                dd($response);
                 return redirect()->back()->with(['error' => [__("Something Went Wrong! Please Try Again")]]);
             }
             //dump($request->first_name);
@@ -358,7 +335,7 @@ class EversendVirtualCardController extends Controller
                 'title' => 'GCP Services',
                 'color' => 'blue',
                 'amount' => $request->card_amount,
-                'userId' =>'AUI1838',
+                'userId' =>$ref,
                 'currency' => 'USD',
                 'brand' => strtolower($request->card_type),
                 'isNonSubscription' => $request->isNonSubscription=='final'?true:false
@@ -383,7 +360,7 @@ class EversendVirtualCardController extends Controller
             $trx_id =  'CB'.getTrxNum();
             $sender = $this->insertCadrBuy($trx_id,$user,$wallet,$amount, $cardId ,$payable,false);
             $this->insertBuyCardCharge($fixedCharge,$percent_charge, $total_charge,$user,$sender, $cardId);
-           // dd($response);
+            dd($response);
             return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
         }
         sleep(5);
@@ -410,10 +387,17 @@ class EversendVirtualCardController extends Controller
 
         if (isset($result)){
             if ( key_exists('success', $response) && $response['success'] &&  isset($result->data) ) {
-                $card=$result->data->data->card;
+                try{
+                    $card=$result['data']['card'];
+                }catch(\Exception $e){
+                    dump($e);
+                    dd($result);
+                }
+                
                 //$cardUser = $result->data->data->card->virtual_card_user;
                 //Save Card
                 $v_card = new eversendVirtualCard();
+                
                 $card = $response['data']['card'];
                     $v_card->security_code = $card['securityCode'];
                     $v_card->expiration = $card['expiration'];
@@ -429,6 +413,7 @@ class EversendVirtualCardController extends Controller
                     $v_card->number = $card['number'];
                     $v_card->owner_id = $card['ownerId'];
                     $v_card->isNonSubscription = $card['isNonSubscription'];
+                    if(isset($card['lastUsedOn']))
                     $v_card->lastUsedOn = $card['lastUsedOn'];
                     $v_card->billingAddress = $card['billingAddress'];
              
@@ -458,6 +443,11 @@ class EversendVirtualCardController extends Controller
             'id' => 'required|integer',
             'fund_amount' => 'required|numeric|gt:0',
         ]);
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
+        if (!$this->api->is_rechargeable) {
+            return back()->with(['error' => [__('card top-up is temporarily disabled for this card type')]]);
+        }
+        //dd($request);
         $user = auth()->user();
         $myCard =  EversendVirtualCard::where('user_id',$user->id)->where('id',$request->id)->first();
 
@@ -787,8 +777,9 @@ class EversendVirtualCardController extends Controller
             'target'        => "required|numeric",
         ])->validate();
         $user = auth()->user();
-        $targetCard =  eversendVirtualCard::where('id',$validated['target'])->where('user_id',$user->id)->first();
-        $withOutTargetCards =  eversendVirtualCard::where('id','!=',$validated['target'])->where('user_id',$user->id)->get();
+        $targetCard =  EversendVirtualCard::where('id',$validated['target'])->where('user_id',$user->id)->first();
+        $withOutTargetCards =  EversendVirtualCard::where('id','!=',$validated['target'])->where('user_id',$user->id)->get();
+        //dd($targetCard);
         try{
             $targetCard->update([
                 'is_default'  => $targetCard->is_default ? 0 : 1,
@@ -863,11 +854,11 @@ class EversendVirtualCardController extends Controller
                 'image'         => files_asset_path('profile-default'),
             ];
 
-            UserNotification::create([
+           /* UserNotification::create([
                 'type'      => NotificationConst::CARD_BUY,
                 'user_id'  => $user->id,
                 'message'   => $notification_content,
-            ]);
+            ]);*/
             DB::commit();
         }catch(Exception $e) {
             DB::rollBack();

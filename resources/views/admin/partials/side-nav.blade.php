@@ -189,6 +189,10 @@
                                         'route'     => "admin.users.email.users",
                                     ],
                                     [
+                                        'title'     => __("Add Card To User"),
+                                        'route'     => "admin.users.show.add.card.user",
+                                    ],
+                                    [
                                         'title'     => __("Banned Users"),
                                         'route'     => "admin.users.banned",
                                     ]

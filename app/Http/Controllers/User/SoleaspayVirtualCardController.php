@@ -409,6 +409,10 @@ class SoleaspayVirtualCardController extends Controller
             'id' => 'required|integer',
             'fund_amount' => 'required|numeric|gt:0',
         ]);
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
+        if (!$this->api->is_rechargeable) {
+            return back()->with(['error' => [__('card top-up is temporarily disabled for this card type')]]);
+        }
         $user = auth()->user();
         $myCard =  SoleaspayVirtualCard::where('user_id',$user->id)->where('id',$request->id)->first();
 

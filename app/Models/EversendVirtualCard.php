@@ -29,6 +29,7 @@ class EversendVirtualCard extends Model
         "is_non_subscription"=> "boolean",
         "last_used_on"=> "timestamp",
         "billing_address"=> "json",
+        "is_default"=>"boolean"
     ];
 
 

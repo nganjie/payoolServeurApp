@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Constants\NotificationConst;
 use App\Events\Admin\SupportConversationEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\Response;
+use App\Models\Admin\Admin;
+use App\Models\UserNotification;
 use App\Models\UserSupportChat;
 use App\Models\UserSupportTicket;
 use App\Models\UserSupportTicketAttachment;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class SupportTicketController extends Controller
@@ -87,6 +91,7 @@ class SupportTicketController extends Controller
 
             try{
                 UserSupportTicketAttachment::insert($attachment);
+               
             }catch(Exception $e) {
                 $support_ticket_id->delete();
                 delete_files($files_link);
@@ -94,6 +99,21 @@ class SupportTicketController extends Controller
                 return back()->with(['error' => [__('Opps! Failed to upload attachment. Please try again.')]]);
             }
         }
+        DB::beginTransaction();
+        $admin=Admin::first();
+        $notification_content = [
+            'title'         =>"Message User",
+            'message'       => 'Buy card successful '.auth()->user()->firstname,
+            'image'         => files_asset_path('profile-default'),
+        ];
+
+        $notify =UserNotification::create([
+            'type'      => NotificationConst::CARD_BUY,
+            'user_id'  =>auth()->user()->id,
+            'message'   => $notification_content,
+        ]);
+        DB::commit();
+        dd($notify);
 
         return redirect()->route('user.support.ticket.index')->with(['success' => [__('Support ticket created successfully!')]]);
 

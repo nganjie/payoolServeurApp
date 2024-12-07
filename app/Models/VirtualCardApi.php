@@ -16,6 +16,7 @@ class VirtualCardApi extends Model
         'card_details' => 'string',
         'card_limit' => 'integer',
         'is_active'=>'boolean',
-        'is_created_card'=>'boolean'
+        'is_created_card'=>'boolean',
+        'is_rechargeable'=>'boolean'
     ];
 }

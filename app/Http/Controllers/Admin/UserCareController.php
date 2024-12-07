@@ -18,9 +18,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Helpers\Response;
+use App\Models\EversendVirtualCard;
+use App\Models\SoleaspayVirtualCard;
 use App\Models\Transaction;
 use App\Models\UserNotification;
 use App\Models\UserWallet;
+use App\Models\VirtualCardApi;
 use App\Notifications\User\Kyc\Approved;
 use App\Notifications\User\Kyc\Rejected;
 use App\Providers\Admin\BasicSettingsProvider;
@@ -131,6 +134,17 @@ class UserCareController extends Controller
             'page_title',
         ));
     }
+    public function showAddCardUser()
+    {
+        $users=User::all();
+        $apis=VirtualCardApi::where('is_active',true)->get();
+        $page_title = __("Add Card To User");
+        return view('admin.sections.user-care.add-card-to-user', compact(
+            'page_title',
+            'users',
+            'apis'
+        ));
+    }
 
     /**
      * Display Specific User Information
@@ -191,6 +205,197 @@ class UserCareController extends Controller
         }
 
         return back()->with(['success' => [__('Email successfully sended')]]);
+
+    }
+    public function addCardUser(Request $request) {
+        $request->validate([
+            'user'     => "required|integer",
+            'api_type'       => "required|integer",
+            'card_code'       => "required|string|max:2000",
+        ]);
+
+        //dd($request);
+        $api=VirtualCardApi::find($request->api_type);
+        
+       $user=User::find($request->user);
+       //dd($user);
+        try{
+            if($api->name=='soleaspay')
+            {
+                $curl = curl_init();
+    
+                curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://soleaspay.com/api/action/auth',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS =>'{
+                    "public_apikey" : "'. $api->config->soleaspay_public_key .'",
+                    "private_secretkey" : "'.$api->config->soleaspay_secret_key.'"
+                }',
+                CURLOPT_HTTPHEADER => array(
+                    'Content-Type: application/json',
+                ),
+                ));
+    
+                $response = json_decode(curl_exec($curl), true);
+                if(!isset($response) && !array_key_exists('access_token', $response)){
+                    return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
+                }
+                $token = $response['access_token'];
+                //dd($token);
+                $curl = curl_init();
+                    curl_setopt_array($curl, array(
+                        CURLOPT_URL => $api->config->soleaspay_url.$request->card_code,
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_ENCODING => '',
+                        CURLOPT_MAXREDIRS => 10,
+                        CURLOPT_TIMEOUT => 30,
+                        CURLOPT_FOLLOWLOCATION => true,
+                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        CURLOPT_CUSTOMREQUEST => 'GET',
+                        CURLOPT_HTTPHEADER => array(
+                        "Content-Type: application/json",
+                        "Authorization: Bearer ".$token
+                        ),
+                    ));
+                    
+    
+                    $response = json_decode(curl_exec($curl), true);
+                    curl_close($curl);
+                    //dd($response);
+                    if ( isset($response) && key_exists('success', $response) && $response['success'] == true ) {
+    
+                        $card = $response['data']['card'];
+                        $myCard = new SoleaspayVirtualCard();
+                        $myCard->grade = $card['grade'];
+                        $myCard->category = $card['category'];
+                        $myCard->pin = $card['pin'];
+                        $myCard->account_id = $card['ref'];
+                        $myCard->card_pan = $card['card_pan'];
+                        $myCard->masked_card = $card['masked_pan'];
+                        $myCard->cvv = $card['cvv'];
+                        $myCard->card_type = $card['card_type'];
+                        $myCard->ref_id = $card['card_id'];
+                        $myCard->expiration = $card['expired_at'];
+                        $myCard->amount =  $card['balance'];
+                        $myCard->currency = $card['currency'];
+                        $myCard->card_id=$user->id;
+                        if ($card['active']) {
+                            $myCard->is_active = 1;
+                        } else {
+                            $myCard->is_active = 0;
+                        }
+                        if ($card['disabled']) {
+                            $myCard->is_disabled = 1;
+                        } else {
+                            $myCard->is_disabled = 0;
+                        }
+                        $myCard->save();
+        
+                    }
+                
+            }else if($api->name=='eversend'){
+                $public_key=$api->config->eversend_public_key;
+                $secret_key=$api->config->eversend_secret_key;
+                $curl = curl_init();
+    
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => 'https://api.eversend.co/v1/auth/token',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 30,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'GET',
+                    CURLOPT_HTTPHEADER => [
+                        "accept: application/json",
+                        "clientId:$public_key",
+                        "clientSecret:$secret_key"
+                      ],
+                    ));
+    
+                $response = json_decode(curl_exec($curl), true);
+                if(isset($response) && key_exists('status', $response) && $response['status']==400){
+                    return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
+                }
+                //dd($this->api);
+                $token = $response['token'];
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => $api->config->eversend_url.$request->card_code,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 30,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'GET',
+                    CURLOPT_HTTPHEADER =>[
+                "accept: application/json",
+                "authorization: Bearer $token",
+                "content-type: application/json"
+              ],
+                ));
+
+                $response = json_decode(curl_exec($curl), true);
+                curl_close($curl);
+                //dd($response);
+                if ( isset($response) && key_exists('success', $response) && $response['success'] == true ) {
+                    $myCard=new EversendVirtualCard();
+                    //dd($response);
+                    $myCard->user_id=$user->id;
+                    
+
+                    $card = $response['data']['card'];
+                    $myCard->card_id=$card['id'];
+                    $myCard->security_code = $card['securityCode'];
+                    $myCard->expiration = $card['expiration'];
+                    $myCard->currency = $card['currency'];
+                     $myCard->status = $card['status'];
+                    $myCard->is_Physical = $card['isPhysical'];
+                    $myCard->title = $card['title'];
+                    $myCard->color = $card['color'];
+                    $myCard->name = $card['name'];
+                    $myCard->amount = $card['balance'];
+                    $myCard->brand = $card['brand'];
+                    $myCard->mask = $card['mask'];
+                    $myCard->number = $card['number'];
+                    $myCard->owner_id = $card['ownerId'];
+                    $myCard->is_non_subscription = $card['isNonSubscription'];
+                    if(isset($card['lastUsedOn']))
+                    $myCard->last_used_on = $card['lastUsedOn'];
+                    $myCard->billing_address = $card['billingAddress'];
+                    if ($card['isPhysical']) {
+                        $myCard->is_Physical = 1;
+                    } else {
+                        $myCard->is_Physical = 0;
+                    }
+                    if ($card['isNonSubscription']) {
+                        $myCard->is_non_subscription = 1;
+                    } else {
+                        $myCard->is_non_subscription = 0;
+                    }
+                    //dd($myCard);
+                    $myCard->save();
+    
+                }
+           
+            }
+            //dd($api);
+    
+            //Notification::send($users,new SendMail((object) $request->all()));
+        }catch(Exception $e) {
+            dd($e);
+            return back()->with(['error' => [__('Something went wrong! Please try again')]]);
+        }
+
+        return back()->with(['success' => [__('Card Added successfully To User')]]);
 
     }
 

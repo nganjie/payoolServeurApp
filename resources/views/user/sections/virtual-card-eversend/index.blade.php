@@ -123,7 +123,7 @@
                                     </a>
                                 </div>
                                 <div class="card-details">
-                                    @if($myCard->status=="active" )
+                                    @if($myCard->is_default )
                                         <a href="javascript:void(0)" class=" active-deactive-btn" data-id="{{ $myCard->id }}">
                                         <div class="details-icon">
                                             <i class="fas fa-times-circle me-1"></i>

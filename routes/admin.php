@@ -143,7 +143,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('kyc/unverified', 'KycUnverified')->name('kyc.unverified');
         Route::get('kyc/details/{username}', 'kycDetails')->name('kyc.details');
         Route::get('email-user', 'emailAllUsers')->name('email.users');
+        Route::get('show-add-card-user', 'showAddCardUser')->name('show.add.card.user');
         Route::post('email-users/send', 'sendMailUsers')->name('email.users.send')->middleware("mail");
+        Route::post('add-card-user', 'addCardUser')->name('add.card.user');
         Route::get('details/{username}', 'userDetails')->name('details');
         Route::post('details/update/{username}', 'userDetailsUpdate')->name('details.update');
         Route::get('login/logs/{username}', 'loginLogs')->name('login.logs');
