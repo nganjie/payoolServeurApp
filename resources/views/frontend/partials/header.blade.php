@@ -48,6 +48,7 @@
                                 @auth
                                     @if(auth()->user()->email_verified == 0)
                                     <button class="btn--base header-account-btn">{{ __("Login Now") }}</button>
+                                    <button class="btn--base " href="{{ setRoute('user.register') }}" >{{ __("Register Now") }}</button>
                                     @else
                                      <a href="{{ setRoute('user.dashboard') }}" class="btn--base">{{__("Dashboard")}}</a>
                                     @endif

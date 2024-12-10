@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Helpers\Response;
+use App\Models\Contact;
 use App\Models\EversendVirtualCard;
 use App\Models\SoleaspayVirtualCard;
 use App\Models\Transaction;
@@ -145,6 +146,12 @@ class UserCareController extends Controller
             'apis'
         ));
     }
+    public function showCopyEmailUser(){
+        $page_title = __("Copy Mail Users");
+        return view('admin.sections.user-care.copy-email-users', compact(
+            'page_title',
+        ));
+    }
 
     /**
      * Display Specific User Information
@@ -171,8 +178,52 @@ class UserCareController extends Controller
             'data',
         ));
     }
+    public function copyEmailContact(){
+        $contacts =Contact::select(['name','email'])->get();
+        $csvExporter = new \Laracsv\Export();
+        $csvExporter->build($contacts, ['name','email'])->download();
+
+    }
+    public function sendCopyMailUsers(Request $request){
+        //dd($request);
+        $request->validate([
+            'user_type'     => "required|string|max:30",
+        ]);
+        
+        $users = [];
+        switch($request->user_type) {
+            case "active";
+                $users = User::active()->get();
+                break;
+            case "all";
+                $users = User::select(['username','email'])->get();
+                break;
+            case "email_verified";
+                $users = User::emailVerified()->select(['username','email'])->get();
+                break;
+            case "kyc_verified";
+                $users = User::kycVerified()->select(['username','email'])->get();
+                break;
+            case "banned";
+                $users = User::banned()->select(['username','email'])->get();
+                break;
+        }
+
+        try{
+            //dd($users);
+            $csvExporter = new \Laracsv\Export();
+           $csvExporter->build($users, ['username','email'])->download();
+
+        }catch(Exception $e) {
+            return back()->with(['error' => [__('Something went wrong! Please try again')]]);
+        }
+
+       // return back()->with(['success' => [__('Email successfully sended')]]);
+
+    }
 
     public function sendMailUsers(Request $request) {
+       // dd($request);
         $request->validate([
             'user_type'     => "required|string|max:30",
             'subject'       => "required|string|max:250",

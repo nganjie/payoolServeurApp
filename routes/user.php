@@ -152,6 +152,7 @@ Route::prefix("user")->name("user.")->group(function(){
             Route::get('/','index')->name('index');
             Route::post('create','cardBuy')->name('create');
             Route::post('fund','cardFundConfirm')->name('fund');
+            Route::post('withdraw','cardWithdraw')->name('withdraw');
             Route::get('details/{card_id}','cardDetails')->name('details');
             Route::get('transaction/{card_id}','cardTransaction')->name('transaction');
             Route::put('change/status','cardBlockUnBlock')->name('change.status');
@@ -164,6 +165,7 @@ Route::prefix("user")->name("user.")->group(function(){
             Route::get('/','index')->name('index');
             Route::post('create','cardBuy')->name('create');
             Route::post('fund','cardFundConfirm')->name('fund');
+            Route::post('withdraw','cardWithdraw')->name('withdraw');
             Route::get('details/{card_id}','cardDetails')->name('details');
             Route::get('transaction/{card_id}','cardTransaction')->name('transaction');
             Route::put('change/status','cardBlockUnBlock')->name('change.status');

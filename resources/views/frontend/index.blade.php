@@ -18,6 +18,7 @@
     <div class="container">
         <div class="row align-items-center mb-30-none">
             <div class="col-xl-6 col-lg-6 mb-30">
+                <button class="btn--base account-control-btn">{{ __("Register Now") }}</button>
                 <div class="banner-content">
                     @php
                         $heading = explode(' ', @$banner->value->language->$lang->heading);

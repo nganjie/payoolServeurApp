@@ -25,10 +25,10 @@ class TrxSettingsController extends Controller
         if(!($transaction_charges))
         {
             //echo "un monde de fou";
-            $transaction_charges = TransactionSetting::whereIn('slug',['transfer-money','reload_card_'.auth()->user()->name_api,'gift_card','virtual_card'])->get();
+            $transaction_charges = TransactionSetting::whereIn('slug',['transfer-money','withdraw_card_'.auth()->user()->name_api,'reload_card_'.auth()->user()->name_api,'gift_card','virtual_card'])->get();
         }else{
             
-            $transaction_charges = TransactionSetting::where('slug','virtual_card_'.$admin->name_api)->orWhereIn('slug',['transfer-money','reload_card_'.auth()->user()->name_api,'gift_card'])->get();
+            $transaction_charges = TransactionSetting::where('slug','virtual_card_'.$admin->name_api)->orWhereIn('slug',['transfer-money','withdraw_card_'.auth()->user()->name_api,'reload_card_'.auth()->user()->name_api,'gift_card'])->get();
         }
         //dd($transaction_charges);
         
@@ -70,11 +70,11 @@ class TrxSettingsController extends Controller
             $request->slug.'_monthly_limit'     => 'sometimes|required|numeric',
         ]);
         $validated = $validator->validate();
-
+        //dd($validated);
         $transaction_setting = TransactionSetting::where('slug',$slug)->first();
         $validated = replace_array_key($validated,$request->slug."_");
         if(!$transaction_setting){
-           //dd($slug);
+           dd($slug);
            $title='';
            if($validated['slug']=="virtual_card")
            {

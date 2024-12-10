@@ -4,12 +4,14 @@
     <div class="dashboard-title-part">
         <div class="left">
             <div class="icon">
-                <button class="sidebar-menu-bar">
+                <button class="sidebar-menu-bar bg-red">
                     <i class="fas fa-exchange-alt"></i>
                 </button>
             </div>
-
-            @yield('breadcrumb')
+            <div class="content">
+                @yield('breadcrumb')
+            </div>
+            
         </div>
         <div class="right">
             <div class="d-flex flex-column flex-md-row">

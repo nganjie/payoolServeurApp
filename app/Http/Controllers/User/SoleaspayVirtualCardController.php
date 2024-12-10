@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Constants\NotificationConst;
 use App\Constants\PaymentGatewayConst;
 use App\Http\Controllers\Controller;
+use App\Http\Helpers\NotificationHelper;
 use App\Http\Helpers\Response;
 use App\Models\Admin\Admin;
 use App\Models\Admin\Currency;
@@ -15,6 +16,11 @@ use App\Models\UserWallet;
 use App\Models\User;
 use App\Models\SoleaspayVirtualCard;
 use App\Models\VirtualCardApi;
+use App\Notifications\Admin\ActivityNotification;
+use App\Notifications\User\VirtualCard\CreateMail;
+use App\Notifications\User\VirtualCard\Fund;
+use App\Notifications\User\Withdraw\WithdrawMail;
+use App\Providers\Admin\BasicSettingsProvider;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
@@ -28,6 +34,7 @@ class SoleaspayVirtualCardController extends Controller
 {
     protected $api;
     protected $card_limit;
+    protected $basic_settings;
     public function __construct()
     {
         //$user=User::where('id',auth()->user()->id)->first();
@@ -35,6 +42,7 @@ class SoleaspayVirtualCardController extends Controller
         $cardApi = VirtualCardApi::where('name',Auth::check()?auth()->user()->name_api:Admin::first()->name_api)->first();
         $this->api =  $cardApi;
         $this->card_limit =  $cardApi->card_limit;
+        $this->basic_settings = BasicSettingsProvider::get();
     }
     public function index()
     {
@@ -147,10 +155,11 @@ class SoleaspayVirtualCardController extends Controller
         $cardCharge = TransactionSetting::where('slug','virtual_card_'.auth()->user()->name_api)->where('status',1)->first();
         $cardReloadCharge = TransactionSetting::where('slug','reload_card_'.auth()->user()->name_api)->where('status',1)->first();
         $transactions = Transaction::auth()->virtualCard()->latest()->take(10)->get();
+        $cardWithdrawCharge = TransactionSetting::where('slug','withdraw_card_'.auth()->user()->name_api)->where('status',1)->first();
         $cardApi = $this->api;
         $user = auth()->user();
         //dump(FacadesRoute::currentRouteName());
-        return view('user.sections.virtual-card-soleaspay.index',compact('page_title','myCards','transactions','cardCharge','cardApi','totalCards','cardReloadCharge', 'user'));
+        return view('user.sections.virtual-card-soleaspay.index',compact('page_title','myCards','transactions','cardCharge','cardApi','totalCards','cardReloadCharge', 'user','cardWithdrawCharge'));
         
     }
     public function cardDetails($card_id)
@@ -159,7 +168,8 @@ class SoleaspayVirtualCardController extends Controller
         $page_title = __("Card Details");
         $myCard = SoleaspayVirtualCard::where('card_id',$card_id)->first();
         $cardApi = $this->api;
-        return view('user.sections.virtual-card-soleaspay.details',compact('page_title','myCard','cardApi'));
+        $cardWithdrawCharge = TransactionSetting::where('slug','withdraw_card_'.auth()->user()->name_api)->where('status',1)->first();
+        return view('user.sections.virtual-card-soleaspay.details',compact('page_title','myCard','cardApi','cardWithdrawCharge'));
     }
 
     public function cardBuy(Request $request)
@@ -397,11 +407,162 @@ class SoleaspayVirtualCardController extends Controller
                     $v_card->is_disabled = 0;
                 }
                 $v_card->save();
+                $trx_id =  'CB'.getTrxNum();
+                try{
+                    $sender = $this->insertCardBuy( $trx_id,$user,$wallet,$amount, $v_card ,$payable);
+                    $this->insertBuyCardCharge( $fixedCharge,$percent_charge, $total_charge,$user,$sender,$v_card->maskedPan);
+                    if( $this->basic_settings->email_notification == true){
+                        $notifyDataSender = [
+                            'trx_id'  => $trx_id,
+                            'title'  => __("Virtual Card (Buy Card)"),
+                            'request_amount'  => getAmount($amount,4).' '.get_default_currency_code(),
+                            'payable'   =>  getAmount($payable,4).' ' .get_default_currency_code(),
+                            'charges'   => getAmount( $total_charge, 2).' ' .get_default_currency_code(),
+                            'card_amount'  => getAmount( $v_card->amount, 2).' ' .get_default_currency_code(),
+                            'card_pan'  => $v_card->maskedPan,
+                            'status'  => __("Success"),
+                          ];
+                          try{
+                              $user->notify(new CreateMail($user,(object)$notifyDataSender));
+                          }catch(Exception $e){}
+                    }
+                    //admin notification
+                    $this->adminNotification($trx_id,$total_charge,$amount,$payable,$user,$v_card);
+                    return redirect()->route("user.stripe.virtual.card.index")->with(['success' => [__('Card Buy Successfully')]]);
+                }catch(Exception $e){
+                    return back()->with(['error' => [__("Something Went Wrong! Please Try Again")]]);
+                }
                 return redirect()->route("user.soleaspay.virtual.card.index")->with(['success' => [__('Buy Card Successfully')]]);
             }else {
                 return redirect()->back()->with(['error' => [@$result['message']??__("Something Went Wrong! Please Try Again")]]);
             }
         }
+
+    }
+    public function cardWithdraw(Request $request){
+        $request->validate([
+            'id' => 'required|integer',
+            'fund_amount' => 'required|numeric|gt:0',
+        ]);
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
+        /*if (!$this->api->is_rechargeable) {
+            return back()->with(['error' => [__('card top-up is temporarily disabled for this card type')]]);
+        }*/
+        $user = auth()->user();
+        $myCard =  SoleaspayVirtualCard::where('user_id',$user->id)->where('id',$request->id)->first();
+
+        if(!$myCard){
+            return back()->with(['error' => [__('Something Is Wrong In Your Card')]]);
+        }
+
+        $amount = $request->fund_amount;
+        $cardCharge = TransactionSetting::where('slug','reload_card_'.auth()->user()->name_api)->where('status',1)->first();
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
+        $wallet = UserWallet::where('user_id',$user->id)->first();
+        $baseCurrency = Currency::default();
+        $rate = $baseCurrency->rate;
+        if(!$baseCurrency){
+            return back()->with(['error' => [__('Default Currency Not Setup Yet')]]);
+        }
+       /* $minLimit =  $cardCharge->min_limit *  $rate;
+        $maxLimit =  $cardCharge->max_limit *  $rate;
+        if($amount < $minLimit || $amount > $maxLimit) {
+            return back()->with(['error' => [__('Please follow the transaction limit')]]);
+        }*/
+        $fixedCharge = $cardCharge->fixed_charge;
+        $percent_charge = ($amount / 100) * $cardCharge->percent_charge;
+        $total_charge = $fixedCharge + $percent_charge;
+        $payable = $total_charge + $amount;
+        //dump($cardCharge);
+       // dump($total_charge);
+        //dd($payable);
+        if($payable > $myCard->amount ){
+            return back()->with(['error' => [__('Sorry, insufficient balance')]]);
+        }
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://soleaspay.com/api/action/auth',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>'{
+                "public_apikey" : "'. $this->api->config->soleaspay_public_key .'",
+                "private_secretkey" : "'.$this->api->config->soleaspay_secret_key.'"
+            }',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+            )
+            ));
+    
+            $response = json_decode(curl_exec($curl), true);
+            if(!isset($response) || !array_key_exists('access_token', $response)){
+                return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
+            }
+    
+            $token = $response['access_token'];
+            curl_close($curl);
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+            CURLOPT_URL =>   $this->api->config->soleaspay_url."transaction/".$myCard->card_id."?action=topup&amount=".$amount,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+                "Content-Type: application/json",
+                "Authorization: Bearer " .$token
+            )
+            ));
+    
+            $result = json_decode(curl_exec($curl), true);
+            curl_close($curl);
+            
+            if( isset($result) && array_key_exists('success', $result) && $result['success'] == true){
+                //added fund amount to card
+                $myCard->amount -= $payable;
+                $myCard->save();
+                $trx_id = 'CF'.getTrxNum();
+                //
+                $sender = $this->insertCardWithdraw( $trx_id,$user,$wallet,$amount, $myCard ,$payable);
+                $this->insertWithdrawCardCharge( $fixedCharge,$percent_charge, $total_charge,$user,$sender,$myCard->masked_card,$amount);
+                $authWalle=UserWallet::where('user_id',$user->id);
+            
+                if($this->basic_settings->email_notification == true){
+                    $notifyDataSender = [
+                        'trx_id'  => $trx_id,
+                        'title'  => __("Virtual Card (Withdraw Amount)"),
+                        'request_amount'  => getAmount($amount,4).' '.get_default_currency_code(),
+                        'payable'   =>  getAmount($payable,4).' ' .get_default_currency_code(),
+                        'charges'   => getAmount( $total_charge,2).' ' .get_default_currency_code(),
+                        'card_amount'  => getAmount($myCard->amount-$amount,2).' ' .get_default_currency_code(),
+                        'account_amount'  => getAmount($authWalle->balance,2).' ' .get_default_currency_code(),
+                        'card_pan'  =>    $myCard->masked_card,
+                        'status'  => __("Success"),
+                    ];
+                    try{
+                        $user->notify(new WithdrawMail($user,(object)$notifyDataSender));
+                    }catch(Exception $e){}
+                }
+                //admin notification
+                $this->adminNotificationWithdraw($trx_id,$total_charge,$amount,$payable,$user,$myCard);
+                return redirect()->back()->with(['success' => [__('Card Funded Successfully')]]);
+    
+            }else{
+                return redirect()->back()->with(['error' => [@$result['message']??__("Something Went Wrong! Please Try Again")]]);
+            }
+        
+        //dd($trx_id);
+
+        //dd($sender);
 
     }
     public function cardFundConfirm(Request $request){
@@ -474,10 +635,7 @@ class SoleaspayVirtualCardController extends Controller
 
         $token = $response['access_token'];
         //Optimistics update
-        $trx_id = 'CF'.getTrxNum();
-        $sender = $this->insertCardFund( $trx_id,$user,$wallet,$amount, $myCard ,$payable);
-        $this->insertFundCardCharge( $fixedCharge,$percent_charge, $total_charge,$user,$sender,$myCard->masked_card,$amount);
-
+      
         curl_close($curl);
         $curl = curl_init();
         curl_setopt_array($curl, array(
@@ -502,7 +660,26 @@ class SoleaspayVirtualCardController extends Controller
             //added fund amount to card
             $myCard->amount += $amount;
             $myCard->save();
-            //
+            $trx_id = 'CF'.getTrxNum();
+            $sender = $this->insertCardFund( $trx_id,$user,$wallet,$amount, $myCard ,$payable);
+            $this->insertFundCardCharge( $fixedCharge,$percent_charge, $total_charge,$user,$sender,$myCard->masked_card,$amount);
+            if($this->basic_settings->email_notification == true){
+                $notifyDataSender = [
+                    'trx_id'  => $trx_id,
+                    'title'  => __("Virtual Card (Fund Amount)"),
+                    'request_amount'  => getAmount($amount,4).' '.get_default_currency_code(),
+                    'payable'   =>  getAmount($payable,4).' ' .get_default_currency_code(),
+                    'charges'   => getAmount( $total_charge,2).' ' .get_default_currency_code(),
+                    'card_amount'  => getAmount($myCard->amount,2).' ' .get_default_currency_code(),
+                    'card_pan'  =>    $myCard->masked_card,
+                    'status'  => __("Success"),
+                ];
+                try{
+                    $user->notify(new Fund($user,(object)$notifyDataSender));
+                }catch(Exception $e){}
+            }
+            //admin notification
+            $this->adminNotificationFund($trx_id,$total_charge,$amount,$payable,$user,$myCard);
             return redirect()->back()->with(['success' => [__('Card Funded Successfully')]]);
 
         }else{
@@ -872,6 +1049,69 @@ class SoleaspayVirtualCardController extends Controller
             throw new Exception(__("Something Went Wrong! Please Try Again"));
         }
     }
+    public function insertCardWithdraw( $trx_id,$user,$wallet,$amount, $myCard ,$payable) {
+        $trx_id = $trx_id;
+        $authWallet = $wallet;
+        $afterCharge = ($authWallet->balance + $payable);
+        $details =[
+            'card_info' =>   $myCard??''
+        ];
+        DB::beginTransaction();
+        try{
+            $id = DB::table("transactions")->insertGetId([
+                'user_id'                       => $user->id,
+                'user_wallet_id'                => $authWallet->id,
+                'payment_gateway_currency_id'   => null,
+                'type'                          => PaymentGatewayConst::VIRTUALCARD,
+                'trx_id'                        => $trx_id,
+                'request_amount'                => $amount,
+                'payable'                       => $payable,
+                'available_balance'             => $afterCharge,
+                'remark'                        => ucwords(remove_speacial_char(PaymentGatewayConst::CARDWITHDRAW," ")),
+                'details'                       => json_encode($details),
+                'attribute'                      =>PaymentGatewayConst::RECEIVED,
+                'status'                        => true,
+                'created_at'                    => now(),
+            ]);
+            $this->updateSenderWalletBalance($authWallet,$afterCharge);
+
+            DB::commit();
+        }catch(Exception $e) {
+            DB::rollBack();
+            throw new Exception(__("Something Went Wrong! Please Try Again"));
+        }
+        return $id;
+    }
+    public function insertWithdrawCardCharge($fixedCharge,$percent_charge, $total_charge,$user,$id,$masked_card,$amount) {
+        DB::beginTransaction();
+        try{
+            DB::table('transaction_charges')->insert([
+                'transaction_id'    => $id,
+                'percent_charge'    => $percent_charge,
+                'fixed_charge'      =>$fixedCharge,
+                'total_charge'      =>$total_charge,
+                'created_at'        => now(),
+            ]);
+            DB::commit();
+
+            //notification
+            $notification_content = [
+                'title'         =>"Card Withdraw",
+                'message'       => __("Withdraw successful Money of card:")." ".$masked_card.' '.getAmount($amount,2).' '.get_default_currency_code(),
+                'image'         => files_asset_path('profile-default'),
+            ];
+
+            UserNotification::create([
+                'type'      => NotificationConst::CARD_FUND,
+                'user_id'  => $user->id,
+                'message'   => $notification_content,
+            ]);
+            DB::commit();
+        }catch(Exception $e) {
+            DB::rollBack();
+            throw new Exception(__("Something Went Wrong! Please Try Again"));
+        }
+    }
     //update user balance
     public function updateSenderWalletBalance($authWalle,$afterCharge) {
         $authWalle->update([
@@ -916,5 +1156,129 @@ class SoleaspayVirtualCardController extends Controller
         }
         return false;
     }
+         //admin notification
+         public function adminNotification($trx_id,$total_charge,$amount,$payable,$user,$v_card){
+            $notification_content = [
+                //email notification
+                'subject' => __("Virtual Card (Buy Card)"),
+                'greeting' => __("Virtual Card Information"),
+                'email_content' =>__("TRX ID")." : ".$trx_id."<br>".__("Request Amount")." : ".get_amount($amount,get_default_currency_code())."<br>".__("Fees & Charges")." : ".get_amount($total_charge,get_default_currency_code())."<br>".__("Total Payable Amount")." : ".get_amount($payable,get_default_currency_code())."<br>".__("card Masked")." : ".@$v_card->maskedPan."<br>".__("Status")." : ".__("Success"),
+    
+                //push notification
+                'push_title' => __("Virtual Card (Buy Card)")." (".userGuard()['type'].")",
+                'push_content' => __('TRX ID')." : ".$trx_id." ".__("Request Amount")." : ".get_amount($amount,get_default_currency_code())." ".__("card Masked")." : ".$v_card->maskedPan??"",
+    
+                //admin db notification
+                'notification_type' =>  NotificationConst::CARD_BUY,
+                'admin_db_title' => "Virtual Card Buy"." (".userGuard()['type'].")",
+                'admin_db_message' => "Transaction ID"." : ".$trx_id.",".__("Request Amount")." : ".get_amount($amount,get_default_currency_code()).","."Card Masked"." : ".@$v_card->maskedPan." (".$user->email.")",
+            ];
+    
+            try{
+                //notification
+                (new NotificationHelper())->admin(['admin.virtual.card.logs'])
+                                        ->mail(ActivityNotification::class, [
+                                            'subject'   => $notification_content['subject'],
+                                            'greeting'  => $notification_content['greeting'],
+                                            'content'   => $notification_content['email_content'],
+                                        ])
+                                        ->push([
+                                            'user_type' => "admin",
+                                            'title' => $notification_content['push_title'],
+                                            'desc'  => $notification_content['push_content'],
+                                        ])
+                                        ->adminDbContent([
+                                            'type' => $notification_content['notification_type'],
+                                            'title' => $notification_content['admin_db_title'],
+                                            'message'  => $notification_content['admin_db_message'],
+                                        ])
+                                        ->send();
+    
+    
+            }catch(Exception $e) {}
+    
+        }
+        public function adminNotificationFund($trx_id,$total_charge,$amount,$payable,$user,$myCard){
+            $notification_content = [
+                //email notification
+                'subject' => __("Virtual Card (Fund Amount)"),
+                'greeting' => __("Virtual Card Information"),
+                'email_content' =>__("TRX ID")." : ".$trx_id."<br>".__("Request Amount")." : ".get_amount($amount,get_default_currency_code())."<br>".__("Fees & Charges")." : ".get_amount($total_charge,get_default_currency_code())."<br>".__("Total Payable Amount")." : ".get_amount($payable,get_default_currency_code())."<br>".__("Card Masked")." : ".$myCard->masked_card??""."<br>".__("Status")." : ".__("Success"),
+    
+                //push notification
+                'push_title' => __("Virtual Card (Fund Amount)")." (".userGuard()['type'].")",
+                'push_content' => __('TRX ID')." : ".$trx_id." ".__("Request Amount")." : ".get_amount($amount,get_default_currency_code())." ".__("Card Masked")." : ".$myCard->masked_card??"",
+    
+                //admin db notification
+                'notification_type' =>  NotificationConst::CARD_FUND,
+                'admin_db_title' => "Virtual Card Funded"." (".userGuard()['type'].")",
+                'admin_db_message' => "Transaction ID"." : ".$trx_id.",".__("Request Amount")." : ".get_amount($amount,get_default_currency_code()).","."Card Masked"." : ".$myCard->masked_card." (".$user->email.")",
+            ];
+    
+            try{
+                //notification
+                (new NotificationHelper())->admin(['admin.virtual.card.logs'])
+                                        ->mail(ActivityNotification::class, [
+                                            'subject'   => $notification_content['subject'],
+                                            'greeting'  => $notification_content['greeting'],
+                                            'content'   => $notification_content['email_content'],
+                                        ])
+                                        ->push([
+                                            'user_type' => "admin",
+                                            'title' => $notification_content['push_title'],
+                                            'desc'  => $notification_content['push_content'],
+                                        ])
+                                        ->adminDbContent([
+                                            'type' => $notification_content['notification_type'],
+                                            'title' => $notification_content['admin_db_title'],
+                                            'message'  => $notification_content['admin_db_message'],
+                                        ])
+                                        ->send();
+    
+    
+            }catch(Exception $e) {}
+    
+        }
+        public function adminNotificationWithdraw($trx_id,$total_charge,$amount,$payable,$user,$myCard){
+            $notification_content = [
+                //email notification
+                'subject' => __("Virtual Card (Withdraw Amount)"),
+                'greeting' => __("Virtual Card Information"),
+                'email_content' =>__("TRX ID")." : ".$trx_id."<br>".__("Request Amount")." : ".get_amount($amount,get_default_currency_code())."<br>".__("Fees & Charges")." : ".get_amount($total_charge,get_default_currency_code())."<br>".__("Total Payable Amount")." : ".get_amount($payable,get_default_currency_code())."<br>".__("Card Masked")." : ".$myCard->masked_card??""."<br>".__("Status")." : ".__("Success"),
+    
+                //push notification
+                'push_title' => __("Virtual Card (Withdraw Amount)")." (".userGuard()['type'].")",
+                'push_content' => __('TRX ID')." : ".$trx_id." ".__("Request Amount")." : ".get_amount($amount,get_default_currency_code())." ".__("Card Masked")." : ".$myCard->masked_card??"",
+    
+                //admin db notification
+                'notification_type' =>  NotificationConst::CARD_WITHDRAW,
+                'admin_db_title' => "Virtual Card Withdrawed"." (".userGuard()['type'].")",
+                'admin_db_message' => "Transaction ID"." : ".$trx_id.",".__("Request Amount")." : ".get_amount($amount,get_default_currency_code()).","."Card Masked"." : ".$myCard->masked_card." (".$user->email.")",
+            ];
+    
+            try{
+                //notification
+                (new NotificationHelper())->admin(['admin.virtual.card.logs'])
+                                        ->mail(ActivityNotification::class, [
+                                            'subject'   => $notification_content['subject'],
+                                            'greeting'  => $notification_content['greeting'],
+                                            'content'   => $notification_content['email_content'],
+                                        ])
+                                        ->push([
+                                            'user_type' => "admin",
+                                            'title' => $notification_content['push_title'],
+                                            'desc'  => $notification_content['push_content'],
+                                        ])
+                                        ->adminDbContent([
+                                            'type' => $notification_content['notification_type'],
+                                            'title' => $notification_content['admin_db_title'],
+                                            'message'  => $notification_content['admin_db_message'],
+                                        ])
+                                        ->send();
+    
+    
+            }catch(Exception $e) {}
+    
+        }
 
 }

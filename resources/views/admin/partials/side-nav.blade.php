@@ -193,6 +193,10 @@
                                         'route'     => "admin.users.show.add.card.user",
                                     ],
                                     [
+                                        'title'     => __("Copy Email Users"),
+                                        'route'     => "admin.users.show.copy.email.users",
+                                    ],
+                                    [
                                         'title'     => __("Banned Users"),
                                         'route'     => "admin.users.banned",
                                     ]

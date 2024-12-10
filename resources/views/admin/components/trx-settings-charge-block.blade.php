@@ -1,6 +1,6 @@
 <div class="custom-card mb-10">
     <div class="card-header">
-        @if($title=="Virtual Card Charges"||$title=="Card Reload Charges")
+        @if($title=="Virtual Card Charges"||$title=="Card Reload Charges"||$title=="Virtual Card Money withdraw Charges")
            <h6 class="title">{{ __($title).' '.getCurrentApi() ?? "" }}</h6>
         @else
         <h6 class="title">{{ __($title) ?? "" }}</h6>

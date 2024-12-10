@@ -5,16 +5,20 @@ namespace App\Http\Controllers\User;
 use App\Constants\NotificationConst;
 use App\Events\Admin\SupportConversationEvent;
 use App\Http\Controllers\Controller;
+use App\Http\Helpers\NotificationHelper;
 use App\Http\Helpers\Response;
 use App\Models\Admin\Admin;
 use App\Models\UserNotification;
 use App\Models\UserSupportChat;
 use App\Models\UserSupportTicket;
 use App\Models\UserSupportTicketAttachment;
+use App\Notifications\Admin\ActivityNotification;
+use App\Notifications\User\ContactTicketMail;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 
 class SupportTicketController extends Controller
@@ -65,7 +69,10 @@ class SupportTicketController extends Controller
         $validated = Arr::except($validated,['attachment']);
 
         try{
+            $user=Admin::first();
             $support_ticket_id = UserSupportTicket::insertGetId($validated);
+            Notification::send($user,new ContactTicketMail((object) $request->all()));
+            
         }catch(Exception $e) {
 
             return back()->with(['error' => [__("Something Went Wrong! Please Try Again")]]);
@@ -144,8 +151,42 @@ class SupportTicketController extends Controller
             return Response::error($error,null,400);
         }
         $validated = $validator->validate();
-
+        $user=Admin::first();
         $support_ticket = UserSupportTicket::notSolved($validated['support_token'])->first();
+        //Notification::send($users,new SendMail((object) $request->all()));
+        $notification_content = [
+            //email notification
+            'subject' => __("User Support Ticket Message"),
+            'ticket'=>$support_ticket->name,
+            'message' =>$validated['message'],
+            //admin db notification
+            'notification_type' =>  'Support Ticket',
+            'admin_db_title' => "Virtual Card Withdrawed"." (".userGuard()['type'].")",
+            'admin_db_message' =>"Ticket Support"
+            
+        ];
+
+        try{
+            //notification
+            (new NotificationHelper())->admin(['admin.virtual.card.logs'])
+                                    ->mail(ActivityNotification::class, [
+                                        'subject'   => $notification_content['subject'],
+                                        'ticket'  => $notification_content['ticket'],
+                                        'message'   => $notification_content['message'],
+                                    ])
+                                    ->push([
+                                        'user_type' => "admin",
+                                    ])
+                                    ->adminDbContent([
+                                        'type' => $notification_content['notification_type'],
+                                        'title' => $notification_content['admin_db_title'],
+                                        'message'  => $notification_content['admin_db_message'],
+                                    ])
+                                    ->send();
+
+
+        }catch(Exception $e) {}
+
         if(!$support_ticket) return Response::error(['error' => [__('This support ticket is closed.')]]);
 
         $data = [

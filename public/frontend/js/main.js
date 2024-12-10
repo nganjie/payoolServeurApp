@@ -491,6 +491,7 @@ $('.header-account-btn').on('click', function () {
     $('.account-section').removeClass("duration");
   }
   $('.account-control-btn').on('click', function () {
+    $('.account-section').addClass('active');
     $('.account-area').toggleClass('change-form');
   })
 

@@ -22,17 +22,21 @@
 @section('content')
     <div class="custom-card">
         <div class="card-header">
-            <h6 class="title">{{ __("Email To Users") }}</h6>
+            <h6 class="title">{{ __("Add Card To User") }}</h6>
         </div>
         <div class="card-body">
             <form class="card-form" action="{{ setRoute('admin.users.add.card.user') }}" method="post">
                 @csrf
+
                 <div class="row mb-10-none">
                     <div class="col-xl-6 col-lg-6 form-group">
                         <label>{{ __("User").'*' }}</label>
-                        <select class="form--control nice-select" name="user">
+                        <select class="form--control selectpicker"  id="select-country" data-live-search="true" name="user">
                             @foreach($users as $user)
-                            <option value="{{$user->id}}">{{$user->username}}</option>
+                            <option data-tokens="{{$user->username}}" value="{{$user->id}}">{{$user->username}}</option>
+                            <option data-tokens="china">China</option>
+                  <option data-tokens="malayasia">Malayasia</option>
+                  <option data-tokens="singapore">Singapore</option>
                             @endforeach
 
                         </select>
@@ -67,4 +71,9 @@
 @endsection
 
 @push('script')
+<script>
+    $(function() {
+ // $('.selectpicker').selectpicker();
+});
+</script>
 @endpush
