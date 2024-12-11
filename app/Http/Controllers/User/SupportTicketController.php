@@ -13,7 +13,8 @@ use App\Models\UserSupportChat;
 use App\Models\UserSupportTicket;
 use App\Models\UserSupportTicketAttachment;
 use App\Notifications\Admin\ActivityNotification;
-use App\Notifications\User\ContactTicketMail;
+use App\Notifications\User\ContactMessageMail;
+use App\Notifications\User\UserTicketEmail;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -69,12 +70,17 @@ class SupportTicketController extends Controller
         $validated = Arr::except($validated,['attachment']);
 
         try{
+            //dd($validated);
+            //$data=[];
+            //$data['subject']=$request->subject;
+           // $data['message']
             $user=Admin::first();
             $support_ticket_id = UserSupportTicket::insertGetId($validated);
-            Notification::send($user,new ContactTicketMail((object) $request->all()));
+            Notification::send($user,new UserTicketEmail((object) $request->all()));
+            //dd($user);
             
         }catch(Exception $e) {
-
+            //dd($e);
             return back()->with(['error' => [__("Something Went Wrong! Please Try Again")]]);
         }
 
@@ -106,21 +112,6 @@ class SupportTicketController extends Controller
                 return back()->with(['error' => [__('Opps! Failed to upload attachment. Please try again.')]]);
             }
         }
-        DB::beginTransaction();
-        $admin=Admin::first();
-        $notification_content = [
-            'title'         =>"Message User",
-            'message'       => 'Buy card successful '.auth()->user()->firstname,
-            'image'         => files_asset_path('profile-default'),
-        ];
-
-        $notify =UserNotification::create([
-            'type'      => NotificationConst::CARD_BUY,
-            'user_id'  =>auth()->user()->id,
-            'message'   => $notification_content,
-        ]);
-        DB::commit();
-        dd($notify);
 
         return redirect()->route('user.support.ticket.index')->with(['success' => [__('Support ticket created successfully!')]]);
 
@@ -154,6 +145,7 @@ class SupportTicketController extends Controller
         $user=Admin::first();
         $support_ticket = UserSupportTicket::notSolved($validated['support_token'])->first();
         //Notification::send($users,new SendMail((object) $request->all()));
+        
         $notification_content = [
             //email notification
             'subject' => __("User Support Ticket Message"),
@@ -185,7 +177,9 @@ class SupportTicketController extends Controller
                                     ->send();
 
 
-        }catch(Exception $e) {}
+        }catch(Exception $e) {
+            dd($e);
+        }
 
         if(!$support_ticket) return Response::error(['error' => [__('This support ticket is closed.')]]);
 
@@ -196,9 +190,17 @@ class SupportTicketController extends Controller
             'message'                   => $validated['message'],
             'receiver_type'             => "ADMIN",
         ];
+        $dataEmail = [
+            'user_support_ticket_id'    => $validated['support_token'],
+            'name'                    => auth()->user()->username,
+            'message'                   => $validated['message'],
+        ];
 
         try{
+            //dd($support_ticket);
             $chat_data = UserSupportChat::create($data);
+            Notification::send($user,new ContactMessageMail((object) $dataEmail));
+            
         }catch(Exception $e) {
             return $e;
             $error = ['error' => [__('SMS Sending failed! Please try again.')]];

@@ -46,8 +46,11 @@ class ContactMessageMail extends Notification
         $data = $this->data;
 
         return (new MailMessage)
-                    ->greeting('Hey ' . $user->fullname . "!")
-                    ->subject($data->subject)
+                    ->greeting('Hey ' . $user->fullname . "! ".__("User Support Ticket Message"))
+                    ->subject(__("User Support Ticket Message"))
+                    ->line('ticket ID : '.$data->user_support_ticket_id)
+                    ->line(__("Name")." : ".$data->name)
+                    ->line(__("Message")." : ")
                     ->line(new HtmlString($data->message));
     }
 

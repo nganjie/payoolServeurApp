@@ -553,7 +553,7 @@ class SoleaspayVirtualCardController extends Controller
                     }catch(Exception $e){}
                 }
                 //admin notification
-                $this->adminNotificationWithdraw($trx_id,$total_charge,$amount,$payable,$user,$myCard);
+                //$this->adminNotificationWithdraw($trx_id,$total_charge,$amount,$payable,$user,$myCard);
                 return redirect()->back()->with(['success' => [__('Card Funded Successfully')]]);
     
             }else{
@@ -728,6 +728,7 @@ class SoleaspayVirtualCardController extends Controller
         ));
 
         $response = json_decode(curl_exec($curl), true);
+        
         if(!array_key_exists('access_token', $response)){
             return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
         }
@@ -827,7 +828,8 @@ class SoleaspayVirtualCardController extends Controller
                 $success = ['success' => [__('Card unblock successfully!')]];
                 return Response::success($success,null,200);
             } else{
-                $error = ['error' => [$result->message]];
+                dd($result);
+                $error = ['error' => [$result['message']]];
                 return Response::error($error, null, 404);
             }
         }
@@ -1052,7 +1054,7 @@ class SoleaspayVirtualCardController extends Controller
     public function insertCardWithdraw( $trx_id,$user,$wallet,$amount, $myCard ,$payable) {
         $trx_id = $trx_id;
         $authWallet = $wallet;
-        $afterCharge = ($authWallet->balance + $payable);
+        $afterCharge = ($authWallet->balance + $amount);
         $details =[
             'card_info' =>   $myCard??''
         ];

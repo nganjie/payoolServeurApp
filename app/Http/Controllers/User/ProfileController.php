@@ -37,6 +37,7 @@ class ProfileController extends Controller
         $validated = Validator::make($request->all(),[
             'firstname'     => "required|string|max:60",
             'lastname'      => "required|string|max:60",
+            'email'      => "required|email|max:60",
             'country'       => "nullable|string|max:50",
             'phone_code'    => "nullable|string|max:20",
             'phone'         => "nullable|string|max:20",

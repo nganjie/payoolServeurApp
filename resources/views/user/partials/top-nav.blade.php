@@ -3,9 +3,10 @@
 <nav class="navbar-wrapper">
     <div class="dashboard-title-part">
         <div class="left">
-            <div class="icon">
-                <button class="sidebar-menu-bar bg-red">
-                    <i class="fas fa-exchange-alt"></i>
+            <div class="icon" style="width: 20px;height:30px;">
+                <button class="sidebar-menu-bar bg-red" style="width: 20px;height:30px;">
+                    <!--<i class="fas fa-exchange-alt"></i>-->
+                    <i class="fas fa-bars" style="font-size: 1.5em;"></i>
                 </button>
             </div>
             <div class="content">

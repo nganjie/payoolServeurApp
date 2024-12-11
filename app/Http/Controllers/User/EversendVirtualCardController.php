@@ -490,7 +490,7 @@ class EversendVirtualCardController extends Controller
         }
 
         $amount = $request->fund_amount;
-        $cardCharge = TransactionSetting::where('slug','reload_card_'.auth()->user()->name_api)->where('status',1)->first();
+        $cardCharge = TransactionSetting::where('slug','withdraw_card_'.auth()->user()->name_api)->where('status',1)->first();
         $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         $wallet = UserWallet::where('user_id',$user->id)->first();
         $baseCurrency = Currency::default();
@@ -590,19 +590,21 @@ class EversendVirtualCardController extends Controller
 
         $result = json_decode(curl_exec($curl), true);
         curl_close($curl);
-        
+        //dd($result);
+        $account_amount=$myCard->amount-$amount;
+        $authWalle=UserWallet::where('user_id',$user->id)->first();
         if( isset($result) && array_key_exists('success', $result) && $result['success'] == true){
                     //Optimistics update
         $trx_id = 'CF'.getTrxNum();
-        $sender = $this->insertCardFund( $trx_id,$user,$wallet,$amount, $myCard ,$payable);
-        $this->insertFundCardCharge( $fixedCharge,$percent_charge, $total_charge,$user,$sender,$myCard->masked_card,$amount);
+        //$sender = $this->insertCardFund( $trx_id,$user,$wallet,$amount, $myCard ,$payable);
+       // $this->insertFundCardCharge( $fixedCharge,$percent_charge, $total_charge,$user,$sender,$myCard->masked_card,$amount);
             //added fund amount to card
             $myCard->amount -= $payable;
             $myCard->save();
             //
             $sender = $this->insertCardWithdraw( $trx_id,$user,$wallet,$amount, $myCard ,$payable);
             $this->insertWithdrawCardCharge( $fixedCharge,$percent_charge, $total_charge,$user,$sender,$myCard->masked_card,$amount);
-            $authWalle=UserWallet::where('user_id',$user->id);
+            //dd();
             
             if($this->basic_settings->email_notification == true){
                 $notifyDataSender = [
@@ -611,21 +613,47 @@ class EversendVirtualCardController extends Controller
                     'request_amount'  => getAmount($amount,4).' '.get_default_currency_code(),
                     'payable'   =>  getAmount($payable,4).' ' .get_default_currency_code(),
                     'charges'   => getAmount( $total_charge,2).' ' .get_default_currency_code(),
-                    'card_amount'  => getAmount($myCard->amount-$amount,2).' ' .get_default_currency_code(),
+                    'card_amount'  => getAmount($account_amount,2).' ' .get_default_currency_code(),
                     'account_amount'  => getAmount($authWalle->balance,2).' ' .get_default_currency_code(),
                     'card_pan'  =>    $myCard->masked_card,
+                    'card_name'=>'Prenium',
                     'status'  => __("Success"),
                 ];
                 try{
                     $user->notify(new WithdrawMail($user,(object)$notifyDataSender));
-                }catch(Exception $e){}
+                }catch(Exception $e){
+                    dd($e);
+                }
             }
             //admin notification
             $this->adminNotificationWithdraw($trx_id,$total_charge,$amount,$payable,$user,$myCard);
             return redirect()->back()->with(['success' => [__('Withdrawed Money Successfully of the card')]]);
 
         }else{
-            return redirect()->back()->with(['error' => [@$result['message']??__("Something Went Wrong! Please Try Again")]]);
+            dump($account_amount);
+            if($this->basic_settings->email_notification == true){
+                $trx_id = 'CF'.getTrxNum();
+                $notifyDataSender = [
+                    'trx_id'  => $trx_id,
+                    'title'  => __("Virtual Card (Withdraw Amount)"),
+                    'request_amount'  => getAmount($amount,4).' '.get_default_currency_code(),
+                    'payable'   =>  getAmount($payable,4).' ' .get_default_currency_code(),
+                    'charges'   => getAmount( $total_charge,2).' ' .get_default_currency_code(),
+                    'card_amount'  => getAmount($account_amount,2).' ' .get_default_currency_code(),
+                    'account_amount'  => getAmount($authWalle->balance,2).' ' .get_default_currency_code(),
+                    'card_pan'  =>    $myCard->masked_card,
+                    'card_name'=>'Prenium',
+                    'status'  => __("failed"),
+                ];
+                try{
+                    $user->notify(new WithdrawMail($user,(object)$notifyDataSender));
+                }catch(Exception $e){
+                    dd($e);
+                }
+        }
+            dd($result);
+            
+            return redirect()->back()->with(['error' => [@$result['responseMessage']??__("Something Went Wrong! Please Try Again")]]);
         }
         //dd($trx_id);
         //dd($sender);
@@ -1109,7 +1137,7 @@ class EversendVirtualCardController extends Controller
     public function insertCardWithdraw( $trx_id,$user,$wallet,$amount, $myCard ,$payable) {
         $trx_id = $trx_id;
         $authWallet = $wallet;
-        $afterCharge = ($authWallet->balance + $payable);
+        $afterCharge = ($authWallet->balance + $amount);
         $details =[
             'card_info' =>   $myCard??''
         ];

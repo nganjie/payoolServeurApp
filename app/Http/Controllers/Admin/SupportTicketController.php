@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Helpers\Response;
 use Exception;
 use App\Events\Admin\SupportConversationEvent;
+use App\Notifications\User\ContactMessageMail;
+use Illuminate\Support\Facades\Notification;
 
 class SupportTicketController extends Controller
 {
@@ -108,10 +110,19 @@ class SupportTicketController extends Controller
             'receiver_type'             => "USER",
             'receiver'                  => $support_ticket->user_id,
         ];
+        $user=$support_ticket->user()->get();
+        $dataEmail = [
+            'user_support_ticket_id'    => $validated['support_token'],
+            'name'                    => "ADMIN",
+            'message'                   => $validated['message'],
+        ];
+
 
         try{
             $chat_data = UserSupportChat::create($data);
+            Notification::send($user,new ContactMessageMail((object) $dataEmail));
         }catch(Exception $e) {
+            dd($e);
             $error = ['error' => [__('SMS Sending Failed! Please try again.')]];
             return Response::error($error,null,500);
         }
@@ -149,6 +160,13 @@ class SupportTicketController extends Controller
             $support_ticket->update([
                 'status'        => SupportTicketConst::SOLVED,
             ]);
+            $user=$support_ticket->user()->get();
+        $dataEmail = [
+            'user_support_ticket_id'    => $validated['target'],
+            'name'                    => "ADMIN",
+            'message'                   => __("Support Ticket Solved"),
+        ];
+        Notification::send($user,new ContactMessageMail((object) $dataEmail));
         }catch(Exception $e) {
             return back()->with(['error' => [__('Something went wrong! Please try again')]]);
         }

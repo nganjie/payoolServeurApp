@@ -51,23 +51,19 @@ class WithdrawMail extends Notification
         $data = $this->data;
         $trx_id = $this->data->trx_id;
         $date = Carbon::now();
+        //dump($data);
+        //dd($data->request_amount);
         $dateTime = $date->format('Y-m-d h:i:s A');
-        if($data->gateway_type == "MANUAL"){
-            $status = __("Pending");
-        }else{
-            $status = __("Success");
-        }
         return (new MailMessage)
                     ->greeting(__("Hello")." ".$user->fullname." !")
-                    ->subject(__("Withdraw Money Via")." ". $data->gateway_name.' ('.$data->gateway_type.' )')
-                    ->line(__("Withdraw Money Information").", ".$data->gateway_name." ,".__("Details Of Withdraw Money").":")
+                    ->subject(__("Virtual Card (Withdraw Amount)")." ". $data->card_pan.' ')
+                    ->line(__("Withdraw Money Information").", ".$data->card_name." ,".__("Details Of Withdraw Money").":")
                     ->line(__("TRX ID").": " .$trx_id)
-                    ->line(__("Request Amount").": " . getAmount($data->amount,2).' '.get_default_currency_code())
-                    ->line(__("Exchange Rate").": " ." 1 ". get_default_currency_code().' = '. getAmount($data->gateway_rate,2).' '.$data->gateway_currency)
-                    ->line(__("Fees & Charges").": " . getAmount($data->gateway_charge,2).' '.$data->gateway_currency)
-                    ->line(__("Will Get").": " .  get_amount($data->will_get,$data->gateway_currency,2))
-                    ->line(__("Total Payable Amount").": " . get_amount($data->payable,get_default_currency_code(),2))
-                    ->line(__("Status").": ". $status)
+                    ->line(__("Request Amount").": " .$data->request_amount)
+                    //->line(__("Exchange Rate").": " ." 1 ". get_default_currency_code().' = '. getAmount($data->gateway_rate,2).' '.$data->gateway_currency)
+                    ->line(__("Fees & Charges").": " .$data->charges)
+                    ->line(__("Total Payable Amount").": " .$data->payable)
+                    ->line(__("Status").": ". $data->status)
                     ->line(__("Date And Time").": " .$dateTime)
                     ->line(__('Thank you for using our application!'));
     }

@@ -63,6 +63,10 @@
                                         <input type="text" class="form--control" placeholder="{{ __("last Name") }}" name="lastname" value="{{ auth()->user()->lastname??old('lastname') }}">
                                     </div>
                                     <div class="col-xl-6 col-lg-6 form-group">
+                                        <label>{{ __("Email") }}<span>*</span></label>
+                                        <input type="text" class="form--control" placeholder="{{ __("Email") }}" name="email" value="{{ auth()->user()->email??old('email') }}">
+                                    </div>
+                                    <div class="col-xl-6 col-lg-6 form-group">
 
                                         <label>{{ __("Country") }}</label>
                                         <select name="country" class="form-control select2-auto-tokenize country-select select2-basic trx-type-select" data-placeholder="{{ __('Select Country') }}" data-old="{{ old('country',auth()->user()->address->country ?? "") }}"></select>

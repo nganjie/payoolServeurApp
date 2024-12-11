@@ -7,7 +7,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\HtmlString;
 
-class ContactTicketMail extends Notification
+class UserTicketEmail extends Notification
 {
     use Queueable;
 
@@ -46,9 +46,13 @@ class ContactTicketMail extends Notification
         $data = $this->data;
 
         return (new MailMessage)
-                    ->greeting('Hey ' . $user->fullname . "!")
-                    ->subject($data->subject)
-                    ->line(new HtmlString($data->message));
+                    ->greeting('Hey ' . $user->fullname . "!".__('you have new ticket for User'))
+                    ->subject(__("New Ticket User"))
+                    ->line(__("Subject")." :".$data->subject)
+                    ->line(__("Name")." :".$data->name)
+                    ->line(__("Email")." :".$data->email)
+                    ->line(__("Message"))
+                    ->line(new HtmlString($data->desc));
     }
 
     /**
