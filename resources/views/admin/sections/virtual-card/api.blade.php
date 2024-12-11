@@ -253,6 +253,15 @@
                         </div>
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                        <label class="form-check-label" for="flexCheckDefault">{{ __("withdraw  money card") }}*</label>
+                        <div class="input-group append">
+                            <span class="input-group-text"><i class="las la-link"></i></span>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_withdraw" value="1" id="flexCheckDefault" @if($api->is_withdraw) @checked(true) @endif>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
                         <label class="form-check-label" for="flexCheckDefault">{{ __("active Card") }}*</label>
                         <div class="input-group append">
                             <span class="input-group-text"><i class="las la-link"></i></span>

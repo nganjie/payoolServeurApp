@@ -96,7 +96,7 @@
                         </div>
                     </div>
                     <div class="card-content text-center d-flex justify-content-center mt-3">
-
+                        @if($myCard->status=="active")
                         <div class="card-details">
                             <a href="javascript:void(0)" class="fundCard" data-id="{{ $myCard->id }}">
                                 <div class="details-icon">
@@ -121,6 +121,7 @@
                                 <h5 class="title">{{__("Transactions")}}</h5>
                             </a>
                         </div>
+                        @endif
                     </div>
                 </div>
             </div>

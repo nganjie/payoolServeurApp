@@ -100,7 +100,8 @@ class VirtualCardController extends Controller
             'image'                     => "nullable|mimes:png,jpg,jpeg,webp,svg",
             'is_created_card'=>'nullable|boolean',
             'is_active'=>'nullable|boolean',
-            'is_rechargeable'=>'nullable|boolean'
+            'is_rechargeable'=>'nullable|boolean',
+            'is_withdraw'=>'nullable|boolean'
             /*'card_limit' => [
                 'required',
                 'numeric',
@@ -147,6 +148,11 @@ class VirtualCardController extends Controller
             $api->is_rechargeable=$data['is_rechargeable'];
         }else{
             $api->is_rechargeable=false;
+        }
+        if(isset($data['is_withdraw'])){
+            $api->is_withdraw=$data['is_withdraw'];
+        }else{
+            $api->is_withdraw=false;
         }
         
        //$this->createApiAppElemet();

@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('eversend_cards', function (Blueprint $table) {
-            $table->boolean('is_active')->default(true)->after('status');
+        Schema::table('virtual_card_apis', function (Blueprint $table) {
+            $table->boolean('is_withdraw')->default(true);
         });
     }
 
@@ -25,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('eversend_cards', function (Blueprint $table) {
-            $table->dropColumn('is_active');
+        Schema::table('virtual_card_apis', function (Blueprint $table) {
+            $table->dropColumn('is_withdraw');
         });
     }
 };

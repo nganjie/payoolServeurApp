@@ -479,9 +479,9 @@ class EversendVirtualCardController extends Controller
             'fund_amount' => 'required|numeric|gt:0',
         ]);
         $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
-        /*if (!$this->api->is_rechargeable) {
-            return back()->with(['error' => [__('card top-up is temporarily disabled for this card type')]]);
-        }*/
+        if (!$this->api->is_withdraw) {
+            return back()->with(['error' => [__('withdrawal of money from the card is temporarily disabled for this type of card')]]);
+        }
         $user = auth()->user();
         $myCard =  EversendVirtualCard::where('user_id',$user->id)->where('id',$request->id)->first();
 
