@@ -3,8 +3,11 @@
     $lang = selectedLang();
     $testimonial_slug = Illuminate\Support\Str::slug(App\Constants\SiteSectionConst::TESTIMONIAL_SECTION);
     $testimonial = App\Models\Admin\SiteSections::getData( $testimonial_slug)->first();
+    $user_notices = App\Models\UserNotice::orderByDesc("id")->get();
+    $total_notices=count(@$user_notices);
     $testimonial_items = (array)@$testimonial->value->items;
     $totalTestimonial = count(@$testimonial_items);
+    $total=$totalTestimonial+$total_notices;
 
 @endphp
 <section class="testimonial-section ptb-80">
@@ -23,11 +26,18 @@
                     </div>
                     @endif
                     @endforeach
+                    @foreach($user_notices as $item)
+                    @if($loop->iteration <= 3)
+                    <div class="img-1 ps-2">
+                        <img src="{{$item->image}}">
+                    </div>
+                    @endif
+                    @endforeach
                     @endif
 
                   </div>
                   <div class="comment pt-2">
-                    <P><span class="text--base">{{ @$totalTestimonial }}+</span> {{ __("Customer Reviews") }}</P>
+                    <P><span class="text--base">{{ @$total }}+</span> {{ __("Customer Reviews") }}</P>
                   </div>
                 </div>
              </div>
@@ -59,6 +69,31 @@
                                     </div>
                                  </div>
                              </div>
+                             @endforeach
+                             @foreach($user_notices as $item)
+                             <div class="swiper-slide">
+                                <div class="testimonial-wrapper">
+                                   <div class="testimonial-ratings">
+                                       @php
+                                           $rating = $item->rating??"5";
+                                       @endphp
+                                        @for($i = 0; $i <  $rating ; $i++)
+                                        <i class="fas fa-star"></i>
+                                       @endfor
+                                   </div>
+                                    <p>{{ __(@$item->details )}}</p>
+                                    <div class="client-details d-flex justify-content-between">
+                                        <div class="client-img">
+                                            <img src="{{$item->image}}" alt="client">
+                                        </div>
+                                        <div class="client-title text--base">
+                                            <h4 class="title text--base">{{ __(@$item->name )}}</h4>
+                                            <P>{{ __(@$item->designation )}}</P>
+                                        </div>
+                                   </div>
+                                </div>
+                            </div>
+
                              @endforeach
                              @endif
                          </div>

@@ -18,7 +18,7 @@
     <div class="table-area mt-10">
         <div class="table-wrapper">
             <div class="dashboard-header-wrapper">
-                <h4 class="title">{{ __("Support Tickets") }}</h4>
+                <h4 class="title">{{ $page_title }}</h4>
                 <div class="dashboard-btn-wrapper">
                     <div class="dashboard-btn">
                         <a href="{{ route('user.notice.create') }}" class="btn--base"><i class="las la-plus me-1"></i>{{ __("Add New") }}</a>

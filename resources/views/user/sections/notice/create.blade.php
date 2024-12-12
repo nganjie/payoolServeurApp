@@ -32,7 +32,7 @@
                         @endif
                         <div class="row">
 
-                                <input type="hidden" name="name" value="{{auth()->user()->fullname??""}}">
+                                <input type="hidden" name="name" value="{{auth()->user()->username??""}}">
 
                             <div class="col-xl-12 col-lg-12 form-group">
                                 @php

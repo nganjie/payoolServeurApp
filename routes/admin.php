@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\UsefulLInkController;
 use App\Http\Controllers\Admin\UserCareController;
 use App\Http\Controllers\Admin\VirtualCardController;
 use App\Http\Controllers\Admin\WebSettingsController;
+use App\Http\Controllers\UserNoticeController;
 use Illuminate\Support\Facades\Artisan;
 use Pusher\PushNotifications\PushNotifications;
 use Illuminate\Http\Request;
@@ -131,6 +132,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::controller(ProfitLogsController::class)->prefix('profit-logs')->name('profit.logs.')->group(function () {
         Route::get('index', 'profitLogs')->name('index');
         Route::get('export-data', 'exportData')->name('export.data');
+    });
+    Route::controller(UserNoticeController::class)->prefix("notice")->name("notice.")->group(function(){
+        Route::get('/','indexAdmin')->name('index');
+        //Route::get('create','showCreate')->name('create');
+        Route::get('update/{user_notice}','showUpdateAdmin')->name('update-notice');
+        Route::post('limite-notice','updateLimitNotice')->name('limit.notice');
+        Route::put('update','update')->name('update')->middleware('app.mode');
+        Route::delete('delete','delete')->name('delete');
     });
 
     // User Care Section

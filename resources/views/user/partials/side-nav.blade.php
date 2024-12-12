@@ -110,7 +110,7 @@
                     <li class="sidebar-menu-item">
                         <a href="{{ setRoute('user.notice.index') }}">
                             <i class="menu-icon las la-bell"></i>
-                            <span class="menu-title">{{ __("User Notice") }}</span>
+                            <span class="menu-title">{{ __("leave a review") }}</span>
                         </a>
                     </li>
                     <li class="sidebar-menu-item">

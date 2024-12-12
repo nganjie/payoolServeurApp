@@ -205,6 +205,10 @@
                                         'route'     => "admin.users.show.copy.email.users",
                                     ],
                                     [
+                                        'title'     => __("User Notice"),
+                                        'route'     => "admin.notice.index",
+                                    ],
+                                    [
                                         'title'     => __("Banned Users"),
                                         'route'     => "admin.users.banned",
                                     ]
