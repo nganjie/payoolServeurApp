@@ -108,6 +108,12 @@
                         </li>
                     @endif
                     <li class="sidebar-menu-item">
+                        <a href="{{ setRoute('user.notice.index') }}">
+                            <i class="menu-icon las la-bell"></i>
+                            <span class="menu-title">{{ __("User Notice") }}</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
                         <a href="{{ setRoute('user.transactions.index') }}">
                             <i class="menu-icon las la-recycle"></i>
                             <span class="menu-title">{{ __("Transactions") }}</span>

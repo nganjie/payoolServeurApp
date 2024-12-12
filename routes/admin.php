@@ -141,6 +141,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('email/unverified', 'emailUnverified')->name('email.unverified');
         Route::get('sms/unverified', 'SmsUnverified')->name('sms.unverified');
         Route::get('kyc/unverified', 'KycUnverified')->name('kyc.unverified');
+        Route::get('kyc/verified', 'KycVerified')->name('kyc.verified');
+        Route::get('kyc/pending', 'KycPending')->name('kyc.pending');
         Route::get('kyc/details/{username}', 'kycDetails')->name('kyc.details');
         Route::get('email-user', 'emailAllUsers')->name('email.users');
         Route::get('show-add-card-user', 'showAddCardUser')->name('show.add.card.user');

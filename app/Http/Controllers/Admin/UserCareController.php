@@ -123,6 +123,25 @@ class UserCareController extends Controller
             'users'
         ));
     }
+    public function KycPending()
+    {
+        $page_title =__( "KYC Pending Users");
+        $users = User::KycPending()->orderBy('id', 'desc')->paginate(8);
+        //dd($users);
+        return view('admin.sections.user-care.index', compact(
+            'page_title',
+            'users'
+        ));
+    }
+    public function KycVerified()
+    {
+        $page_title =__( "KYC Verified Users");
+        $users = User::kycVerified()->orderBy('id', 'desc')->paginate(8);
+        return view('admin.sections.user-care.index', compact(
+            'page_title',
+            'users'
+        ));
+    }
 
     /**
      * Display Send Email to All Users View
@@ -201,8 +220,14 @@ class UserCareController extends Controller
             case "email_verified";
                 $users = User::emailVerified()->select(['username','email'])->get();
                 break;
-            case "kyc_verified";
-                $users = User::kycVerified()->select(['username','email'])->get();
+                case "kyc_verified";
+                $users = User::kycVerified()->get();
+                break;
+            case "kyc_unverified";
+                $users = User::kycUnerified()->get();
+                break;
+            case "kyc_pending";
+                $users = User::KycPending()->get();
                 break;
             case "banned";
                 $users = User::banned()->select(['username','email'])->get();
@@ -244,12 +269,19 @@ class UserCareController extends Controller
             case "kyc_verified";
                 $users = User::kycVerified()->get();
                 break;
+            case "kyc_unverified";
+                $users = User::kycUnerified()->get();
+                break;
+            case "kyc_pending";
+                $users = User::KycPending()->get();
+                break;
             case "banned";
                 $users = User::banned()->get();
                 break;
         }
 
         try{
+            //dd($users);
             Notification::send($users,new SendMail((object) $request->all()));
         }catch(Exception $e) {
             return back()->with(['error' => [__('Something went wrong! Please try again')]]);

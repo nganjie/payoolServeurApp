@@ -23,14 +23,18 @@
                     <span class="{{ $item->emailStatus->class }}">{{ __($item->emailStatus->value) }}</span>
                 </td>
                 <td>
-                    @if (Route::currentRouteName() == "admin.users.kyc.unverified")
+                    @php
+                    $datar=["admin.users.kyc.unverified","admin.users.kyc.verified","admin.users.kyc.pending"];
+                    $isKyc=in_array(Route::currentRouteName(),$datar);
+                    @endphp
+                    @if ($isKyc)
                         <span class="{{ $item->kycStringStatus->class }}">{{ __($item->kycStringStatus->value) }}</span>
                     @else
                         <span class="{{ $item->stringStatus->class }}">{{ __($item->stringStatus->value) }}</span>
                     @endif
                 </td>
                 <td>
-                    @if (Route::currentRouteName() == "admin.users.kyc.unverified")
+                    @if (Route::currentRouteName() == "admin.users.kyc.unverified"||Route::currentRouteName() == "admin.users.kyc.pendind")
                         @include('admin.components.link.info-default',[
                             'href'          => setRoute('admin.users.kyc.details', $item->username),
                             'permission'    => "admin.users.kyc.details",

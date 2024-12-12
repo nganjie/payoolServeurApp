@@ -181,6 +181,14 @@
                                         'route'     => "admin.users.kyc.unverified",
                                     ],
                                     [
+                                        'title'     => __("KYC Verified"),
+                                        'route'     => "admin.users.kyc.verified",
+                                    ],
+                                    [
+                                        'title'     => __("KYC Pending"),
+                                        'route'     => "admin.users.kyc.pending",
+                                    ],
+                                    [
                                         'title'     => __("All Users"),
                                         'route'     => "admin.users.index",
                                     ],

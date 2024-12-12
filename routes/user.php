@@ -21,6 +21,7 @@ use App\Http\Controllers\User\TransferMoneyController;
 use App\Http\Controllers\User\VirtualcardController;
 use App\Http\Controllers\User\WithdrawController;
 use App\Http\Controllers\User\SoleaspayVirtualCardController;
+use App\Http\Controllers\UserNoticeController;
 
 Route::prefix("user")->name("user.")->group(function(){
     Route::controller(DashboardController::class)->group(function(){
@@ -34,6 +35,14 @@ Route::prefix("user")->name("user.")->group(function(){
         Route::put('update','update')->name('update')->middleware('app.mode');
         Route::get('change/password','changePassword')->name('change.password')->middleware('app.mode');
         Route::put('password/update','passwordUpdate')->name('password.update')->middleware('app.mode');
+    });
+    Route::controller(UserNoticeController::class)->prefix("notice")->name("notice.")->group(function(){
+        Route::get('/','index')->name('index');
+        Route::get('create','showCreate')->name('create');
+        Route::get('update/{user_notice}','showUpdate')->name('update-notice');
+        Route::post('create','store')->name('store');
+        Route::put('update','update')->name('update')->middleware('app.mode');
+        Route::delete('delete','delete')->name('delete');
     });
     //Transfer  Money
     Route::middleware('module:transfer-money')->group(function(){

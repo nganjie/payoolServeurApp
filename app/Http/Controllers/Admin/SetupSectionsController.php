@@ -955,8 +955,10 @@ public function testimonialItemStore(Request $request,$slug) {
         'rating'     => "required|string|max:100",
         'details'   => "required|string",
     ];
+    //dd($request);
 
     $language_wise_data = $this->contentValidate($request,$basic_field_name,"testimonial-add");
+    //dd($language_wise_data);
     if($language_wise_data instanceof RedirectResponse) return $language_wise_data;
     $slug = Str::slug(SiteSectionConst::TESTIMONIAL_SECTION);
     $section = SiteSections::where("key",$slug)->first();
@@ -980,6 +982,7 @@ public function testimonialItemStore(Request $request,$slug) {
     $update_data['value']   = $section_data;
 
     try{
+        //dd($update_data);
         SiteSections::updateOrCreate(['key' => $slug],$update_data);
     }catch(Exception $e) {
         return back()->with(['error' => [__('Something went wrong! Please try again')]]);

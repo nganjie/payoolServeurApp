@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Constants\GlobalConst;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
@@ -89,6 +90,10 @@ class User extends Authenticatable
     public function scopeKycUnverified($query)
     {
         return $query->whereNot('kyc_verified',GlobalConst::VERIFIED);
+    }
+    public function scopeKycPending($query)
+    {
+        return $query->where('kyc_verified',GlobalConst::PENDING);
     }
 
     public function scopeActive($query)
@@ -232,6 +237,18 @@ class User extends Authenticatable
     public function virtual_card_strowallet()
     {
         return $this->hasOne(StrowalletVirtualCard::class,'user_id')->where('is_default',true);
+    }
+    public function virtual_card_soleaspay()
+    {
+        return $this->hasOne(SoleaspayVirtualCard::class,'user_id')->where('is_default',true);
+    }
+    public function virtual_card_eversend()
+    {
+        return $this->hasOne(EversendVirtualCard::class,'user_id')->where('is_default',true);
+    }
+    public function userNotice():HasMany
+    {
+        return $this->hasMany(UserNotice::class);
     }
 
     public function scopeSearch($query,$data) {

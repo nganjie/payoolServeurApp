@@ -35,7 +35,9 @@
                             <option value="all">{{ __("All Users") }}</option>
                             <option value="active">{{ __("Active Users") }}</option>
                             <option value="email_verified">{{ __("Email Unverified") }}</option>
-                            <option value="kyc_verified">{{ __("Kyc Unverified") }}</option>
+                            <option value="kyc_unverified">{{ __("Kyc Unverified") }}</option>
+                            <option value="kyc_verified">{{ __("Kyc verified") }}</option>
+                            <option value="kyc_pending">{{ __("Kyc Pending") }}</option>
                             <option value="banned">{{ __("Banned Users") }}</option>
                         </select>
                     </div>
