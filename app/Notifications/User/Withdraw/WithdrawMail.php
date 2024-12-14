@@ -49,7 +49,6 @@ class WithdrawMail extends Notification
 
         $user = $this->user;
         $data = $this->data;
-        $trx_id = $this->data->trx_id;
         $date = Carbon::now();
         //dump($data);
         //dd($data->request_amount);

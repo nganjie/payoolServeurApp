@@ -18,6 +18,9 @@ class VirtualCardApi extends Model
         'is_active'=>'boolean',
         'is_created_card'=>'boolean',
         'is_rechargeable'=>'boolean',
-        'is_withdraw'=>'boolean'
+        'is_withdraw'=>'boolean',
+        'nb_trx_failled'=>'integer',
+        'penality_price'=>'double',
+        'is_activate_penality'=>'boolean'
     ];
 }

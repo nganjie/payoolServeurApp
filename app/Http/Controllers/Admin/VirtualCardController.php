@@ -9,6 +9,7 @@ use App\Models\VirtualCardApi;
 use App\Models\ApiApp;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -30,6 +31,9 @@ class VirtualCardController extends Controller
             //dump($api);
             $api->card_details='';
         }
+        //dd(URL::to('/'));
+        $url=URL::to('/').'/'.$api->name.'/'.'webhook';
+        $urlWebhook=$url;
         //$apiApp=ApiApp::all();
         //dump($api);
         //$adim =Admin::where('id',auth()->user()->id)->first();
@@ -39,7 +43,8 @@ class VirtualCardController extends Controller
         return view('admin.sections.virtual-card.api',compact(
             'page_title',
             'api',
-            'existApi'
+            'existApi',
+            'urlWebhook'
         ));
     }
     public function cardApiChange(Request $request){
@@ -98,10 +103,13 @@ class VirtualCardController extends Controller
             'eversend_secret_key'     => 'required_if:api_method,eversend',
             'eversend_url'            => 'required_if:api_method,eversend',
             'image'                     => "nullable|mimes:png,jpg,jpeg,webp,svg",
+            'nb_trx_failled'=>'required|integer',
+            'penality_price'=>'required|numeric|required_if:is_activate_penality,1',
             'is_created_card'=>'nullable|boolean',
             'is_active'=>'nullable|boolean',
             'is_rechargeable'=>'nullable|boolean',
-            'is_withdraw'=>'nullable|boolean'
+            'is_withdraw'=>'nullable|boolean',
+            'is_activate_penality'=>'nullable|boolean'
             /*'card_limit' => [
                 'required',
                 'numeric',
@@ -130,6 +138,9 @@ class VirtualCardController extends Controller
         
         //dump($api);
         $api->card_details = $request->card_details;
+        $api->nb_trx_failled=$request->nb_trx_failled;
+        if(isset($request['penality_price']))
+        $api->penality_price=$request->penality_price;
         $api->card_limit = 10000;//$request->card_limit;
         $api->config = $data;
         $api->name=$data['name'];
@@ -153,6 +164,11 @@ class VirtualCardController extends Controller
             $api->is_withdraw=$data['is_withdraw'];
         }else{
             $api->is_withdraw=false;
+        }
+        if(isset($data['is_activate_penality'])){
+            $api->is_activate_penality=$data['is_activate_penality'];
+        }else{
+            $api->is_activate_penality=false;
         }
         
        //$this->createApiAppElemet();

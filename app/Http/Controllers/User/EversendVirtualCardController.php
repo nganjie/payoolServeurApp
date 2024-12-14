@@ -154,6 +154,7 @@ class EversendVirtualCardController extends Controller
         $page_title = __("Card Details");
         $myCard = EversendVirtualCard::where('card_id',$card_id)->first();
         $cardApi = $this->api;
+        //dd($myCard->user());
         $cardWithdrawCharge = TransactionSetting::where('slug','withdraw_card_'.auth()->user()->name_api)->where('status',1)->first();
         return view('user.sections.virtual-card-eversend.details',compact('page_title','myCard','cardApi','cardWithdrawCharge'));
     }
@@ -630,7 +631,7 @@ class EversendVirtualCardController extends Controller
             return redirect()->back()->with(['success' => [__('Withdrawed Money Successfully of the card')]]);
 
         }else{
-            dump($account_amount);
+            //dump($account_amount);
             if($this->basic_settings->email_notification == true){
                 $trx_id = 'CF'.getTrxNum();
                 $notifyDataSender = [
@@ -802,6 +803,7 @@ class EversendVirtualCardController extends Controller
         $public_key=$this->api->config->eversend_public_key;
         $secret_key=$this->api->config->eversend_secret_key;
         $validated = $validator->safe()->all();
+        //return $validated;
         if($request->status == 1 ){
             $card = EversendVirtualCard::where('id',$request->data_target)->first();
             $status = 'block';
@@ -827,12 +829,14 @@ class EversendVirtualCardController extends Controller
             "clientSecret:$secret_key"
           ],
         ));
-
+        
         $response = json_decode(curl_exec($curl), true);
+        //return $response;
         if(!array_key_exists('token', $response)){
             return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
         }
         $token = $response['token'];
+       // return $token;
 
         curl_close($curl);
         $curl = curl_init();
@@ -857,6 +861,7 @@ class EversendVirtualCardController extends Controller
 
         $result = json_decode(curl_exec($curl), true);
         curl_close($curl);
+        //return $result;
         
             if (isset($result)) {
                 if ($result['success'] == true) {
@@ -926,8 +931,9 @@ class EversendVirtualCardController extends Controller
 
         $result = json_decode(curl_exec($curl), true);
         curl_close($curl);
+        //return $result;
         
-        if (isset($result)) {
+        if (isset($result)&&isset($result['success'])) {
             if ( $result['success'] == true ) {
                 $card->status='active';
                 $card->save();

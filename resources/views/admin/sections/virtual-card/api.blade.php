@@ -234,6 +234,38 @@
                     </div>-->
                     
                     </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                            <label>{{ __("Webhook Url") }}</label>
+                            <div class="input-group append">
+                                <span class="input-group-text"><i class="las la-key"></i></span>
+                                <input type="text" class="form--control" name="webhook_url" value="{{@$urlWebhook}}">
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                            <label>{{ __("number of failed transaction attempts") }}</label>
+                            <div class="input-group append">
+                                <span class="input-group-text"><i class="las la-key"></i></span>
+                                <input type="number" class="form--control" name="nb_trx_failled" value="{{@$api->nb_trx_failled}}">
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                            <label>{{ __("Price of The Penalty") }}</label>
+                            <div class="input-group append">
+                                <span class="input-group-text"><i class="las la-key"></i></span>
+                                <input type="number" class="form--control" name="penality_price" value="{{@$api->penality_price}}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                        <label class="form-check-label" for="flexCheckDefault">{{ __("Activate The Penalty") }}*</label>
+                        <div class="input-group append">
+                            <span class="input-group-text"><i class="las la-link"></i></span>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_activate_penality" value="1" id="flexCheckDefault" @if($api->is_activate_penality) @checked(true) @endif>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
                         <label class="form-check-label" for="flexCheckDefault">{{ __("is Created Card") }}*</label>
                         <div class="input-group append">
@@ -270,6 +302,7 @@
                             </div>
                         </div>
                     </div>
+                    
                     
                     <div class="col-xl-12 col-lg-12 form-group">
                         @include('admin.components.form.input-text-rich',[

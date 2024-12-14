@@ -36,6 +36,8 @@ class SoleaspayVirtualCard extends Model
         'is_disabled' => 'integer',
         'pin' => 'integer',
         'is_default' => 'integer',
+        'is_deleted' => 'boolean',
+        'nb_trx_failed'=>'integer',
     ];
 
 
