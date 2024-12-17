@@ -18,6 +18,7 @@ class SiteController extends Controller
     public function home(){
         $basic_settings = BasicSettings::first();
         $page_title = $basic_settings->site_title??"Home";
+        //echo __("if you make successive attempts to make a payment error, your card will be blocked and you will have to pay a fine of",['nbtrx'=>3,'amount'=>2]);
 
         return view('frontend.index',compact('page_title'));
     }

@@ -6,6 +6,7 @@ use App\Events\Eversend\CardPayementFailedEvent;
 use App\Models\EversendVirtualCard;
 use App\Models\User;
 use App\Models\VirtualCardApi;
+use App\Notifications\Webhook\CardBlockMail;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Notifications\Webhook\CardPayementFailedMail;
 use Illuminate\Queue\InteractsWithQueue;
@@ -46,22 +47,95 @@ class CardPayemenFailedtListener
              $nbtrx=$card->nb_trx_failed+1;
              //$card->nb_trx_failed+=1;
              //$card->save();
+             $not=[];
+             $not['nbtrx_max']=$api->nb_trx_failled;
+             $not['nbtrx']=$api->penality_price;
+             $not['amande']=$nbtrx;
+             $not['card']=$card;
+             $not['data']=$data;
              if($user){
-                if($nbtrx==1&&$api->is_activate_penality){
+                if($nbtrx<$api->nb_trx_failled){
+                 
+                 $user->notify(new CardPayementFailedMail($user,$not));
+                }else if($nbtrx>=$api->nb_trx_failled){
+                    $card->is_penalize=true;
+                    $card->save();
+                    $public_key=$api->config->eversend_public_key;
+                    $secret_key=$api->config->eversend_secret_key;
+                    $curl = curl_init();
 
-                }else if($nbtrx==1&&(!$api->is_activate_penality)){
-
-                }else if($nbtrx>=$api->nb_trx_failled&&$api->is_activate_penality){
-
-                }else if($nbtrx>=$api->nb_trx_failled&&(!$api->is_activate_penality)){}
+                    curl_setopt_array($curl, array(
+                    CURLOPT_URL => 'https://api.eversend.co/v1/auth/token',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 30,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'GET',
+                    CURLOPT_HTTPHEADER => [
+                        "accept: application/json",
+                        "clientId:$public_key",
+                        "clientSecret:$secret_key"
+                      ],
+                    ));
+                    $response = json_decode(curl_exec($curl), true);
+                    if(!array_key_exists('token', $response)){
+                        Log::build([
+                            'driver' => 'single',
+                            'path' => storage_path('logs/eversend.log'),
+                          ])->info(json_encode(['api'=>'eversend','erro_token_block_card'=>$card->card_id]));
+                        return;
+                    }
+                    $token = $response['token'];
+                    curl_close($curl);
+                    $curl = curl_init();
+                    curl_setopt_array($curl, array(
+                        CURLOPT_URL => $api->config->eversend_url."freeze",
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_ENCODING => '',
+                        CURLOPT_MAXREDIRS => 10,
+                        CURLOPT_TIMEOUT => 30,
+                        CURLOPT_FOLLOWLOCATION => true,
+                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        CURLOPT_CUSTOMREQUEST => 'POST',
+                        CURLOPT_POSTFIELDS =>json_encode([
+                           "cardId"=>$card->card_id
+                          ]),
+                          CURLOPT_HTTPHEADER =>  [
+                            "accept: application/json",
+                            "authorization: Bearer $token",
+                            "content-type: application/json"
+                          ],
+                    ));
+            
+                    $result = json_decode(curl_exec($curl), true);
+                    curl_close($curl);
+                    if (isset($result)) {
+                        if ($result['success'] == true) {
+                            $card->status = 'frozen';
+                            $card->save();
+                            $success = ['success' => [__('Card block successfully!')]];
+                            Log::build([
+                                'driver' => 'single',
+                                'path' => storage_path('logs/eversend.log'),
+                              ])->info(json_encode($success));
+                        }  else {
+                            $error = ['error' => [$result->message]];
+                            Log::build([
+                                'driver' => 'single',
+                                'path' => storage_path('logs/eversend.log'),
+                              ])->info(json_encode($error));
+                        }
+                    }
+                    
+                    $user->notify(new CardBlockMail($user,$not)); 
+                }
                  Log::build([
                      'driver' => 'single',
                      'path' => storage_path('logs/eversend.log'),
                    ])->info($data);
-                 $not=[];
-                 $not['card']=$card;
-                 $not['data']=$data;
-                 $user->notify(new CardPayementFailedMail($user,$not));
+                 
              }
          }
     }

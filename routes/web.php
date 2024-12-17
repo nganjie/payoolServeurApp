@@ -20,7 +20,9 @@ use Stripe\Issuing\Card;
 */
 
 //landing page
-Route::webhooks('eversend/webhook')->name('eversend.webhook');
+Route::webhooks('eversend/webhook','eversend');
+//Route::webhooks('eversend/webhook');
+//Route::webhooks('soleaspay/webhook','soleaspay');
 //Route::name('eversend.webhook')->webhooks('eversend/webhook');
 Route::controller(SiteController::class)->group(function(){
     Route::get('/','home')->name('index');

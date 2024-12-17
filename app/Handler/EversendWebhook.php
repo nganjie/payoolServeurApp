@@ -3,9 +3,11 @@
 namespace App\Handler;
 
 use App\Events\Eversend\CardAdjustedEvent;
+use App\Events\Eversend\CardMaintenanceEvent;
 use App\Events\Eversend\CardPayementEvent;
 use App\Events\Eversend\CardPayementFailedEvent;
 use App\Events\Eversend\CardTerminatedEvent;
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Spatie\WebhookClient\Jobs\ProcessWebhookJob;
 
@@ -22,19 +24,28 @@ class EversendWebhook extends ProcessWebhookJob
         //http_response_code(200);
         //$data = $dat['payload'];
         //Log::useDailyFiles(storage_path().'/logs/eversend.log');
-        /*Log::build([
+        Log::build([
           'driver' => 'single',
           'path' => storage_path('logs/eversend.log'),
-        ])->info($dat);*/
+        ])->info($dat);
         $data = $dat['payload'];
         
     
         if ($data['eventType'] == 'card.adjusted') {
-          $this->cardAjusted($data);
-         /* Log::build([
+          /*Log::build([
             'driver' => 'single',
             'path' => storage_path('logs/eversend.log'),
           ])->info($data);*/
+          try{
+            $this->cardAjusted($data);
+          }catch(Exception $e){
+            Log::build([
+              'driver' => 'single',
+              'path' => storage_path('logs/eversend.log'),
+            ])->info($e);
+          }
+          
+          
         }else if($data['eventType'] == 'card.terminated'){
           $this->cardTerminated($data);
         }else if($data['eventType'] == 'card.authorization'){
@@ -62,6 +73,6 @@ class EversendWebhook extends ProcessWebhookJob
     event(new CardPayementFailedEvent($data));
   }
   public function cardMaintenance($data){
-    event(new CardPayementFailedEvent($data));
+    event(new CardMaintenanceEvent($data));
   }
 }

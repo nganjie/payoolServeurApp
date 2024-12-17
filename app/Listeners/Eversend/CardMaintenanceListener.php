@@ -49,9 +49,7 @@ class CardMaintenanceListener
                      'driver' => 'single',
                      'path' => storage_path('logs/eversend.log'),
                    ])->info($data);
-                 $status=$status=$activated?__('Card - Active'):__('Card - Suspended');
                  $not=[];
-                 $not['status']=$status;
                  $not['card']=$card;
                  $not['data']=$data;
                  $user->notify(new CardMaintenanceMail($user,$not));
