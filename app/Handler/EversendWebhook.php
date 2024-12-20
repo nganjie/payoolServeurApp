@@ -38,6 +38,10 @@ class EversendWebhook extends ProcessWebhookJob
           ])->info($data);*/
           try{
             $this->cardAjusted($data);
+            Log::build([
+              'driver' => 'single',
+              'path' => storage_path('logs/eversend.log'),
+            ])->info("data empty");
           }catch(Exception $e){
             Log::build([
               'driver' => 'single',
@@ -46,7 +50,7 @@ class EversendWebhook extends ProcessWebhookJob
           }
           
           
-        }else if($data['eventType'] == 'card.terminated'){
+        }else if($data['eventType'] == 'card.authDeclinedBlocked'){
           $this->cardTerminated($data);
         }else if($data['eventType'] == 'card.authorization'){
           $this->cardPayement($data);

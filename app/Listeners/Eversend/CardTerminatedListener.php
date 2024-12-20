@@ -51,6 +51,7 @@ class CardTerminatedListener
                   ])->info($data);
                 $not=[];
                 $not['card']=$card;
+                $not['data']=$data;
                 $user->notify(new CardTerminatedMail($user,$not));
             }
         }

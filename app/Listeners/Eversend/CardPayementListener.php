@@ -34,7 +34,7 @@ class CardPayementListener
        Log::build([
         'driver' => 'single',
         'path' => storage_path('logs/eversend.log'),
-      ])->info($data);
+      ])->info("succes payement");
       print_r($data);
       $card_id=$data['cardId'];
         $card = EversendVirtualCard::where('card_id',$card_id)->first();

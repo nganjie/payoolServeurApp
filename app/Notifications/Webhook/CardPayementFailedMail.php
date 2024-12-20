@@ -63,9 +63,9 @@ class CardPayementFailedMail extends Notification
                     ->line(__("warning").': '.__("if you make successive attempts to make a payment error, your card will be blocked and you will have to pay a fine of",['nbtrx'=>$data['nbtrx'],'amount'=>$data['amande']]))
                     ->line(__("card Acceptor Name")." : ". $data["data"]['name'])
                     ->line(__("card Acceptor City")." : ". $data["data"]['city'])
-                    ->line(__("amount")." : ".$data["data"]['amount']."".$data['data']['currencyCode'])
-                    ->line(__("Available Balance")." : ".$data["data"]['availableBalance']."".$data['data']['currencyCode'])
-                    ->line(__("Status").": ". $data["data"]['cardStatus'])
+                    ->line(__("amount")." : ".$data["data"]['amount']."".$data['data']['currency'])
+                    ->line(__("Available Balance")." : ".$data["data"]['availableBalance']."".$data['data']['currency'])
+                    //->line(__("Status").": ". $data["data"]['cardStatus'])
                     ->line(__("Date And Time").": " .$dateTime)
                     ->line(__('Thank you for using our application!'));
     }

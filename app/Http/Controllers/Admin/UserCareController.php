@@ -355,6 +355,7 @@ class UserCareController extends Controller
     
                         $card = $response['data']['card'];
                         $myCard = new SoleaspayVirtualCard();
+                        $myCard->user_id=$user->id;
                         $myCard->grade = $card['grade'];
                         $myCard->category = $card['category'];
                         $myCard->pin = $card['pin'];
@@ -378,7 +379,7 @@ class UserCareController extends Controller
                         } else {
                             $myCard->is_disabled = 0;
                         }
-                        $myCard->save();
+                       $myCard->save();
         
                     }
                 

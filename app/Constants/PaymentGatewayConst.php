@@ -60,6 +60,7 @@ class PaymentGatewayConst {
     const PAGADITO                  = 'pagadito';
     const SOLEASPAY                 = 'soleaspay';
     const PAIEMENTPRO                 = 'paiementpro';
+    const CARD_PAY_PENALITY       ="PAY-PENALITY-VIRTUAL-CARD";
 
 
     const SEND = "SEND";

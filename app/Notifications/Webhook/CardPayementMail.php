@@ -60,9 +60,9 @@ class CardPayementMail extends Notification
                     ->line(__("Message")." : ".__("you have made a payment"))
                     ->line(__("card Acceptor Name")." : ". $data["data"]['cardAcceptorName'])
                     ->line(__("card Acceptor City")." : ". $data["data"]['cardAcceptorCity'])
-                    ->line(__("amount")." : ".$data["data"]['amount']."".$data['data']['currencyCode'])
-                    ->line(__("balance")." : ".$data["data"]['balance']."".$data['data']['currencyCode'])
-                    ->line(__("Status").": ". $data["data"]['cardStatus'])
+                    ->line(__("amount")." : ".$data["data"]['amount']."".$data['data']['currency'])
+                    ->line(__("balance")." : ".$data["data"]['balance']."".$data['data']['currency'])
+                    //->line(__("Status").": ". $data["data"]['cardStatus'])
                     ->line(__("Date And Time").": " .$dateTime)
                     ->line(__('Thank you for using our application!'));
     }

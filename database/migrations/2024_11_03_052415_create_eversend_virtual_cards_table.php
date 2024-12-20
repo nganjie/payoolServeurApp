@@ -32,7 +32,7 @@ return new class extends Migration
             $table->string('number');
             $table->string('owner_id');
             $table->boolean('is_non_subscription');
-            $table->timestamp('last_used_on')->nullable();
+            $table->string('last_used_on')->nullable();
             $table->json('billing_address')->nullable(); 
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');

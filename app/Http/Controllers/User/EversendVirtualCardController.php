@@ -19,6 +19,7 @@ use App\Models\VirtualCardApi;
 use App\Notifications\Admin\ActivityNotification;
 use App\Notifications\User\VirtualCard\CreateMail;
 use App\Notifications\User\VirtualCard\Fund;
+use App\Notifications\User\VirtualCard\PayPenalityMail;
 use App\Notifications\User\Withdraw\WithdrawMail;
 use App\Providers\Admin\BasicSettingsProvider;
 use Barryvdh\Debugbar\Twig\Extension\Dump;
@@ -45,7 +46,7 @@ class EversendVirtualCardController extends Controller
     {
         // Update card details
         $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
-        $myCards = EversendVirtualCard::where('user_id',auth()->user()->id)->get();
+        $myCards = EversendVirtualCard::where('user_id',auth()->user()->id)->where('status','terminating')->get();
         if( count($myCards) >0){
             // Get Token
             $public_key=$this->api->config->eversend_public_key;
@@ -69,6 +70,7 @@ class EversendVirtualCardController extends Controller
                 ));
 
             $response = json_decode(curl_exec($curl), true);
+            //dd($response);
             if(isset($response) && key_exists('status', $response) && $response['status']==400){
                 return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
             }
@@ -101,37 +103,43 @@ class EversendVirtualCardController extends Controller
                 if ( isset($response) && key_exists('success', $response) && $response['success'] == true ) {
                     //$myCard=new EversendVirtualCard();
                     //dd($response);
-                    $myCard->user_id=auth()->user()->id;
+                    try{
+                        $myCard->user_id=auth()->user()->id;
 
-                    $card = $response['data']['card'];
-                    $myCard->security_code = $card['securityCode'];
-                    $myCard->expiration = $card['expiration'];
-                    $myCard->currency = $card['currency'];
-                     $myCard->status = $card['status'];
-                    $myCard->is_Physical = $card['isPhysical'];
-                    $myCard->title = $card['title'];
-                    $myCard->color = $card['color'];
-                    $myCard->name = $card['name'];
-                    $myCard->amount = $card['balance'];
-                    $myCard->brand = $card['brand'];
-                    $myCard->mask = $card['mask'];
-                    $myCard->number = $card['number'];
-                    $myCard->owner_id = $card['ownerId'];
-                    $myCard->is_non_subscription = $card['isNonSubscription'];
-                    if(isset($card['lastUsedOn']))
-                    $myCard->last_used_on = $card['lastUsedOn'];
-                    $myCard->billing_address = $card['billingAddress'];
-                    if ($card['isPhysical']) {
-                        $myCard->is_Physical = 1;
-                    } else {
-                        $myCard->is_Physical = 0;
+                        $card = $response['data']['card'];
+                        $myCard->security_code = $card['securityCode'];
+                        $myCard->expiration = $card['expiration'];
+                        $myCard->currency = $card['currency'];
+                         $myCard->status = $card['status'];
+                        $myCard->is_Physical = $card['isPhysical'];
+                        $myCard->title = $card['title'];
+                        $myCard->color = $card['color'];
+                        $myCard->name = $card['name'];
+                        $myCard->amount = $card['balance'];
+                        $myCard->brand = $card['brand'];
+                        $myCard->mask = $card['mask'];
+                        $myCard->number = $card['number'];
+                        $myCard->owner_id = $card['ownerId'];
+                        $myCard->is_non_subscription = $card['isNonSubscription'];
+                        if(isset($card['lastUsedOn']))
+                        $myCard->last_used_on = $card['lastUsedOn'];
+                        $myCard->billing_address = $card['billingAddress'];
+                        if ($card['isPhysical']) {
+                            $myCard->is_Physical = 1;
+                        } else {
+                            $myCard->is_Physical = 0;
+                        }
+                        if ($card['isNonSubscription']) {
+                            $myCard->is_non_subscription = 1;
+                        } else {
+                            $myCard->is_non_subscription = 0;
+                        }
+                        $myCard->save();
+                    }catch(Exception $e){
+                        dump($card);
+                        dd($e);
                     }
-                    if ($card['isNonSubscription']) {
-                        $myCard->is_non_subscription = 1;
-                    } else {
-                        $myCard->is_non_subscription = 0;
-                    }
-                    $myCard->save();
+                  
     
                 }
            }
@@ -149,6 +157,7 @@ class EversendVirtualCardController extends Controller
         //dump(FacadesRoute::currentRouteName());
         return view('user.sections.virtual-card-eversend.index',compact('page_title','myCards','transactions','cardCharge','cardApi','totalCards','cardReloadCharge','cardWithdrawCharge', 'user'));
     }
+    
     public function cardDetails($card_id)
     {
         $page_title = __("Card Details");
@@ -367,6 +376,65 @@ class EversendVirtualCardController extends Controller
             $trx_id =  'CB'.getTrxNum();
             $sender = $this->insertCadrBuy($trx_id,$user,$wallet,$amount, $cardId ,$payable,true);
             $this->insertBuyCardCharge($fixedCharge,$percent_charge, $total_charge,$user,$sender, $cardId);
+            $v_card = new eversendVirtualCard();
+                
+            $card = $response['data']['card'];
+                $v_card->security_code = $card['securityCode'];
+                $v_card->expiration = $card['expiration'];
+                $v_card->currency = $card['currency'];
+                 $v_card->status = $card['status'];
+                $v_card->is_Physical = $card['isPhysical'];
+                $v_card->title = $card['title'];
+                $v_card->color = $card['color'];
+                $v_card->name = $card['name'];
+                $v_card->amount = $card['balance'];
+                $v_card->brand = $card['brand'];
+                $v_card->mask = $card['mask'];
+                $v_card->number = $card['number'];
+                $v_card->owner_id = $card['ownerId'];
+                $v_card->isNonSubscription = $card['isNonSubscription'];
+                if(isset($card['lastUsedOn']))
+                $v_card->lastUsedOn = $card['lastUsedOn'];
+                $v_card->billingAddress = $card['billingAddress'];
+         
+            // $v_card->charge =  $total_charge;
+            if ($card['is_Physical']) {
+                $v_card->is_Physical = 1;
+            } else {
+                $v_card->isPhysical = 0;
+            }
+            if ($card['isNonSubscription']) {
+                $v_card->isNonSubscription = 1;
+            } else {
+                $v_card->isNonSubscription = 0;
+            }
+            $v_card->save();
+            $trx_id =  'CB'.getTrxNum();
+            try{
+                $sender = $this->insertCardBuy( $trx_id,$user,$wallet,$amount, $v_card ,$payable);
+                $this->insertBuyCardCharge( $fixedCharge,$percent_charge, $total_charge,$user,$sender,$v_card->maskedPan);
+                if( $this->basic_settings->email_notification == true){
+                    $notifyDataSender = [
+                        'trx_id'  => $trx_id,
+                        'title'  => __("Virtual Card (Buy Card)"),
+                        'request_amount'  => getAmount($amount,4).' '.get_default_currency_code(),
+                        'payable'   =>  getAmount($payable,4).' ' .get_default_currency_code(),
+                        'charges'   => getAmount( $total_charge, 2).' ' .get_default_currency_code(),
+                        'card_amount'  => getAmount( $v_card->amount, 2).' ' .get_default_currency_code(),
+                        'card_pan'  => $v_card->maskedPan,
+                        'status'  => __("Success"),
+                      ];
+                      try{
+                          $user->notify(new CreateMail($user,(object)$notifyDataSender));
+                      }catch(Exception $e){}
+                }
+                //admin notification
+                $this->adminNotification($trx_id,$total_charge,$amount,$payable,$user,$v_card);
+                return redirect()->route("user.eversend.virtual.card.index")->with(['success' => [__('Card Buy Successfully')]]);
+            }catch(Exception $e){
+                dd($e);
+                return back()->with(['error' => [__("Something Went Wrong! Please Try Again")]]);
+            }
         } else {
             $trx_id =  'CB'.getTrxNum();
             $sender = $this->insertCadrBuy($trx_id,$user,$wallet,$amount, $cardId ,$payable,false);
@@ -374,11 +442,39 @@ class EversendVirtualCardController extends Controller
             dd($response);
             return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
         }
-        sleep(5);
-        // Get card detail
+        
+
+      
+
+    }
+    public function payPenality(Request $request){
+        $request->validate([
+            'card_id' => 'required|integer',
+        ]);
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
+        $user = auth()->user();
+        $myCard =  EversendVirtualCard::where('user_id',$user->id)->where('id',$request->card_id)->first();
+        $amount=$this->api->penality_price;
+        $wallet = UserWallet::where('user_id',$user->id)->first();
+        if($amount >$wallet->balance) {
+            return back()->with(['error' => [__('Sorry, insufficient balance')]]);
+        }
+        $baseCurrency = Currency::default();
+        $rate = $baseCurrency->rate;
+        if(!$baseCurrency){
+            return back()->with(['error' => [__('Default Currency Not Setup Yet')]]);
+        }
+        $trx_id = 'CF'.getTrxNum();
+        $sender = $this->insertCardPenality( $trx_id,$user,$wallet,$amount, $myCard ,$amount);
+        $this->insertPenalityCardCharge($user,$sender,$myCard->masked_card,$amount);
+        $myCard->is_penalize=false;
+        $myCard->save();
+        $public_key=$this->api->config->eversend_public_key;
+        $secret_key=$this->api->config->eversend_secret_key;
         $curl = curl_init();
+
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->api->config->eversend_url.$cardId,
+            CURLOPT_URL => 'https://api.eversend.co/v1/auth/token',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -388,90 +484,74 @@ class EversendVirtualCardController extends Controller
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => [
                 "accept: application/json",
-                "authorization: Bearer $token",
-                "content-type: application/json"
-              ]
-          ));
-        $result = json_decode(curl_exec($curl));
-        curl_close($curl);
-        
+                "clientId:$public_key",
+                "clientSecret:$secret_key"
+              ],
+            ));
 
-        if (isset($result)){
-            if ( key_exists('success', $response) && $response['success'] &&  isset($result->data) ) {
-                try{
-                    $card=$result['data']['card'];
-                }catch(\Exception $e){
-                    dump($e);
-                    dd($result);
-                }
-                
-                //$cardUser = $result->data->data->card->virtual_card_user;
-                //Save Card
-                $v_card = new eversendVirtualCard();
-                
-                $card = $response['data']['card'];
-                    $v_card->security_code = $card['securityCode'];
-                    $v_card->expiration = $card['expiration'];
-                    $v_card->currency = $card['currency'];
-                     $v_card->status = $card['status'];
-                    $v_card->is_Physical = $card['isPhysical'];
-                    $v_card->title = $card['title'];
-                    $v_card->color = $card['color'];
-                    $v_card->name = $card['name'];
-                    $v_card->amount = $card['balance'];
-                    $v_card->brand = $card['brand'];
-                    $v_card->mask = $card['mask'];
-                    $v_card->number = $card['number'];
-                    $v_card->owner_id = $card['ownerId'];
-                    $v_card->isNonSubscription = $card['isNonSubscription'];
-                    if(isset($card['lastUsedOn']))
-                    $v_card->lastUsedOn = $card['lastUsedOn'];
-                    $v_card->billingAddress = $card['billingAddress'];
-             
-                // $v_card->charge =  $total_charge;
-                if ($card->is_Physical) {
-                    $v_card->is_Physical = 1;
-                } else {
-                    $v_card->isPhysical = 0;
-                }
-                if ($card->isNonSubscription) {
-                    $v_card->isNonSubscription = 1;
-                } else {
-                    $v_card->isNonSubscription = 0;
-                }
-                $v_card->save();
-                $trx_id =  'CB'.getTrxNum();
-                try{
-                    $sender = $this->insertCardBuy( $trx_id,$user,$wallet,$amount, $v_card ,$payable);
-                    $this->insertBuyCardCharge( $fixedCharge,$percent_charge, $total_charge,$user,$sender,$v_card->maskedPan);
-                    if( $this->basic_settings->email_notification == true){
-                        $notifyDataSender = [
-                            'trx_id'  => $trx_id,
-                            'title'  => __("Virtual Card (Buy Card)"),
-                            'request_amount'  => getAmount($amount,4).' '.get_default_currency_code(),
-                            'payable'   =>  getAmount($payable,4).' ' .get_default_currency_code(),
-                            'charges'   => getAmount( $total_charge, 2).' ' .get_default_currency_code(),
-                            'card_amount'  => getAmount( $v_card->amount, 2).' ' .get_default_currency_code(),
-                            'card_pan'  => $v_card->maskedPan,
-                            'status'  => __("Success"),
-                          ];
-                          try{
-                              $user->notify(new CreateMail($user,(object)$notifyDataSender));
-                          }catch(Exception $e){}
+        $response = json_decode(curl_exec($curl), true);
+        if(!isset($response) || !array_key_exists('token', $response)){
+            return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
+        }
+        $token = $response['token'];
+
+        curl_close($curl);
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->api->config->eversend_url."unfreeze",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>json_encode([
+                "cardId"=>$myCard->card_id
+               ]),
+               CURLOPT_HTTPHEADER =>  [
+                 "accept: application/json",
+                 "authorization: Bearer $token",
+                 "content-type: application/json"
+               ],
+        ));
+
+        $result = json_decode(curl_exec($curl), true);
+        curl_close($curl);
+        //return $result;
+        
+        if (isset($result)&&isset($result['success'])) {
+            if ( $result['success'] == true ) {
+                $myCard->status='active';
+                $myCard->save();
+                if($this->basic_settings->email_notification == true){
+                    $notifyDataSender = [
+                        'trx_id'  => $trx_id,
+                        'title'  => __("Virtual Card (Card Unbloking)"),
+                        'request_amount'  => getAmount($amount,4).' '.get_default_currency_code(),
+                        'payable'   =>  getAmount($amount,4).' ' .get_default_currency_code(),
+                        'charges'   => getAmount( $amount,2).' ' .get_default_currency_code(),
+                        'card_amount'  => getAmount($myCard->amount,2).' ' .get_default_currency_code(),
+                        'card_pan'  =>    $myCard->masked_card,
+                        'status'  => __("Success"),
+                    ];
+                    try{
+                        $user->notify(new PayPenalityMail($user,(object)$notifyDataSender));
+                    }catch(Exception $e){
+                        dd($e);
                     }
-                    //admin notification
-                    $this->adminNotification($trx_id,$total_charge,$amount,$payable,$user,$v_card);
-                    return redirect()->route("user.stripe.virtual.card.index")->with(['success' => [__('Card Buy Successfully')]]);
-                }catch(Exception $e){
-                    return back()->with(['error' => [__("Something Went Wrong! Please Try Again")]]);
-                }
-                return redirect()->route("user.eversend.virtual.card.index")->with(['success' => [__('Buy Card Successfully')]]);
-                
-            }else {
-                dd($response);
-                return redirect()->back()->with(['error' => [@$result['message']??__("Something Went Wrong! Please Try Again")]]);
+                $success = ['success' => [__('Card unblock successfully!')]];
+                //return Response::success($success,null,200);
             }
         }
+        return redirect()->back()->with(['success' => [__('The penalty on your virtual card has been successfully paid.')]]);
+        
+
+        }else{
+            dd($result);
+            return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
+        }
+       
 
     }
     public function cardWithdraw(Request $request){
@@ -785,6 +865,7 @@ class EversendVirtualCardController extends Controller
             return redirect()->back()->with(['success' => [__('Card Funded Successfully')]]);
 
         }else{
+            dd($result);
             return redirect()->back()->with(['error' => [@$result['message']??__("Something Went Wrong! Please Try Again")]]);
         }
 
@@ -1233,6 +1314,69 @@ class EversendVirtualCardController extends Controller
             DB::rollBack();
             throw new Exception(__("Something Went Wrong! Please Try Again"));
         }
+    }
+    public function insertPenalityCardCharge($user,$id,$masked_card,$amount) {
+        DB::beginTransaction();
+        try{
+            DB::table('transaction_charges')->insert([
+                'transaction_id'    => $id,
+                'percent_charge'    => 0,
+                'fixed_charge'      =>0,
+                'total_charge'      =>0,
+                'created_at'        => now(),
+            ]);
+            DB::commit();
+
+            //notification
+            $notification_content = [
+                'title'         =>"Card Unbloking",
+                'message'       => __("Unlocking your card successful Card")." : ".$masked_card.' '.getAmount($amount,2).' '.get_default_currency_code(),
+                'image'         => files_asset_path('profile-default'),
+            ];
+
+            UserNotification::create([
+                'type'      => NotificationConst::PAYPENALITY,
+                'user_id'  => $user->id,
+                'message'   => $notification_content,
+            ]);
+            DB::commit();
+        }catch(Exception $e) {
+            DB::rollBack();
+            throw new Exception(__("Something Went Wrong! Please Try Again"));
+        }
+    }
+    public function insertCardPenality( $trx_id,$user,$wallet,$amount, $myCard ,$payable) {
+        $trx_id = $trx_id;
+        $authWallet = $wallet;
+        $afterCharge = ($authWallet->balance - $amount);
+        $details =[
+            'card_info' =>   $myCard??''
+        ];
+        DB::beginTransaction();
+        try{
+            $id = DB::table("transactions")->insertGetId([
+                'user_id'                       => $user->id,
+                'user_wallet_id'                => $authWallet->id,
+                'payment_gateway_currency_id'   => null,
+                'type'                          => PaymentGatewayConst::VIRTUALCARD,
+                'trx_id'                        => $trx_id,
+                'request_amount'                => $amount,
+                'payable'                       => $payable,
+                'available_balance'             => $afterCharge,
+                'remark'                        => ucwords(remove_speacial_char(PaymentGatewayConst::CARD_PAY_PENALITY," ")),
+                'details'                       => json_encode($details),
+                'attribute'                      =>PaymentGatewayConst::RECEIVED,
+                'status'                        => true,
+                'created_at'                    => now(),
+            ]);
+            $this->updateSenderWalletBalance($authWallet,$afterCharge);
+
+            DB::commit();
+        }catch(Exception $e) {
+            DB::rollBack();
+            throw new Exception(__("Something Went Wrong! Please Try Again"));
+        }
+        return $id;
     }
     //update user balance
     public function updateSenderWalletBalance($authWalle,$afterCharge) {

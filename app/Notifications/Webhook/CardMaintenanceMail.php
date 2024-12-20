@@ -60,7 +60,7 @@ class CardMaintenanceMail extends Notification
                     ->line(__("Message")." : ".__("Subscription Renewal"))
                     ->line(__("card Acceptor Name")." : ". $data["data"]['name'])
                     ->line(__("card Acceptor City")." : ". $data["data"]['city'])
-                    ->line(__("balance")." : ".$data["data"]['balance']."".$data['data']['currencyCode'])
+                    ->line(__("balance")." : ".$data["data"]['balance']."".$data['data']['currency'])
                     ->line(__("Status").": ". $data["data"]['cardStatus'])
                     ->line(__("Date And Time").": " .$dateTime)
                     ->line(__('Thank you for using our application!'));

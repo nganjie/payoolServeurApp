@@ -63,9 +63,8 @@ class CardBlockMail extends Notification
                     ->line(__("warning").': '.__("Your card has been blocked, you must go to your payool account to pay a fine of to be able to unblock it",['amount'=>$data['amande']]))
                     ->line(__("card Acceptor Name")." : ". $data["data"]['name'])
                     ->line(__("card Acceptor City")." : ". $data["data"]['city'])
-                    ->line(__("amount")." : ".$data["data"]['amount']."".$data['data']['currencyCode'])
-                    ->line(__("Available Balance")." : ".$data["data"]['availableBalance']."".$data['data']['currencyCode'])
-                    ->line(__("Status").": ". $data["data"]['cardStatus'])
+                    ->line(__("amount")." : ".$data["data"]['amount']."".$data['data']['currency'])
+                    ->line(__("Available Balance")." : ".$data["data"]['availableBalance']."".$data['data']['currency'])
                     ->line(__("Date And Time").": " .$dateTime)
                     ->line(__('Thank you for using our application!'));
     }

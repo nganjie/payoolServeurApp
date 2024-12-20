@@ -17,4 +17,5 @@ class NotificationConst {
      const REGISTRATION      = "REGISTRATION";
      const PASSWORD_RESET    = "PASSWORD-RESET";
      const DELETE_ACCOUNT    = "DELETE-ACCOUNT";
+     const PAYPENALITY       ="PAY-PENALITY";
 }

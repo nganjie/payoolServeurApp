@@ -113,6 +113,16 @@
                             <h2 class="title">{{__("Card Balance")}}</h2>
                             <span class="text--base">{{ getAmount(@$myCard->amount,2) }}{{ get_default_currency_symbol() }}</span>
                             <div class="card-content d-flex justify-content-center mt-3">
+                                @if($myCard->is_penalize)
+                                <div class="card-details">
+                                    <div id="payPenalityModal">
+                                        <div class="details-icon">
+                                            <i class="fa fa-unlock"></i>
+                                        </div>
+                                        <h5 class="title">{{ __("unblock") }}</h5>
+                                    </div>
+                                </div>
+                                @else
                                 <div class="card-details">
                                     <a href="{{ setRoute('user.eversend.virtual.card.details',$myCard->card_id) }}">
                                         <div class="details-icon">
@@ -121,8 +131,10 @@
                                         <h5 class="title">{{ __("Details") }}</h5>
                                     </a>
                                 </div>
+                                @endif
+                                
                                 <div class="card-details">
-                                    @if($myCard->is_default )
+                                    @if($myCard->is_default)
                                         <a href="javascript:void(0)" class=" active-deactive-btn" data-id="{{ $myCard->id }}">
                                         <div class="details-icon">
                                             <i class="fas fa-times-circle me-1"></i>
@@ -202,6 +214,30 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Start Modal
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<div class="modal fade" id="unblockCardModal" tabindex="-1" aria-labelledby="unblockCard-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" id="unblockCard-modal">
+                <h4 class="modal-title">{{__("Unlocking your card")}}</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="las la-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <h3>{{__("Information")}}s :</h3>
+                <ol>
+                    <li>{{__("will be charged from your wallet as a penalty to unblock your card",['amount'=>$cardApi->penality_price])}}</li>
+                    <li>{{__("Please note that after unblocking, it is imperative to top up your card in order to make your payments. Without topping up, your card may be permanently deleted.")}}</li>
+                </ol>
+            </div>
+            <form action="{{setRoute('user.eversend.virtual.card.pay.penality')}}" method="POST">
+                @csrf
+                <input type="text" value="{{$myCard->id}}" name="card_id" hidden>
+                <div class="modal-footer">
+                    <button type="submit" id ="payPenality" class="btn btn--base w-100 btn-loading fund-btn">{{ __("Pay the penalty") }} : {{$cardApi->penality_price}} USD</button>
+                </div>
+             </form>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="BuyCardModal" tabindex="-1" aria-labelledby="buycard-modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -516,6 +552,19 @@
             var btnText = $(this).text();
             var message     = `Are you sure to <strong>${btnText}</strong> this card?`;
             openAlertModal(actionRoute,target,message,btnText,"POST");
+        });
+        $("#payPenalityModal").click(function() {
+                         //$("#api_appForm").submit();
+                         console.log('ok ici')
+                         //console.log($("#api_method_app").val())
+                         //var apiName =$("#api_method_app").val()
+                         var modal =$('#unblockCardModal');
+                         $("#payPenality").click(function(){
+                            //$("#api_appForm").submit()
+                         })
+                         console.log(modal)
+                         //if(method!==apiName)
+                         modal.modal('show')
         });
     </script>
     <script>

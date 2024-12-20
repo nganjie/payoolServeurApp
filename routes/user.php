@@ -160,6 +160,7 @@ Route::prefix("user")->name("user.")->group(function(){
         Route::controller(SoleaspayVirtualCardController::class)->prefix('soleaspay-virtual-card')->middleware('kyc.verification.guard')->name('soleaspay.virtual.card.')->group(function(){
             Route::get('/','index')->name('index');
             Route::post('create','cardBuy')->name('create');
+            Route::post('pay/penality','payPenality')->name('pay.penality');
             Route::post('fund','cardFundConfirm')->name('fund');
             Route::post('withdraw','cardWithdraw')->name('withdraw');
             Route::get('details/{card_id}','cardDetails')->name('details');
@@ -173,6 +174,7 @@ Route::prefix("user")->name("user.")->group(function(){
         Route::controller(EversendVirtualCardController::class)->prefix('eversend-virtual-card')->name('eversend.virtual.card.')->group(function(){
             Route::get('/','index')->name('index');
             Route::post('create','cardBuy')->name('create');
+            Route::post('pay/penality','payPenality')->name('pay.penality');
             Route::post('fund','cardFundConfirm')->name('fund');
             Route::post('withdraw','cardWithdraw')->name('withdraw');
             Route::get('details/{card_id}','cardDetails')->name('details');

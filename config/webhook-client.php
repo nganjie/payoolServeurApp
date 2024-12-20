@@ -68,7 +68,7 @@ return [
             /*
              * The name of the header containing the signature.
              */
-            'signature_header_name' => 'x-eversend-signature',
+            'signature_header_name' => 'x-private-key',
 
             /*
              *  This class will verify that the content of the signature header is valid.

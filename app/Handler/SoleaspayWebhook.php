@@ -23,11 +23,15 @@ class SoleaspayWebhook extends ProcessWebhookJob
         //http_response_code(200);
         //$data = $dat['payload'];
         //Log::useDailyFiles(storage_path().'/logs/eversend.log');
-        /*Log::build([
+        Log::build([
           'driver' => 'single',
-          'path' => storage_path('logs/eversend.log'),
-        ])->info($dat);*/
+          'path' => storage_path('logs/soleaspay.log'),
+        ])->info($dat);
         $data = $dat['payload'];
+        Log::build([
+          'driver' => 'single',
+          'path' => storage_path('logs/soleaspay.log'),
+        ])->info($data);
         
     
        /* if ($data['eventType'] == 'card.adjusted') {

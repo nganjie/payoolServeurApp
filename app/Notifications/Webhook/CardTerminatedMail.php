@@ -58,7 +58,9 @@ class CardTerminatedMail extends Notification
                     ->subject(__("Virtual Card (Terminated)")." ". $data["card"]["mask"].' ')
                     ->line(__("Card Information").", ".$data["card"]["mask"])
                     ->line(__("Message")." : ".__("your virtual card has been deleted"))
-                    ->line(__("Status").": ". $data["data"]['cardStatus'])
+                    ->line(__("Status").": ". __('isBlocked'))
+                    ->line(__("balanceBeforeTermination").": ". $data['data']['balanceBeforeTermination'])
+                    ->line(__("balanceCreditedIntoWallet").": ".$data['data']['balanceCreditedIntoWallet'])
                     ->line(__("Date And Time").": " .$dateTime)
                     ->line(__('Thank you for using our application!'));
     }
