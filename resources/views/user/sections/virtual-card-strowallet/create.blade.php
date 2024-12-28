@@ -19,15 +19,16 @@
             @include('user.sections.virtual-card-strowallet.component.create-customer')
         @endif
         {{-- check and update for customer  --}}
-        @if(isset($user->strowallet_customer) )
+       <!-- @if(isset($user->strowallet_customer) )
             @if(isset($user->strowallet_customer->status) && $user->strowallet_customer->status ==  global_const()::CARD_UNDER_STATUS || $user->strowallet_customer->status ==  global_const()::CARD_LOW_KYC_STATUS)
             @include('user.sections.virtual-card-strowallet.component.check-customer-status')
             @endif
-        @endif
+        @endif-->
         {{-- Create card  --}}
+        @include('user.sections.virtual-card-strowallet.component.create-card')
         @if(isset($user->strowallet_customer))
             @if(isset($user->strowallet_customer->status) && $user->strowallet_customer->status ==  global_const()::CARD_HIGH_KYC_STATUS)
-            @include('user.sections.virtual-card-strowallet.component.create-card')
+            
             @endif
         @endif
     </div>

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events\Eversend;
+namespace App\Events\Strowallet;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;

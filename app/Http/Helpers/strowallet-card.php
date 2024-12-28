@@ -131,7 +131,7 @@ function update_customer($formData,$public_key,$base_url,$idImage,$userPhoto,$cu
 
 }
 // create virtual card for strowallet
-function create_strowallet_virtual_card($user,$cardAmount,$customer,$public_key,$base_url,$formData){
+function create_strowallet_virtual_card($user,$cardAmount,$customerEmail,$public_key,$base_url,$formData){
 
     $method = VirtualCardApi::where('name',Auth::check()?auth()->user()->name_api:Admin::first()->name_api)->first();
     $mode = $method->config->strowallet_mode??GlobalConst::SANDBOX;
@@ -140,7 +140,7 @@ function create_strowallet_virtual_card($user,$cardAmount,$customer,$public_key,
         'card_type'     => 'visa',
         'public_key'    => $public_key,
         'amount'        => $cardAmount,
-        'customerEmail' => $customer->customerEmail,
+        'customerEmail' => $customerEmail,
     ];
 
     if ($mode === GlobalConst::SANDBOX) {

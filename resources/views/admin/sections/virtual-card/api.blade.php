@@ -71,7 +71,7 @@
                                 <label>{{ __("Api Key") }}*</label>
                                 <div class="input-group append">
                                     <span class="input-group-text"><i class="las la-key"></i></span>
-                                    <input type="text" class="form--control" name="sudo_api_key" value="@if(!@$existApi){{ @$api->config->sudo_api_key }} @endif">
+                                    <input type="text" class="form--control" name="sudo_api_key" value="@if(@$existApi){{ @$api->config->sudo_api_key }} @endif">
                                 </div>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 form-group">
@@ -130,21 +130,21 @@
                                 <label>{{ __("Public Key") }}*</label>
                                 <div class="input-group append">
                                     <span class="input-group-text"><i class="las la-key"></i></span>
-                                    <input type="text" class="form--control" name="strowallet_public_key" value="@if(@$existApi){{ @$api->config->strowallet_public_key }}@endif">
+                                    <input type="text" class="form--control" name="strowallet_public_key" value="{{ @$api->config->strowallet_public_key }}">
                                 </div>
                             </div>
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
                                 <label>{{ __("Secret Key") }}*</label>
                                 <div class="input-group append">
                                     <span class="input-group-text"><i class="las la-key"></i></span>
-                                    <input type="text" class="form--control" name="strowallet_secret_key" value="@if(@$existApi){{ @$api->config->strowallet_secret_key }}@endif">
+                                    <input type="text" class="form--control" name="strowallet_secret_key" value="{{ @$api->config->strowallet_secret_key }}">
                                 </div>
                             </div>
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
                                 <label>{{ __("Base Url") }}*</label>
                                <div class="input-group append">
                                     <span class="input-group-text"><i class="las la-link"></i></span>
-                                    <input type="text" class="form--control" name="strowallet_url" value="@if(@$existApi){{ @$api->config->strowallet_url }}@endif" 
+                                    <input type="text" class="form--control" name="strowallet_url" value="{{ @$api->config->strowallet_url }}" 
                                     >
                                 </div>
                             </div>
@@ -155,6 +155,14 @@
                                     'name'          => "strowallet_mode",
                                     'options'       => [__('Live') => global_const()::LIVE,__('Sandbox') => global_const()::SANDBOX]
                                 ])
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                            <label>{{ __("email") }}*</label>
+                           <div class="input-group append">
+                                <span class="input-group-text"><i class="las la-link"></i></span>
+                                <input type="text" class="form--control" name="strowallet_email" value="{{ @$api->config->strowallet_email }}" 
+                                >
                             </div>
                         </div>
                     </div>
@@ -184,8 +192,8 @@
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
                                 @include('admin.components.form.switcher', [
                                     'label'         => __('Mode'),
-                                    'value'         => old('strowallet_mode',@$api->config->strowallet_mode),
-                                    'name'          => "strowallet_mode",
+                                    'value'         => old('soleaspay_mode',@$api->config->strowallet_mode),
+                                    'name'          => "soleaspay_mode",
                                     'options'       => [__('Live') => global_const()::LIVE,__('Sandbox') => global_const()::SANDBOX]
                                 ])
                             </div>
@@ -217,8 +225,8 @@
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
                                 @include('admin.components.form.switcher', [
                                     'label'         => __('Mode'),
-                                    'value'         => old('strowallet_mode',@$api->config->strowallet_mode),
-                                    'name'          => "strowallet_mode",
+                                    'value'         => old('eversend_mode',@$api->config->strowallet_mode),
+                                    'name'          => "eversend_mode",
                                     'options'       => [__('Live') => global_const()::LIVE,__('Sandbox') => global_const()::SANDBOX]
                                 ])
                             </div>

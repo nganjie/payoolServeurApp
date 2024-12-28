@@ -190,6 +190,7 @@ Route::prefix("user")->name("user.")->group(function(){
                 Route::get('/','index')->name('index');
                 Route::get('create','createPage')->name('create');
                 Route::post('create/customer','createCustomer')->name('create.customer');
+                Route::post('withdraw','cardWithdraw')->name('withdraw');
                 Route::get('edit/customer','editCustomer')->name('edit.customer');
                 Route::put('update/customer','updateCustomer')->name('update.customer');
                 Route::post('create','cardBuy')->name('create');

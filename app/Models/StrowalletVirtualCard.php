@@ -33,6 +33,9 @@ class StrowalletVirtualCard extends Model
         'status'                => 'boolean',
         'is_active'             => 'boolean',
         'is_default'            => 'boolean',
+        'is_deleted' => 'boolean',
+        'is_penalize' => 'boolean',
+        'nb_trx_failed'=>'integer',
     ];
     public function user() {
         return $this->belongsTo(User::class);

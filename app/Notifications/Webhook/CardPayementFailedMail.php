@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications\Webhook;
+namespace App\Notifications\Webhook\Strowallet;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -61,10 +61,9 @@ class CardPayementFailedMail extends Notification
                     ->line(__("number of failures").': '.$data['nbtrx'])
                     ->line(__("maximum number of failures").': '.$data['nbtrx_max'])
                     ->line(__("warning").': '.__("if you make successive attempts to make a payment error, your card will be blocked and you will have to pay a fine of",['nbtrx'=>$data['nbtrx'],'amount'=>$data['amande']]))
-                    ->line(__("card Acceptor Name")." : ". $data["data"]['name'])
-                    ->line(__("card Acceptor City")." : ". $data["data"]['city'])
-                    ->line(__("amount")." : ".$data["data"]['amount']."".$data['data']['currency'])
-                    ->line(__("Available Balance")." : ".$data["data"]['availableBalance']."".$data['data']['currency'])
+                    ->line(__("reason")." : ". $data["data"]['reason'])
+                    ->line(__("amount")." : ".$data["data"]['amount']." USD")
+                    ->line(__("narrative")." : ".$data["data"]['narrative'])
                     //->line(__("Status").": ". $data["data"]['cardStatus'])
                     ->line(__("Date And Time").": " .$dateTime)
                     ->line(__('Thank you for using our application!'));
