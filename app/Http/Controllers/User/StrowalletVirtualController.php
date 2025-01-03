@@ -48,20 +48,36 @@ class StrowalletVirtualController extends Controller
     public function index()
     {
         $page_title     = __("Virtual Card");
+        $this->api=VirtualCardApi::where('name',Auth::check()?auth()->user()->name_api:Admin::first()->name_api)->first();
         $myCards        = StrowalletVirtualCard::where('user_id', auth()->user()->id)->latest()->limit($this->card_limit)->get();
         $user           = auth()->user();
-        $customer_email = $user->strowallet_customer->customerEmail??false;
+        $customer_card = '';//$user->strowallet_customer->customerEmail??false;
 
-        if($customer_email === false){
+        /*if($customer_email === false){
             $customer_card  = 0;
         }else{
             $customer_card  = StrowalletVirtualCard::where('customer_email',$customer_email)->count();
+        }*/
+        if(count($myCards)>0){
+            foreach($myCards as $myCard){
+                $card_details   = card_details($myCard->card_id,$this->api->config->strowallet_public_key,$this->api->config->strowallet_url);
+                $myCard->card_status               = $card_details['data']['card_detail']['card_status'];
+            $myCard->card_name               = $card_details['data']['card_detail']['card_name'];
+            $myCard->card_number               = $card_details['data']['card_detail']['card_number'];
+            $myCard->last4                     = $card_details['data']['card_detail']['last4'];
+            $myCard->cvv                       = $card_details['data']['card_detail']['cvv'];
+            $myCard->expiry                    = $card_details['data']['card_detail']['expiry'];
+            $myCard->balance                    = $card_details['data']['card_detail']['balance'];
+            $myCard->save();
+            }
         }
+        $myCards        = StrowalletVirtualCard::where('user_id', auth()->user()->id)->latest()->limit($this->card_limit)->get();
         $cardCharge       = TransactionSetting::where('slug','virtual_card_'.auth()->user()->name_api)->where('status',1)->first();
         $cardReloadCharge = TransactionSetting::where('slug','reload_card_'.auth()->user()->name_api)->where('status',1)->first();
         $transactions     = Transaction::auth()->virtualCard()->latest()->take(5)->get();
         $cardWithdrawCharge = TransactionSetting::where('slug','withdraw_card_'.auth()->user()->name_api)->where('status',1)->first();
         $cardApi = $this->api;
+        //dd($myCards);
         return view('user.sections.virtual-card-strowallet.index',compact(
             'page_title',
             'cardApi',
@@ -83,7 +99,7 @@ class StrowalletVirtualController extends Controller
         $myCard = StrowalletVirtualCard::where('card_id',$card_id)->first();
         if(!$myCard) return back()->with(['error' => [__("Something is wrong in your card")]]);
 
-        if($myCard->card_status == 'pending'){
+       // if($myCard->card_status == 'pending'){
             $card_details   = card_details($card_id,$this->api->config->strowallet_public_key,$this->api->config->strowallet_url);
 
             if($card_details['status'] == false){
@@ -92,18 +108,22 @@ class StrowalletVirtualController extends Controller
 
             $myCard->user_id                   = Auth::user()->id;
             $myCard->card_status               = $card_details['data']['card_detail']['card_status'];
+            $myCard->card_name               = $card_details['data']['card_detail']['card_name'];
             $myCard->card_number               = $card_details['data']['card_detail']['card_number'];
             $myCard->last4                     = $card_details['data']['card_detail']['last4'];
             $myCard->cvv                       = $card_details['data']['card_detail']['cvv'];
             $myCard->expiry                    = $card_details['data']['card_detail']['expiry'];
+            $myCard->balance                    = $card_details['data']['card_detail']['balance'];
             $myCard->save();
-        }
+       // }
 
         $cardApi = $this->api;
+        $cardWithdrawCharge = TransactionSetting::where('slug','withdraw_card_'.auth()->user()->name_api)->where('status',1)->first();
         return view('user.sections.virtual-card-strowallet.details',compact(
             'page_title',
             'myCard',
-            'cardApi'
+            'cardApi',
+            'cardWithdrawCharge'
         ));
     }
 
@@ -363,7 +383,7 @@ class StrowalletVirtualController extends Controller
         }
 
         $customer_email =$this->api->config->strowallet_email; //$user->strowallet_customer->customerEmail??false;
-        dd($customer_email);
+        //dd($customer_email);
         if($customer_email === false){
             $customer_card  = 0;
         }else{
@@ -377,8 +397,12 @@ class StrowalletVirtualController extends Controller
         // for live code
         $created_card = create_strowallet_virtual_card($user,$request->card_amount,$customer_email,$this->api->config->strowallet_public_key,$this->api->config->strowallet_url,$formData);
         if($created_card['status'] == false){
+            dd($created_card);
             return back()->with(['error' => [$created_card['message'] .' ,'.__('Please Contact With Administration.')]]);
         }
+        
+       
+
 
         $strowallet_card                            = new StrowalletVirtualCard();
         $strowallet_card->user_id                   = $user->id;
@@ -392,6 +416,14 @@ class StrowalletVirtualController extends Controller
         $strowallet_card->card_status               = $created_card['data']['card_status'];
         $strowallet_card->customer_id               = $created_card['data']['customer_id'];
         $strowallet_card->customer_email            = $customer->customerEmail;
+        $strowallet_card->save();
+        $card_details   = card_details($strowallet_card->card_id,$this->api->config->strowallet_public_key,$this->api->config->strowallet_url);
+        $strowallet_card->card_status               = $card_details['data']['card_detail']['card_status'];
+        $strowallet_card->card_name               = $card_details['data']['card_detail']['card_name'];
+        $strowallet_card->card_number               = $card_details['data']['card_detail']['card_number'];
+        $strowallet_card->last4                     = $card_details['data']['card_detail']['last4'];
+        $strowallet_card->cvv                       = $card_details['data']['card_detail']['cvv'];
+        $strowallet_card->expiry                    = $card_details['data']['card_detail']['expiry'];
         $strowallet_card->balance                   = $amount;
         $strowallet_card->save();
 
@@ -516,6 +548,7 @@ class StrowalletVirtualController extends Controller
             return Response::error($error,null,400);
         }
         $validated = $validator->safe()->all();
+        //dump($validated);
         if($request->status == 1){
 
             $card   = StrowalletVirtualCard::where('id',$request->data_target)->where('is_active',1)->first();
@@ -534,16 +567,17 @@ class StrowalletVirtualController extends Controller
 
             if( isset($data['status']) ){
                 $card->is_active = 0;
+                $card->card_status="frozen";
                 $card->save();
                 $success = ['success' => [__('Card Freeze successfully')]];
                 return Response::success($success,null,200);
             }else{
-                $error = ['error' =>  [$data['message']]];
+                $error = ['error' =>  [$data,$validated]];
                 return Response::error($error,null,400);
             }
         }else{
 
-            $card   = StrowalletVirtualCard::where('id',$request->data_target)->where('is_active',0)->first();
+            $card   = StrowalletVirtualCard::where('id',$request->data_target)->first();
             $client = new \GuzzleHttp\Client();
             $public_key     = $this->api->config->strowallet_public_key;
             $base_url       = $this->api->config->strowallet_url;
@@ -557,11 +591,12 @@ class StrowalletVirtualController extends Controller
             $data  = json_decode($result, true);
             if(isset($data['status'])){
                 $card->is_active = 1;
+                $card->card_status="active";
                 $card->save();
                 $success = ['success' => [__('Card UnFreeze successfully')]];
                 return Response::success($success,null,200);
             }else{
-                $error = ['error' =>  [$data['message']]];
+                $error = ['error' =>  [$data,$validated]];
                 return Response::error($error,null,400);
             }
         }
@@ -631,7 +666,7 @@ class StrowalletVirtualController extends Controller
         //dump($cardCharge);
        // dump($total_charge);
         //dd($payable);
-        if($payable > $myCard->amount ){
+        if($payable > $myCard->balance ){
             return back()->with(['error' => [__('Sorry, insufficient balance')]]);
         }
         $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
@@ -643,14 +678,14 @@ class StrowalletVirtualController extends Controller
             'amount'        => $amount,
             'public_key'    => $public_key
         ];
+        //dd($myCard->card_id);
 
         $client = new \GuzzleHttp\Client();
 
-        $response               = $client->request('POST', $base_url.'card_withdraw/', [
+        $response               = $client->request('POST', $base_url.'card_withdraw/?&card_id='.$myCard->card_id.'&amount='.$amount.'&public_key='.$public_key, [
             'headers'           => [
                 'accept'        => 'application/json',
             ],
-            'form_params'       => $form_params,
         ]);
 
         $result         = $response->getBody();
@@ -658,7 +693,7 @@ class StrowalletVirtualController extends Controller
             
             if(!empty($decodedResult['success'])  && $decodedResult['success'] === true){
                 //added fund amount to card
-                $myCard->amount -= $payable;
+                $myCard->balance -= $payable;
                 $myCard->save();
                 $trx_id = 'CF'.getTrxNum();
                 //
@@ -673,7 +708,7 @@ class StrowalletVirtualController extends Controller
                         'request_amount'  => getAmount($amount,4).' '.get_default_currency_code(),
                         'payable'   =>  getAmount($payable,4).' ' .get_default_currency_code(),
                         'charges'   => getAmount( $total_charge,2).' ' .get_default_currency_code(),
-                        'card_amount'  => getAmount($myCard->amount-$amount,2).' ' .get_default_currency_code(),
+                        'card_amount'  => getAmount($myCard->balance-$amount,2).' ' .get_default_currency_code(),
                         'account_amount'  => getAmount($authWalle->balance,2).' ' .get_default_currency_code(),
                         'card_pan'  =>    $myCard->masked_card,
                         'status'  => __("Success"),
@@ -687,6 +722,7 @@ class StrowalletVirtualController extends Controller
                 return redirect()->back()->with(['success' => [__('Card Funded Successfully')]]);
     
             }else{
+                dd($decodedResult);
                 return redirect()->back()->with(['error' => [@$result['message']??__("Something Went Wrong! Please Try Again")]]);
             }
         }
@@ -774,6 +810,7 @@ class StrowalletVirtualController extends Controller
             return redirect()->back()->with(['success' => [__('Card Funded Successfully')]]);
 
         }else{
+            //dd($decodedResult);
             return redirect()->back()->with(['error' => [@$decodedResult['message'].' ,'.__('Please Contact With Administration.')]]);
         }
 

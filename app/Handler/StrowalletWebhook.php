@@ -37,6 +37,10 @@ class StrowalletWebhook extends ProcessWebhookJob
         }else if($data['event'] == 'virtualcard.transaction.crossborder'){
           //$this->cardPayement($data);
         }else if($data['event'] == 'virtualcard.transaction.declined'){
+          Log::build([
+            'driver' => 'single',
+            'path' => storage_path('logs/strowallet.log'),
+          ])->info('card declined');
           $this->cardPayementFailed($data);
         }
 

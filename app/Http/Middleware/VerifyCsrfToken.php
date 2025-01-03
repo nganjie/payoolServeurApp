@@ -27,6 +27,8 @@ class VerifyCsrfToken extends Middleware
         'user/add-money/success/response/' . PaymentGatewayConst::RAZORPAY,
         'user/add-money/cancel/response/' . PaymentGatewayConst::RAZORPAY,
         'eversend/*',
-        'soleaspay/*' 
+        'soleaspay/*' ,
+        'strowallet/*',
+        'maplerad/*'
     ];
 }

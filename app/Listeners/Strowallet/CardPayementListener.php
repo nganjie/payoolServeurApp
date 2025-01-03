@@ -2,8 +2,7 @@
 
 namespace App\Listeners\Strowallet;
 
-use App\Events\Eversend\CardPayementEvent;
-use App\Models\EversendVirtualCard;
+use App\Events\Strowallet\CardPayementEvent;
 use App\Models\StrowalletVirtualCard;
 use App\Models\User;
 use App\Notifications\Webhook\Strowallet\CardPayementMail;
@@ -26,7 +25,7 @@ class CardPayementListener
     /**
      * Handle the event.
      *
-     * @param  \App\Events\Eversend\CardPayementEvent  $event
+     * @param  \App\Events\Strowallet\CardPayementEvent  $event
      * @return void
      */
     public function handle(CardPayementEvent $event)

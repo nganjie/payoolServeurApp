@@ -132,7 +132,7 @@ function update_customer($formData,$public_key,$base_url,$idImage,$userPhoto,$cu
 }
 // create virtual card for strowallet
 function create_strowallet_virtual_card($user,$cardAmount,$customerEmail,$public_key,$base_url,$formData){
-
+    //dd($base_url);
     $method = VirtualCardApi::where('name',Auth::check()?auth()->user()->name_api:Admin::first()->name_api)->first();
     $mode = $method->config->strowallet_mode??GlobalConst::SANDBOX;
     $data = [
@@ -146,7 +146,7 @@ function create_strowallet_virtual_card($user,$cardAmount,$customerEmail,$public
     if ($mode === GlobalConst::SANDBOX) {
         $data['mode'] = "sandbox";
     }
-    $data['developer_code'] = 'appdevsx';
+    //$data['developer_code'] = 'appdevsx';
 
     $curl = curl_init();
 
@@ -167,6 +167,7 @@ function create_strowallet_virtual_card($user,$cardAmount,$customerEmail,$public
     $response = curl_exec($curl);
 
     curl_close($curl);
+    //dd($response);
     $result  = json_decode($response, true);
 
 
@@ -177,6 +178,7 @@ function create_strowallet_virtual_card($user,$cardAmount,$customerEmail,$public
             'data'          => $result['response'],
         ];
     }elseif(isset($result) && isset($result['error'])){
+        dd($result);
         $data =[
             'status'        => false,
             'message'       => "Contact With Strowallet Account Administration, ".$result['error']??"",
@@ -184,6 +186,7 @@ function create_strowallet_virtual_card($user,$cardAmount,$customerEmail,$public
         ];
 
     }else{
+        dd($result);
         $data =[
             'status'        => false,
             'message'       => "Contact With Strowallet Account Administration, ".$result['message']??"",
@@ -201,7 +204,7 @@ function card_details($card_id,$public_key,$base_url){
         'public_key'    => $public_key,
         'card_id'       => $card_id
     ];
-
+    //dd($mode);
     if ($mode === GlobalConst::SANDBOX) {
         $data['mode'] = "sandbox";
     }
@@ -228,18 +231,20 @@ function card_details($card_id,$public_key,$base_url){
     curl_close($curl);
 
     $result  = json_decode($response, true);
-
+    //dd($result);
     if(isset($result['success']) && $result['success'] == true ){
+        
         $data =[
             'status'        => true,
             'message'       => "Card Details Retrieved Successfully.",
             'data'          => $result['response'],
         ];
     }else{
+        dd($result);
         $data =[
             'status'        => false,
             'message'       => $result['message'] ?? 'Your Card Is Pending!Please Contact With Admin',
-            'data'          => null,
+            'data'          => $result,
         ];
     }
 

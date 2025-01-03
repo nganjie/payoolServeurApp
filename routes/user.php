@@ -12,6 +12,7 @@ use App\Http\Controllers\User\TransactionController;
 use App\Http\Controllers\User\AuthorizationController;
 use App\Http\Controllers\User\EversendVirtualCardController;
 use App\Http\Controllers\User\GiftCardController;
+use App\Http\Controllers\User\MapleradVirtualCardController;
 use App\Http\Controllers\User\SecurityController;
 use App\Http\Controllers\User\StripeVirtualController;
 use App\Http\Controllers\User\StrowalletVirtualController;
@@ -182,6 +183,20 @@ Route::prefix("user")->name("user.")->group(function(){
             Route::put('change/status','cardBlockUnBlock')->name('change.status');
             Route::post('make/default/remove/default','makeDefaultOrRemove')->name('make.default.or.remove');
             Route::post('eversend-card-callback','cardCallBack')->name('callBack');
+        });
+    });
+    Route::middleware('virtual_card_method:maplerad')->group(function(){
+        Route::controller(MapleradVirtualCardController::class)->prefix('maplerad-virtual-card')->name('maplerad.virtual.card.')->group(function(){
+            Route::get('/','index')->name('index');
+            Route::post('create','cardBuy')->name('create');
+            Route::post('pay/penality','payPenality')->name('pay.penality');
+            Route::post('fund','cardFundConfirm')->name('fund');
+            Route::post('withdraw','cardWithdraw')->name('withdraw');
+            Route::get('details/{card_id}','cardDetails')->name('details');
+            Route::get('transaction/{card_id}','cardTransaction')->name('transaction');
+            Route::put('change/status','cardBlockUnBlock')->name('change.status');
+            Route::post('make/default/remove/default','makeDefaultOrRemove')->name('make.default.or.remove');
+            Route::post('maplerad-card-callback','cardCallBack')->name('callBack');
         });
     });
         //virtual card strowallet

@@ -53,7 +53,7 @@ class DashboardController extends Controller
     }
     public function changeApi(Request $request){
         $validator = Validator::make($request->all(),[
-            'api_method_app'=> 'required|in:flutterwave,sudo,stripe,strowallet,soleaspay,eversend'
+            'api_method_app'=> 'required|in:flutterwave,sudo,stripe,strowallet,soleaspay,eversend,maplerad'
         ]);
         $user =User::where('id',auth()->user()->id)->first();
         

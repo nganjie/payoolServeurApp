@@ -4,6 +4,8 @@ use App\Http\Controllers\SiteController;
 use App\Http\Controllers\Api\User\AddMoneyController as UserAddMoneyController;
 use App\Http\Controllers\User\AddMoneyController;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Stripe\Stripe;
 use Stripe\Issuing\Card;
@@ -24,6 +26,7 @@ Route::webhooks('eversend/webhook','eversend');
 //Route::webhooks('eversend/webhook');
 Route::webhooks('soleaspay/webhook','soleaspay');
 Route::webhooks('strowallet/webhook','strowallet');
+Route::webhooks('maplerad/webhook','maplerad');
 //Route::name('eversend.webhook')->webhooks('eversend/webhook');
 Route::controller(SiteController::class)->group(function(){
     Route::get('/','home')->name('index');

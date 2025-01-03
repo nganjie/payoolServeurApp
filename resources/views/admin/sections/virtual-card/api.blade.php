@@ -37,6 +37,7 @@
                             <option value="flutterwave" @if(getCurrentApi() == 'flutterwave') selected @endif>@lang('Flutterwave')</option>
                             <option value="soleaspay" @if(getCurrentApi() == 'soleaspay') selected @endif>@lang('Soleaspay')</option>
                             <option value="eversend" @if(getCurrentApi() == 'eversend') selected @endif>@lang('Eversend')</option>
+                            <option value="maplerad" @if(getCurrentApi() == 'maplerad') selected @endif>@lang('Maplerad')</option>
                         </select>
                     </div>
                     <div class="col-xl-12 col-lg-12 form-group configForm" id="flutterwave">
@@ -227,6 +228,39 @@
                                     'label'         => __('Mode'),
                                     'value'         => old('eversend_mode',@$api->config->strowallet_mode),
                                     'name'          => "eversend_mode",
+                                    'options'       => [__('Live') => global_const()::LIVE,__('Sandbox') => global_const()::SANDBOX]
+                                ])
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 form-group configForm" id="maplerad">
+                        <div class="row" >
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                                <label>{{ __("Public Key") }}*</label>
+                                <div class="input-group append">
+                                    <span class="input-group-text"><i class="las la-key"></i></span>
+                                    <input type="text" class="form--control" name="maplerad_public_key" value="{{ @$api->config->maplerad_public_key }}">
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                                <label>{{ __("Secret Key") }}*</label>
+                                <div class="input-group append">
+                                    <span class="input-group-text"><i class="las la-key"></i></span>
+                                    <input type="text" class="form--control" name="maplerad_secret_key" value="{{ @$api->config->maplerad_secret_key }}">
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                                <label>{{ __("Base Url") }}*</label>
+                                <div class="input-group append">
+                                    <span class="input-group-text"><i class="las la-link"></i></span>
+                                    <input type="text" class="form--control" name="maplerad_url" value="{{ @$api->config->maplerad_url }}">
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                                @include('admin.components.form.switcher', [
+                                    'label'         => __('Mode'),
+                                    'value'         => old('maplerad_mode',@$api->config->maplerad_mode),
+                                    'name'          => "maplerad_mode",
                                     'options'       => [__('Live') => global_const()::LIVE,__('Sandbox') => global_const()::SANDBOX]
                                 ])
                             </div>

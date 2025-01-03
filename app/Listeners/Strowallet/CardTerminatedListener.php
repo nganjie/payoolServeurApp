@@ -2,8 +2,7 @@
 
 namespace App\Listeners\Strowallet;
 
-use App\Events\Eversend\CardTerminatedEvent;
-use App\Models\EversendVirtualCard;
+use App\Events\Strowallet\CardTerminatedEvent;
 use App\Models\StrowalletVirtualCard;
 use App\Models\User;
 use App\Notifications\Webhook\Strowallet\CardTerminatedMail;
@@ -26,7 +25,7 @@ class CardTerminatedListener
     /**
      * Handle the event.
      *
-     * @param  \App\Events\Eversend\CardTerminatedEvent  $event
+     * @param  \App\Events\Strowallet\CardTerminatedEvent  $event
      * @return void
      */
     public function handle(CardTerminatedEvent $event)

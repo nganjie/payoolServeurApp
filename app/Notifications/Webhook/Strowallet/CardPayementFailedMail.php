@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications\Webhook;
+namespace App\Notifications\Webhook\Strowallet;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

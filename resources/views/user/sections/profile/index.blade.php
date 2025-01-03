@@ -74,11 +74,10 @@
                                     <div class="col-xl-6 col-lg-6 form-group">
                                         <label>{{ __("Phone") }}</label>
                                         <div class="input-group">
-                                            <div class="input-group-text phone-code">+{{ auth()->user()->mobile_code }}</div>
+                                            <div class="input-group-text phone-code">{{ auth()->user()->mobile_code }}</div>
                                             <input class="phone-code" type="hidden" name="phone_code" value="{{ auth()->user()->mobile_code }}" />
                                             <input type="text" class="form--control" placeholder="{{ __("Enter Phone") }}" name="phone" value="{{ old('phone',auth()->user()->mobile) }}">
                                         </div>
-
                                     </div>
                                     <div class="col-xl-6 col-lg-6 form-group">
                                         @include('admin.components.form.input',[

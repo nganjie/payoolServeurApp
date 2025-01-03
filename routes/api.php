@@ -31,7 +31,6 @@ use App\Http\Controllers\Api\User\WithdrawController;
 |
 */
 
-
 Route::get('clear-cache', function() {
     Artisan::call('cache:clear');
     Artisan::call('config:clear');

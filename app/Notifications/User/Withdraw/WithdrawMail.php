@@ -57,7 +57,7 @@ class WithdrawMail extends Notification
                     ->greeting(__("Hello")." ".$user->fullname." !")
                     ->subject(__("Virtual Card (Withdraw Amount)")." ". $data->card_pan.' ')
                     ->line(__("Withdraw Money Information").", ".$data->card_name." ,".__("Details Of Withdraw Money").":")
-                    ->line(__("TRX ID").": " .$trx_id)
+                    ->line(__("TRX ID").": " .$data->trx_id)
                     ->line(__("Request Amount").": " .$data->request_amount)
                     //->line(__("Exchange Rate").": " ." 1 ". get_default_currency_code().' = '. getAmount($data->gateway_rate,2).' '.$data->gateway_currency)
                     ->line(__("Fees & Charges").": " .$data->charges)

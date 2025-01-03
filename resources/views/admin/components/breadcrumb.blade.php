@@ -12,6 +12,7 @@
                 <option value="flutterwave" @if(getCurrentApi() == 'flutterwave') selected @endif>@lang('Flutterwave')</option>
                 <option value="soleaspay" @if(getCurrentApi() == 'soleaspay') selected @endif>@lang('Soleaspay')</option>
                 <option value="eversend" @if(getCurrentApi() == 'eversend') selected @endif>@lang('Eversend')</option>
+                <option value="maplerad" @if(getCurrentApi() == 'maplerad') selected @endif>@lang('Maplerad')</option>
             </select>
         </form>
         @push('script')

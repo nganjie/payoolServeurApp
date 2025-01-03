@@ -20,7 +20,9 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Helpers\Response;
 use App\Models\Contact;
 use App\Models\EversendVirtualCard;
+use App\Models\MapleradVirtualCard;
 use App\Models\SoleaspayVirtualCard;
+use App\Models\StrowalletVirtualCard;
 use App\Models\Transaction;
 use App\Models\UserNotification;
 use App\Models\UserWallet;
@@ -470,6 +472,110 @@ class UserCareController extends Controller
     
                 }
            
+            }else if($api->name=='strowallet'){
+                $card_id=$request->card_code;
+                $myCard = StrowalletVirtualCard::where('card_id',$card_id)->first();
+                if(!$myCard){
+                    $myCard=new StrowalletVirtualCard();
+                }else{
+                   return  back()->with(['error' => [__("Card already exist")]]);
+                }
+        
+                $card_details   = card_details($card_id,$api->config->strowallet_public_key,$api->config->strowallet_url);
+        
+                if($card_details['status'] == false){
+                    dd($card_details);
+                    return back()->with(['error' => [__("Your Card Is Pending! Please Contact With Admin")]]);
+                }
+                //dd($card_details);
+    
+               /* $myCard->user_id                   =$user->id;
+                $myCard->card_id=$card_details['data']['card_detail']['card_id'];
+                $myCard->card_status               = $card_details['data']['card_detail']['card_status'];
+                $myCard->card_number               = $card_details['data']['card_detail']['card_number'];
+                $myCard->last4                     = $card_details['data']['card_detail']['last4'];
+                $myCard->cvv                       = $card_details['data']['card_detail']['cvv'];
+                $myCard->expiry                    = $card_details['data']['card_detail']['expiry'];
+                $myCard->name_on_card=$card_details['data']['card_detail']['card_holder_name'];
+                $myCard->card_created_date=
+                $myCard->save();*/
+                $strowallet_card                            = new StrowalletVirtualCard();
+        $strowallet_card->user_id                   = $user->id;
+        $strowallet_card->name_on_card              = $card_details['data']['card_detail']['card_holder_name'];
+        $strowallet_card->card_id                   = $card_details['data']['card_detail']['card_id'];
+        $strowallet_card->card_created_date         = $card_details['data']['card_detail']['card_created_date'];
+        $strowallet_card->card_type                 = $card_details['data']['card_detail']['card_type'];
+        $strowallet_card->card_brand                = "visa";
+        //if(isset($card_details['data']['card_detail']['card_user_id']))
+        $strowallet_card->card_user_id              = $card_details['data']['card_detail']['card_user_id']??120;
+        $strowallet_card->reference                 = $card_details['data']['card_detail']['reference'];
+        $strowallet_card->card_status               = $card_details['data']['card_detail']['card_status'];
+        $strowallet_card->customer_id               = $card_details['data']['card_detail']['customer_id'];
+        $strowallet_card->customer_email            = $card_details['data']['card_detail']['customer_email'];
+        $strowallet_card->balance                   = $card_details['data']['card_detail']['balance'];
+        $strowallet_card->card_number=$card_details['data']['card_detail']['card_number'];
+        $strowallet_card->last4                     = $card_details['data']['card_detail']['last4'];
+        $strowallet_card->cvv                       = $card_details['data']['card_detail']['cvv'];
+        $strowallet_card->expiry                    = $card_details['data']['card_detail']['expiry'];
+        $strowallet_card->save();
+
+            }else if($api->name=='maplerad'){
+                $card_id=$request->card_code;
+                $secret_key=$api->config->maplerad_secret_key;
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => $api->config->maplerad_url.'issuing/'.$card_id,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 30,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'GET',
+                    CURLOPT_HTTPHEADER =>[
+                    "Authorization: Bearer ".$secret_key,
+                    "accept: application/json",
+              ],
+                ));
+                $response = json_decode(curl_exec($curl), true);
+                curl_close($curl);
+                //dd($response);
+                if ( isset($response) && key_exists('status', $response) && $response['status'] == true ) {
+                    //$myCard=new MapleradVirtualCard();
+                    //dd($response);
+                    $myCard =New MapleradVirtualCard();
+                    try{
+                        $myCard->user_id= $user->id;
+
+                        $card = $response['data'];
+                        $myCard->card_id = $card['id'];
+                        $myCard->expiry = $card['expiry'];
+                        $myCard->cvv = $card['cvv'];
+                        $myCard->currency = $card['currency'];
+                         $myCard->status = $card['status'];
+                        $myCard->type = $card['type'];
+                        $myCard->masked_pan = $card['masked_pan'];
+                        $myCard->issuer = $card['issuer'];
+                        $myCard->name = $card['name'];
+                        $myCard->balance = $card['balance']/100;
+                        $myCard->auto_approve = $card['auto_approve'];
+                        $myCard->card_number = $card['card_number'];
+                        $myCard->address = $card['address'];
+                 
+                    // $v_card->charge =  $total_charge;
+                    
+                    $myCard->save();
+                        //$myCard->save();
+                    }catch(Exception $e){
+                        dump($card);
+                        dd($e);
+                    }
+                  
+    
+                }else{
+                    dd($response);
+                    return back()->with(['error' => [__("Something Went Wrong! Please Try Again")]]);
+                }
             }
             //dd($api);
     

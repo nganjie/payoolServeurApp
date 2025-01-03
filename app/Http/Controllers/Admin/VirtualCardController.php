@@ -49,7 +49,7 @@ class VirtualCardController extends Controller
     }
     public function cardApiChange(Request $request){
         $validator = Validator::make($request->all(),[
-            'api_method_app'=> 'required|in:flutterwave,sudo,stripe,strowallet,soleaspay,eversend'
+            'api_method_app'=> 'required|in:flutterwave,sudo,stripe,strowallet,soleaspay,eversend,maplerad'
         ]);
         $admin =Admin::where('id',auth()->user()->id)->first();
         
@@ -81,7 +81,7 @@ class VirtualCardController extends Controller
     public function cardApiUpdate(Request $request){
         //dd($request);
         $validator = Validator::make($request->all(), [
-            'api_method'                => 'required|in:flutterwave,sudo,stripe,strowallet,soleaspay,eversend',
+            'api_method'                => 'required|in:flutterwave,sudo,stripe,strowallet,soleaspay,eversend,maplerad',
             'flutterwave_secret_key'    => 'required_if:api_method,flutterwave',
             'flutterwave_secret_hash'   => 'required_if:api_method,flutterwave',
             'flutterwave_url'           => 'required_if:api_method,flutterwave',
@@ -106,6 +106,10 @@ class VirtualCardController extends Controller
             'eversend_secret_key'     => 'required_if:api_method,eversend',
             'eversend_url'            => 'required_if:api_method,eversend',
             'eversend_mode'                 => 'required_if:api_method,eversend',
+            'maplerad_public_key'     => 'required_if:api_method,maplerad',
+            'maplerad_secret_key'     => 'required_if:api_method,maplerad',
+            'maplerad_url'            => 'required_if:api_method,maplerad',
+            'maplerad_mode'                 => 'required_if:api_method,maplerad',
             'image'                     => "nullable|mimes:png,jpg,jpeg,webp,svg",
             'nb_trx_failled'=>'required|integer',
             'penality_price'=>'required|numeric|required_if:is_activate_penality,1',

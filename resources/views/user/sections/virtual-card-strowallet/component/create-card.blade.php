@@ -11,7 +11,7 @@
             <div class="col-lg-12">
                 <div class="form-group">
                     <label>{{ __("Card Holder's Name") }}<span>*</span></label>
-                    <input type="text" class="form--control" placeholder="{{ __("Enter Card Holder's Name") }}" name="name_on_card" value="{{ old('name_on_card') }}" required>
+                    <input type="text" class="form--control" placeholder="{{ __("Enter Card Holder's Name") }}" name="name_on_card" value="{{ old('name_on_card',auth()->user()->username) }}" required>
                 </div>
                 <div class="form-group">
                     <label>{{__("Card Amount")}}<span>*</span></label>
@@ -24,6 +24,14 @@
                 <div class="note-area d-flex justify-content-between">
                     <div class="d-block limit-show">--</div>
                     <div class="d-block fees-show">--</div>
+                </div>
+                <div class="preview-item d-flex justify-content-between">
+                    <div class="preview-content">
+                        <span>{{__("Total Payable")}}</span>
+                    </div>
+                    <div class="preview-content">
+                        <p class="payable-total">--</p>
+                    </div>
                 </div>
                   <div class="button pt-3">
                     <button type="submit" class="btn btn--base w-100 btn-loading buyBtn">{{ __("Confirm") }}</button>
@@ -54,16 +62,17 @@
                 <p class="fees">--</p>
             </div>
         </div>
-
-
         <div class="preview-item d-flex justify-content-between">
             <div class="preview-content">
-                <span>{{__("Total Payable Amount")}}</span>
+                <span>{{__("Total Payable")}}</span>
             </div>
             <div class="preview-content">
                 <p class="payable-total">--</p>
             </div>
         </div>
+
+
+        
 
     </div>
 </div>

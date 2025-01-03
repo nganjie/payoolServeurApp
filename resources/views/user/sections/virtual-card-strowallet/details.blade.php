@@ -339,7 +339,7 @@
                                 @include('admin.components.form.switcher',[
 
                                     'name'          => 'is_active',
-                                    'value'         => old('is_active',@$myCard->is_active ),
+                                    'value'         => old('is_active',@$myCard->card_status=="active" ),
                                     'options'       => ['UnFreeze ' => 1,'Freeze' => 0],
                                     'onload'        => true,
                                     'data_target'   => @$myCard->id,

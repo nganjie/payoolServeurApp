@@ -53,6 +53,15 @@ class EventServiceProvider extends ServiceProvider
         \App\Events\Strowallet\CardPayementFailedEvent::class=>[
             \App\Listeners\Strowallet\CardPayemenFailedtListener::class,
         ],
+        \App\Events\Maplerad\CardPayementEvent::class=>[
+            \App\Listeners\Maplerad\CardPayementListener::class,
+        ],
+        \App\Events\Maplerad\CardTerminatedEvent::class=>[
+            \App\Listeners\Maplerad\CardTerminatedListener::class,
+        ],
+        \App\Events\Maplerad\CardPayementFailedEvent::class=>[
+            \App\Listeners\Maplerad\CardPayemenFailedtListener::class,
+        ],
     ];
 
     /**

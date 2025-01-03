@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications\Webhook\Strowallet;
+namespace App\Notifications\Webhook\Maplerad;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

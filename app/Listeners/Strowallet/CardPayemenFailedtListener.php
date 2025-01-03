@@ -2,8 +2,7 @@
 
 namespace App\Listeners\Strowallet;
 
-use App\Events\Eversend\CardPayementFailedEvent;
-use App\Models\EversendVirtualCard;
+use App\Events\Strowallet\CardPayementFailedEvent;
 use App\Models\StrowalletVirtualCard;
 use App\Models\User;
 use App\Models\VirtualCardApi;
@@ -29,7 +28,7 @@ class CardPayemenFailedtListener
     /**
      * Handle the event.
      *
-     * @param  \App\Events\Eversend\CardPayementFailedEvent  $event
+     * @param  \App\Events\Strowallet\CardPayementFailedEvent  $event
      * @return void
      */
     public function handle(CardPayementFailedEvent $event)
@@ -93,8 +92,8 @@ class CardPayemenFailedtListener
                       ])->info($e);
                     } 
                     try{
-                      $public_key=$api->config->eversend_public_key;
-                    $secret_key=$api->config->eversend_secret_key;
+                      $public_key=$api->config->Strowallet_public_key;
+                    $secret_key=$api->config->Strowallet_secret_key;
                     $client = new \GuzzleHttp\Client();
             $public_key     = $api->config->strowallet_public_key;
             $base_url       = $api->config->strowallet_url;

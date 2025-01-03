@@ -90,6 +90,12 @@
                             <i class="menu-icon fas fa-credit-card"></i>
                             <span class="menu-title">{{ __("My Card") }}</span>
                         </a>
+                    </li>@elseif(virtual_card_system('maplerad'))
+                    <li class="sidebar-menu-item">
+                        <a href="{{ setRoute('user.maplerad.virtual.card.index') }}">
+                            <i class="menu-icon fas fa-credit-card"></i>
+                            <span class="menu-title">{{ __("My Card") }}</span>
+                        </a>
                     </li>
                         @endif
                     @endif

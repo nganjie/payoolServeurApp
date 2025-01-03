@@ -26,6 +26,7 @@ use App\Models\Admin\PaymentGateway;
 use App\Models\Admin\SiteSections;
 use App\Models\ApiApp;
 use App\Models\EversendVirtualCard;
+use App\Models\MapleradVirtualCard;
 use App\Models\SoleaspayVirtualCard;
 use App\Models\StripeVirtualCard;
 use App\Models\StrowalletVirtualCard;
@@ -1838,6 +1839,10 @@ function activeCardSystem(){
         $virtual_cards = EversendVirtualCard::where('user_id',auth()->user()->id)->count();
         $active_cards =  EversendVirtualCard::where('user_id',auth()->user()->id)->where('is_non_subscription',1)->count();
         $inactive_cards = EversendVirtualCard::where('user_id',auth()->user()->id)->where('is_non_subscription',0)->count();
+    }elseif(virtual_card_system('maplerad') == "maplerad"){
+        $virtual_cards = MapleradVirtualCard::where('user_id',auth()->user()->id)->count();
+        $active_cards =  MapleradVirtualCard::where('user_id',auth()->user()->id)->where('status','active')->count();
+        $inactive_cards = MapleradVirtualCard::where('user_id',auth()->user()->id)->where('status','active')->count();
     }
     //dd($virtual_cards);
     $virtual_card_info =[
