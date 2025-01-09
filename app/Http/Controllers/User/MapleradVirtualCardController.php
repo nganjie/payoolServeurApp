@@ -108,8 +108,8 @@ class MapleradVirtualCardController extends Controller
            }
         }
         $page_title = __("Virtual Card");
-        $myCards = MapleradVirtualCard::where('user_id',auth()->user()->id)->get();
-        $totalCards = MapleradVirtualCard::where('user_id',auth()->user()->id)->count();
+        $myCards = MapleradVirtualCard::where('user_id',auth()->user()->id)->where('is_deleted',false)->get();
+        $totalCards = MapleradVirtualCard::where('user_id',auth()->user()->id)->where('is_deleted',false)->count();
         $cardCharge = TransactionSetting::where('slug','virtual_card_'.auth()->user()->name_api)->where('status',1)->first();
         $cardReloadCharge = TransactionSetting::where('slug','reload_card_'.auth()->user()->name_api)->where('status',1)->first();
         $cardWithdrawCharge = TransactionSetting::where('slug','withdraw_card_'.auth()->user()->name_api)->where('status',1)->first();
@@ -130,6 +130,15 @@ class MapleradVirtualCardController extends Controller
         $cardWithdrawCharge = TransactionSetting::where('slug','withdraw_card_'.auth()->user()->name_api)->where('status',1)->first();
         return view('user.sections.virtual-card-maplerad.details',compact('page_title','myCard','cardApi','cardWithdrawCharge'));
     }
+    public function deleteCard(Request $request){
+        $myCard = MapleradVirtualCard::where('id',$request->card_id)->first();
+        if(!$myCard){
+            return back()->with(['error' => [__('Something Is Wrong In Your Card')]]);
+        }
+        $myCard->is_deleted=true;
+        $myCard->save();
+        return back()->with(['success' => [__('your card has been successfully deleted')]]);
+    }
 
     public function cardBuy(Request $request)
     {
@@ -138,6 +147,7 @@ class MapleradVirtualCardController extends Controller
             return back()->with(['error' => [__('the card purchase is temporary deactivate for this type of card')]]);
         }
         $user = auth()->user();
+       // dd($request->id_number);
        
         if($user->maplerad_customer == null){
             $request->validate([
@@ -145,10 +155,11 @@ class MapleradVirtualCardController extends Controller
                 'first_name'        => ['required', 'string', 'regex:/^[^0-9\W]+$/'],
                 'last_name'         => ['required', 'string', 'regex:/^[^0-9\W]+$/'],
                 'email'    => 'required|string',
-                'id_number' => 'required|numeric|max:9',
+                'id_number' => 'required|numeric',
                 'dob' => 'required|string',
                 'phone_code' => 'required|string',
                 'phone' => 'required|string',
+                'type_card'=>'required|string'
             ], [
                 'first_name.regex'  => 'The First Name field should only contain letters and cannot start with a number or special character.',
                 'last_name.regex'   => 'The Last Name field should only contain letters and cannot start with a number or special character.',
@@ -179,10 +190,16 @@ class MapleradVirtualCardController extends Controller
             return back()->with(['error' => [__('Please follow the transaction limit')]]);
         }
         //charge calculations
+        $mapleradCharge=0;
+        if($request->type_card=="business"){
+            $mapleradCharge=$cardCharge->fixed_final_charge;
+        }else{
+            $mapleradCharge=0;
+        }
         $fixedCharge = $cardCharge->fixed_charge *  $rate;
         $percent_charge = ($amount / 100) * $cardCharge->percent_charge;
         $total_charge = $fixedCharge + $percent_charge;
-        $payable = $total_charge + $amount;
+        $payable = $total_charge + $amount+$mapleradCharge;
         //dd($payable);
         if($payable > $wallet->balance ){
             return back()->with(['error' => [__('Sorry, insufficient balance')]]);
@@ -196,7 +213,7 @@ class MapleradVirtualCardController extends Controller
         $secret_key=$this->api->config->maplerad_secret_key;
 
 
-        // End 
+        //dd($request->phone_code);
         
         if ($user->maplerad_customer == null) {
             
@@ -219,7 +236,7 @@ class MapleradVirtualCardController extends Controller
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'email' => $request->email,
-                'country' => 'NG',
+                'country' => 'US',
               ]),
             CURLOPT_HTTPHEADER =>  [
                 "Authorization: Bearer ".$secret_key,
@@ -251,15 +268,15 @@ class MapleradVirtualCardController extends Controller
                 'customer_id' => $ref,
                 'dob' => Carbon::createFromFormat('Y-m-d', $request->input('dob'))->format('d-m-Y'),
                 'phone' => [
-                    'phone_country_code'=>$request->phone_code,
-                    'phone_number'=>$request->phone,
+                    'phone_country_code'=>'+1',
+                    'phone_number'=>'2068489567',
                 ],
                 'address' => [
-                    'street'=>'63 banana island',
-                    'city'=>'Isolo',
-                    'state'=>'Lagos',
-                    'country'=>'NG',
-                    'postal_code'=>'770835'
+                    'street'=>'2055 Limestone Road',
+                    'city'=>'Wilmington',
+                    'state'=>'Delaware',
+                    'country'=>'US',
+                    'postal_code'=>'19808'
                 ],
                 'identification_number'=>$request->id_number.'1290282882'
               ]),
@@ -293,13 +310,36 @@ class MapleradVirtualCardController extends Controller
         // $cardId = $response['data']['id'];
         //dd($user);
         $cardId ='';
-       
+        $data=[];
+        $addUrl="";
+       if($request->type_card=="basic"){
+        $data=[
+            'customer_id' => $ref,
+            'type' => 'VIRTUAL',
+            'currency' => $currency,
+            'auto_approve'=>true,
+            'brand' => $request->card_type,
+            'amount' => (int)$request->card_amount*100,
+            'card_pin' => '12345678'
+        ];
+        $addUrl='issuing';
+       }else{
+        $data=[
+            'name' => $request->card_name,
+            'type' => 'VIRTUAL',
+            'currency' => $currency,
+            'auto_approve'=>true,
+            'brand' => $request->card_type,
+            'amount' => (int)$request->card_amount*100,
+        ];
+        $addUrl='issuing/business';
+       }
         
         // Create a card
         //dd((int)$request->card_amount);
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->api->config->maplerad_url.'issuing',
+            CURLOPT_URL => $this->api->config->maplerad_url.$addUrl,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -308,15 +348,7 @@ class MapleradVirtualCardController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS =>
-            json_encode([
-                'customer_id' => $ref,
-                'type' => 'VIRTUAL',
-                'currency' => $currency,
-                'auto_approve'=>true,
-                'brand' => $request->card_type,
-                'amount' => (int)$request->card_amount,
-                'card_pin' => '12345678'
-            ]),
+            json_encode($data),
             CURLOPT_HTTPHEADER => [
                 "Authorization: Bearer ".$secret_key,
                 "accept: application/json",
@@ -423,6 +455,7 @@ class MapleradVirtualCardController extends Controller
         $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         $user = auth()->user();
         $myCard =  MapleradVirtualCard::where('user_id',$user->id)->where('id',$request->card_id)->first();
+        //dd($myCard);
         $amount=$this->api->penality_price;
         $wallet = UserWallet::where('user_id',$user->id)->first();
         if($amount >$wallet->balance) {
@@ -441,56 +474,30 @@ class MapleradVirtualCardController extends Controller
         $public_key=$this->api->config->maplerad_public_key;
         $secret_key=$this->api->config->maplerad_secret_key;
         $curl = curl_init();
-
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.maplerad.co/v1/auth/token',
+            CURLOPT_URL => $this->api->config->maplerad_url.'issuing/'.$myCard->card_id."/unfreeze",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
             CURLOPT_TIMEOUT => 30,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => [
-                "Authorization: Bearer ".$secret_key,
-                "accept: application/json",
-              ],
-            ));
-
-        $response = json_decode(curl_exec($curl), true);
-        if(!isset($response) || !array_key_exists('token', $response)){
-            return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
-        }
-        $token = $response['token'];
-
-        curl_close($curl);
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->api->config->maplerad_url."unfreeze",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS =>json_encode([
-                "cardId"=>$myCard->card_id
-               ]),
+            CURLOPT_CUSTOMREQUEST => 'PATCH',
                CURLOPT_HTTPHEADER =>  [
+                "Authorization: Bearer ".$secret_key,
                  "accept: application/json",
-                 "authorization: Bearer $token",
-                 "content-type: application/json"
                ],
         ));
 
         $result = json_decode(curl_exec($curl), true);
+       // return $result;
         curl_close($curl);
         //return $result;
+        //return $result;
         
-        if (isset($result)&&isset($result['success'])) {
-            if ( $result['success'] == true ) {
-                $myCard->status='active';
+        if (isset($result)&&isset($result['status'])) {
+            if ( $result['status'] == true ) {
+                $myCard->status='ACTIVE';
                 $myCard->save();
                 if($this->basic_settings->email_notification == true){
                     $notifyDataSender = [

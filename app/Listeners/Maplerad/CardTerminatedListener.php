@@ -35,7 +35,7 @@ class CardTerminatedListener
         'driver' => 'single',
         'path' => storage_path('logs/maplerad.log'),
       ])->info($data);
-      print_r($data);
+      //print_r($data);
       $card_id=$data['card_id'];
         $card = MapleradVirtualCard::where('card_id',$card_id)->first();
         if($card){

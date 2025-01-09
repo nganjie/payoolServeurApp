@@ -26,13 +26,8 @@
                         <option disabled>{{ __("Select Platfrom") }}</option>
         
                         @foreach ($currentsApi as $item)
-                        @if($item->is_active)<option value="{{$item->name}}" @if(getCurrentApi() == $item->name) selected @endif>@if($item->name=="soleaspay")
-                            {{__("Carte Basique")}}
-                            @elseif($item->name=="eversend")
-                             {{__("Carte Premium")}}
-                            @else
-                            {{$item->name}}
-                            @endif
+                        @if($item->is_active)<option value="{{$item->name}}" @if(getCurrentApi() == $item->name) selected @endif>
+                            {{$item->substitute_name}}
                         </option>
                         @endif
                     @endforeach

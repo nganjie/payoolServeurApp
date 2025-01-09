@@ -105,7 +105,7 @@ function getCurrentsApi(){
     //$cur=auth()->user()->name_api;
     //$api = VirtualCardApi::where('name',$cur->name)->first();
     //return $api->config->name;
-    $currentsApi=VirtualCardApi::select(['name','is_active'])->get();
+    $currentsApi=VirtualCardApi::select(['name','substitute_name','is_active'])->get();
     return $currentsApi;
 }
 function getCurrentApi():string{

@@ -52,6 +52,15 @@
                                         </div>
                                     </div>
                                 @endif
+                                @if($item->slug == 'virtual_card_maplerad'&&getCurrentApi()=="maplerad")
+                                    <div class="col-xxl-12 col-xl-6 col-lg-6 form-group">
+                                        <label>{{ __("Business Card Payment") }}*</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form--control" value="{{ old($data->slug.'fixed_final_charge',$data->fixed_final_charge) }}" name="{{$data->slug}}_fixed_final_charge">
+                                            <span class="input-group-text">USD</span>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>

@@ -145,8 +145,8 @@ class EversendVirtualCardController extends Controller
            }
         }
         $page_title = __("Virtual Card");
-        $myCards = EversendVirtualCard::where('user_id',auth()->user()->id)->get();
-        $totalCards = EversendVirtualCard::where('user_id',auth()->user()->id)->count();
+        $myCards = EversendVirtualCard::where('user_id',auth()->user()->id)->where('is_deleted',false)->get();
+        $totalCards = EversendVirtualCard::where('user_id',auth()->user()->id)->where('is_deleted',false)->count();
         $cardCharge = TransactionSetting::where('slug','virtual_card_'.auth()->user()->name_api)->where('status',1)->first();
         $cardReloadCharge = TransactionSetting::where('slug','reload_card_'.auth()->user()->name_api)->where('status',1)->first();
         $cardWithdrawCharge = TransactionSetting::where('slug','withdraw_card_'.auth()->user()->name_api)->where('status',1)->first();
@@ -166,6 +166,15 @@ class EversendVirtualCardController extends Controller
         //dd($myCard->user());
         $cardWithdrawCharge = TransactionSetting::where('slug','withdraw_card_'.auth()->user()->name_api)->where('status',1)->first();
         return view('user.sections.virtual-card-eversend.details',compact('page_title','myCard','cardApi','cardWithdrawCharge'));
+    }
+    public function deleteCard(Request $request){
+        $myCard = EversendVirtualCard::where('id',$request->card_id)->first();
+        if(!$myCard){
+            return back()->with(['error' => [__('Something Is Wrong In Your Card')]]);
+        }
+        $myCard->is_deleted=true;
+        $myCard->save();
+        return back()->with(['success' => [__('your card has been successfully deleted')]]);
     }
 
     public function cardBuy(Request $request)

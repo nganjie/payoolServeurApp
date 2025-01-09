@@ -2,9 +2,9 @@
 
 namespace App\Handler;
 
-use App\Events\Strowallet\CardPayementEvent;
-use App\Events\Strowallet\CardPayementFailedEvent;
-use App\Events\Strowallet\CardTerminatedEvent;
+use App\Events\Maplerad\CardPayementEvent;
+use App\Events\Maplerad\CardPayementFailedEvent;
+use App\Events\Maplerad\CardTerminatedEvent;
 use Illuminate\Support\Facades\Log;
 use Spatie\WebhookClient\Jobs\ProcessWebhookJob;
 

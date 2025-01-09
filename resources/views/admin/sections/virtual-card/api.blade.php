@@ -285,6 +285,13 @@
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
+                            <label>{{ __("substitute name") }}</label>
+                            <div class="input-group append">
+                                <span class="input-group-text"><i class="las la-key"></i></span>
+                                <input type="text" class="form--control" name="substitute_name" value="{{@$api->substitute_name}}">
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 form-group">
                             <label>{{ __("number of failed transaction attempts") }}</label>
                             <div class="input-group append">
                                 <span class="input-group-text"><i class="las la-key"></i></span>

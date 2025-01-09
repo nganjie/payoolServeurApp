@@ -123,7 +123,18 @@
                                     <small class="badge badge--warning">Pending</small>
                                 </div>
                             @endif
+                            
                             <div class="card-content d-flex justify-content-center mt-3">
+                                @if($myCard->is_penalize)
+                                <div class="card-details">
+                                    <div class="payPenalityModal" data-id="{{ $myCard->id }}">
+                                        <div class="details-icon">
+                                            <i class="fa fa-unlock"></i>
+                                        </div>
+                                        <h5 class="title">{{ __("unblock") }}</h5>
+                                    </div>
+                                </div>
+                                @else
                                 <div class="card-details">
                                     <a href="{{ setRoute('user.strowallet.virtual.card.details',$myCard->card_id) }}">
                                         <div class="details-icon">
@@ -165,6 +176,17 @@
                                         <h5 class="title">{{ __("withdraw") }}</h5>
                                     </a>
                                 </div>
+                                @endif
+                                @if($myCard->card_status=="terminated")
+                                <div class="card-details">
+                                    <a href="javascript:void(0)" class="deleteCardModal" data-id="{{ $myCard->id }}">
+                                        <div class="details-icon">
+                                            <i class="fas fa-trash"></i>
+                                        </div>
+                                        <h5 class="title">{{ __("Remove card") }}</h5>
+                                    </a>
+                                </div>
+                                @endif
                                 <div class="card-details">
                                     <a href="{{  setRoute('user.strowallet.virtual.card.transaction',$myCard->card_id) }}">
                                         <div class="details-icon">
@@ -208,6 +230,52 @@
     @endif
 </div>
 
+<div class="modal fade" id="unblockCardModal" tabindex="-1" aria-labelledby="unblockCard-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" id="unblockCard-modal">
+                <h4 class="modal-title">{{__("Unlocking your card")}}</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="las la-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <h3>{{__("Information")}}s :</h3>
+                <ol>
+                    <li>{{__("will be charged from your wallet as a penalty to unblock your card",['amount'=>$cardApi->penality_price])}}</li>
+                    <li>{{__("Please note that after unblocking, it is imperative to top up your card in order to make your payments. Without topping up, your card may be permanently deleted.")}}</li>
+                </ol>
+            </div>
+            <form action="{{setRoute('user.strowallet.virtual.card.pay.penality')}}" method="POST">
+                @csrf
+                <input type="text" value="" name="card_id" hidden>
+                <div class="modal-footer">
+                    <button type="submit" id ="payPenality" class="btn btn--base w-100 btn-loading fund-btn">{{ __("Pay the penalty") }} : {{$cardApi->penality_price}} USD</button>
+                </div>
+             </form>
+        </div>
+    </div>
+</div><div class="modal fade" id="removeCardModal" tabindex="-1" aria-labelledby="removeCard-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" id="removeCard-modal">
+                <h4 class="modal-title">{{__("Remove card")}}</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="las la-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <h3>{{__("Information")}}s :</h3>
+                <ol>
+                    <li>{{__("This card is already deleted from the bank. Are you sure you want to permanently remove it from your account? This action is irreversible and all data associated with this card will be deleted from your PayOol™ space.")}}</li>
+                </ol>
+            </div>
+            <form action="{{setRoute('user.strowallet.virtual.card.delete')}}" method="POST">
+                @csrf
+                <input type="text" value="" name="card_id" hidden>
+                <div class="modal-footer">
+                    <button type="submit" id ="deleteCard" class="btn btn--base w-100 btn-loading fund-btn">{{ __("Confirm Deletion") }}</button>
+                </div>
+             </form>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="withdrawCardModal" tabindex="-1" aria-labelledby="card-modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -321,6 +389,34 @@
             var btnText = $(this).text();
             var message     = `Are you sure to <strong>${btnText}</strong> this card?`;
             openAlertModal(actionRoute,target,message,btnText,"POST");
+        });
+        $(".payPenalityModal").on('click', function () {
+                         //$("#api_appForm").submit();
+                         console.log('ok ici')
+                         
+                         //console.log($("#api_method_app").val())
+                         //var apiName =$("#api_method_app").val()
+                         var modal =$('#unblockCardModal');
+                         modal.find('input[name=card_id]').val($(this).data('id'));
+                         $("#payPenality").click(function(){
+                            //$("#api_appForm").submit()
+                         })
+                         console.log(modal)
+                         //if(method!==apiName)
+                         modal.modal('show')
+        });
+        $(".deleteCardModal").on('click', function () {
+                         //$("#api_appForm").submit();
+                         console.log('ok ici')
+                         
+                         //console.log($("#api_method_app").val())
+                         //var apiName =$("#api_method_app").val()
+                         var modal =$('#removeCardModal');
+                         modal.find('input[name=card_id]').val($(this).data('id'));
+
+                         console.log(modal)
+                         //if(method!==apiName)
+                         modal.modal('show')
         });
     </script>
     <script>

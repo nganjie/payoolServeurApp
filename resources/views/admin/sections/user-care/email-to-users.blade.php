@@ -38,6 +38,7 @@
                             <option value="kyc_unverified">{{ __("Kyc Unverified") }}</option>
                             <option value="kyc_verified">{{ __("Kyc verified") }}</option>
                             <option value="kyc_pending">{{ __("Kyc Pending") }}</option>
+                            <option value="kyc_rejected">{{ __("Kyc Rejected") }}</option>
                             <option value="banned">{{ __("Banned Users") }}</option>
                         </select>
                     </div>

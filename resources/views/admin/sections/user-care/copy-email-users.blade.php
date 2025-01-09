@@ -22,7 +22,7 @@
 @section('content')
     <div class="custom-card">
         <div class="card-header">
-            <h6 class="title">{{ __("Copy Email Users") }}</h6>
+            <h6 class="title">{{ __("Copy mail Users") }}</h6>
         </div>
         <div class="card-body">
             <form class="card-form" action="{{ setRoute('admin.users.copy.email.users') }}" method="post">
@@ -37,6 +37,7 @@
                             <option value="email_verified">{{ __("Email Unverified") }}</option>
                             <option value="kyc_unverified">{{ __("Kyc Unverified") }}</option>
                             <option value="kyc_verified">{{ __("Kyc verified") }}</option>
+                            <option value="kyc_rejected">{{ __("Kyc Rejected") }}</option>
                             <option value="kyc_pending">{{ __("Kyc Pending") }}</option>
                             <option value="banned">{{ __("Banned Users") }}</option>
                         </select>

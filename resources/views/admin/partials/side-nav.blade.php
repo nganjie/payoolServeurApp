@@ -185,6 +185,10 @@
                                         'route'     => "admin.users.kyc.verified",
                                     ],
                                     [
+                                        'title'     => __("KYC Rejected"),
+                                        'route'     => "admin.users.kyc.rejected",
+                                    ],
+                                    [
                                         'title'     => __("KYC Pending"),
                                         'route'     => "admin.users.kyc.pending",
                                     ],

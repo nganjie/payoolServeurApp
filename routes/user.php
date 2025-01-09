@@ -136,6 +136,7 @@ Route::prefix("user")->name("user.")->group(function(){
             Route::controller(SudoVirtualCardController::class)->prefix('sudo-virtual-card')->middleware('kyc.verification.guard')->name('sudo.virtual.card.')->group(function(){
                 Route::get('/','index')->name('index');
                 Route::post('create','cardBuy')->name('create');
+                Route::post('delete','deleteCard')->name('delete');
                 Route::post('make/default/remove/default','makeDefaultOrRemove')->name('make.default.or.remove');
                 Route::get('details/{card_id}','cardDetails')->name('details');
                 Route::get('transaction/{card_id}','cardTransaction')->name('transaction');
@@ -161,6 +162,7 @@ Route::prefix("user")->name("user.")->group(function(){
         Route::controller(SoleaspayVirtualCardController::class)->prefix('soleaspay-virtual-card')->middleware('kyc.verification.guard')->name('soleaspay.virtual.card.')->group(function(){
             Route::get('/','index')->name('index');
             Route::post('create','cardBuy')->name('create');
+            Route::post('delete','deleteCard')->name('delete');
             Route::post('pay/penality','payPenality')->name('pay.penality');
             Route::post('fund','cardFundConfirm')->name('fund');
             Route::post('withdraw','cardWithdraw')->name('withdraw');
@@ -175,6 +177,7 @@ Route::prefix("user")->name("user.")->group(function(){
         Route::controller(EversendVirtualCardController::class)->prefix('eversend-virtual-card')->name('eversend.virtual.card.')->group(function(){
             Route::get('/','index')->name('index');
             Route::post('create','cardBuy')->name('create');
+            Route::post('delete','deleteCard')->name('delete');
             Route::post('pay/penality','payPenality')->name('pay.penality');
             Route::post('fund','cardFundConfirm')->name('fund');
             Route::post('withdraw','cardWithdraw')->name('withdraw');
@@ -189,6 +192,7 @@ Route::prefix("user")->name("user.")->group(function(){
         Route::controller(MapleradVirtualCardController::class)->prefix('maplerad-virtual-card')->name('maplerad.virtual.card.')->group(function(){
             Route::get('/','index')->name('index');
             Route::post('create','cardBuy')->name('create');
+            Route::post('delete','deleteCard')->name('delete');
             Route::post('pay/penality','payPenality')->name('pay.penality');
             Route::post('fund','cardFundConfirm')->name('fund');
             Route::post('withdraw','cardWithdraw')->name('withdraw');
@@ -204,6 +208,7 @@ Route::prefix("user")->name("user.")->group(function(){
             Route::controller(StrowalletVirtualController::class)->prefix('strowallet-virtual-card')->middleware('kyc.verification.guard')->name('strowallet.virtual.card.')->group(function(){
                 Route::get('/','index')->name('index');
                 Route::get('create','createPage')->name('create');
+                Route::post('delete','deleteCard')->name('delete');
                 Route::post('create/customer','createCustomer')->name('create.customer');
                 Route::post('withdraw','cardWithdraw')->name('withdraw');
                 Route::get('edit/customer','editCustomer')->name('edit.customer');

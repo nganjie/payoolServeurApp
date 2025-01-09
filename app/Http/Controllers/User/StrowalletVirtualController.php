@@ -71,7 +71,7 @@ class StrowalletVirtualController extends Controller
             $myCard->save();
             }
         }
-        $myCards        = StrowalletVirtualCard::where('user_id', auth()->user()->id)->latest()->limit($this->card_limit)->get();
+        $myCards        = StrowalletVirtualCard::where('user_id', auth()->user()->id)->where('is_deleted',false)->latest()->limit($this->card_limit)->get();
         $cardCharge       = TransactionSetting::where('slug','virtual_card_'.auth()->user()->name_api)->where('status',1)->first();
         $cardReloadCharge = TransactionSetting::where('slug','reload_card_'.auth()->user()->name_api)->where('status',1)->first();
         $transactions     = Transaction::auth()->virtualCard()->latest()->take(5)->get();
@@ -125,6 +125,15 @@ class StrowalletVirtualController extends Controller
             'cardApi',
             'cardWithdrawCharge'
         ));
+    }
+    public function deleteCard(Request $request){
+        $myCard = StrowalletVirtualCard::where('id',$request->card_id)->first();
+        if(!$myCard){
+            return back()->with(['error' => [__('Something Is Wrong In Your Card')]]);
+        }
+        $myCard->is_deleted=true;
+        $myCard->save();
+        return back()->with(['success' => [__('your card has been successfully deleted')]]);
     }
 
     /**

@@ -17,14 +17,14 @@
                         <li><img src="{{ $item->userImage }}" alt="user"></li>
                     </ul>
                 </td>
-                <td><span>{{ $item->fullname }}</span></td>
+                <td><span>{{ $item->fullname}}</span></td>
                 <td>{{ $item->email }}</td>
                 <td>
                     <span class="{{ $item->emailStatus->class }}">{{ __($item->emailStatus->value) }}</span>
                 </td>
                 <td>
                     @php
-                    $datar=["admin.users.kyc.unverified","admin.users.kyc.verified","admin.users.kyc.pending"];
+                    $datar=["admin.users.kyc.unverified","admin.users.kyc.verified","admin.users.kyc.pending","admin.users.kyc.rejected"];
                     $isKyc=in_array(Route::currentRouteName(),$datar);
                     @endphp
                     @if ($isKyc)

@@ -114,7 +114,7 @@
                             <div class="card-content d-flex justify-content-center mt-3">
                                 @if($myCard->is_penalize)
                                 <div class="card-details">
-                                    <div id="payPenalityModal">
+                                    <div class="payPenalityModal" data-id="{{ $myCard->id }}">
                                         <div class="details-icon">
                                             <i class="fa fa-unlock"></i>
                                         </div>
@@ -149,6 +149,16 @@
                                             </div>
                                             <h5 class="title">{{ __("make Default") }}</h5>
                                         </a>
+                                    @endif
+                                    @if($myCard->is_disabled)
+                                    <div class="card-details">
+                                        <a href="javascript:void(0)" class="deleteCardModal" data-id="{{ $myCard->id }}">
+                                            <div class="details-icon">
+                                                <i class="fas fa-trash"></i>
+                                            </div>
+                                            <h5 class="title">{{ __("Remove card") }}</h5>
+                                        </a>
+                                    </div>
                                     @endif
                                 </div>
                                 @if($myCard->is_active)
@@ -231,9 +241,31 @@
             </div>
             <form action="{{setRoute('user.soleaspay.virtual.card.pay.penality')}}" method="POST">
                 @csrf
-                <input type="text" value="{{$myCard->id}}" name="card_id" hidden>
+                <input type="text" value="" name="card_id" hidden>
                 <div class="modal-footer">
                     <button type="submit" id ="payPenality" class="btn btn--base w-100 btn-loading fund-btn">{{ __("Pay the penalty") }} : {{$cardApi->penality_price}} USD</button>
+                </div>
+             </form>
+        </div>
+    </div>
+</div><div class="modal fade" id="removeCardModal" tabindex="-1" aria-labelledby="removeCard-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" id="removeCard-modal">
+                <h4 class="modal-title">{{__("Remove card")}}</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="las la-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <h3>{{__("Information")}}s :</h3>
+                <ol>
+                    <li>{{__("This card is already deleted from the bank. Are you sure you want to permanently remove it from your account? This action is irreversible and all data associated with this card will be deleted from your PayOol™ space.")}}</li>
+                </ol>
+            </div>
+            <form action="{{setRoute('user.soleaspay.virtual.card.delete')}}" method="POST">
+                @csrf
+                <input type="text" value="" name="card_id" hidden>
+                <div class="modal-footer">
+                    <button type="submit" id ="deleteCard" class="btn btn--base w-100 btn-loading fund-btn">{{ __("Confirm Deletion") }}</button>
                 </div>
              </form>
         </div>
@@ -575,15 +607,30 @@
             var message     = `Are you sure to <strong>${btnText}</strong> this card?`;
             openAlertModal(actionRoute,target,message,btnText,"POST");
         });
-        $("#payPenalityModal").click(function() {
+        $(".payPenalityModal").on('click', function () {
                          //$("#api_appForm").submit();
                          console.log('ok ici')
+                         
                          //console.log($("#api_method_app").val())
                          //var apiName =$("#api_method_app").val()
                          var modal =$('#unblockCardModal');
+                         modal.find('input[name=card_id]').val($(this).data('id'));
                          $("#payPenality").click(function(){
                             //$("#api_appForm").submit()
                          })
+                         console.log(modal)
+                         //if(method!==apiName)
+                         modal.modal('show')
+        });
+        $(".deleteCardModal").on('click', function () {
+                         //$("#api_appForm").submit();
+                         console.log('ok ici')
+                         
+                         //console.log($("#api_method_app").val())
+                         //var apiName =$("#api_method_app").val()
+                         var modal =$('#removeCardModal');
+                         modal.find('input[name=card_id]').val($(this).data('id'));
+
                          console.log(modal)
                          //if(method!==apiName)
                          modal.modal('show')

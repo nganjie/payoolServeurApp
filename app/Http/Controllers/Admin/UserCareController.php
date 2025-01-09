@@ -144,6 +144,15 @@ class UserCareController extends Controller
             'users'
         ));
     }
+    public function KycRejected()
+    {
+        $page_title =__( "KYC Rejected Users");
+        $users = User::kycRejected()->orderBy('id', 'desc')->paginate(8);
+        return view('admin.sections.user-care.index', compact(
+            'page_title',
+            'users'
+        ));
+    }
 
     /**
      * Display Send Email to All Users View
@@ -231,6 +240,9 @@ class UserCareController extends Controller
             case "kyc_pending";
                 $users = User::KycPending()->get();
                 break;
+            case "kyc_rejected";
+                $users = User::KycRejected()->get();
+                break;
             case "banned";
                 $users = User::banned()->select(['username','email'])->get();
                 break;
@@ -276,6 +288,9 @@ class UserCareController extends Controller
                 break;
             case "kyc_pending";
                 $users = User::KycPending()->get();
+                break;
+            case "kyc_rejected";
+                $users = User::KycRejected()->get();
                 break;
             case "banned";
                 $users = User::banned()->get();

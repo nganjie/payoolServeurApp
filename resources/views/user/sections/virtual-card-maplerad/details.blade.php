@@ -58,7 +58,7 @@
                                      $stv=strval($myCard->expiry);
                                      $month=substr($stv,0,2);
                                      $annee=substr($stv,2,4);
-                                     $expiration=$month.'/'.$annee;
+                                     $expiration=$month.''.$annee;
                                     @endphp
                                     <div class="card-number">
                                         @foreach($card_pan as $key => $value)
@@ -69,7 +69,7 @@
                                     <div class="end"><span class="end-text">{{__("exp. end")}}:</span><span class="end-date"> {{ $expiration }}</span>
                                     </div>
                                     <div class="card-holder">{{ auth()->user()->fullname }}</div>
-                                    @if($myCard->brand === "Visa")
+                                    @if($myCard->issuer === "VISA")
                                         <div class="master">
                                             <img  src="{{ URL::to('/') }}/public/frontend/images/card/visa-logo.png"/>
                                         </div>
@@ -156,7 +156,7 @@
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span class="text--warning">{{ __((ucwords(@$myCard->brand))) }}</span>
+                            <span class="text--warning">{{ __((ucwords(@$myCard->issuer))) }}</span>
                         </div>
                     </div>
                     <div class="preview-list-item">
@@ -181,12 +181,12 @@
                                     <i class="las la-hourglass-end "></i>
                                 </div>
                                 <div class="preview-list-user-content">
-                                    <span>{{ __("Account Id") }}</span>
+                                    <span>{{ __("Card") }}</span>
                                 </div>
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span>{{ @$myCard->owner_id }}</span>
+                            <span>{{ @$myCard->type }}</span>
                         </div>
                     </div>
                     <div class="preview-list-item">
@@ -202,7 +202,7 @@
                         </div>
                         <div class="preview-list-right">
                             @php
-                            $card_pan = str_split($myCard->number, 4);
+                            $card_pan = str_split($myCard->card_number, 4);
                            @endphp
                                @foreach($card_pan as $key => $value)
                                <span>{{ @$value }}</span>
@@ -221,7 +221,7 @@
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span>{{ @$myCard->mask }}</span>
+                            <span>{{ @$myCard->masked_pan }}</span>
                         </div>
                     </div>
 
@@ -237,7 +237,7 @@
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span>{{ __(@$myCard->security_code) }}</span>
+                            <span>{{ __(@$myCard->cvv) }}</span>
                         </div>
                     </div>
                     <div class="preview-list-item">
@@ -268,21 +268,6 @@
                         </div>
                         <div class="preview-list-right">
                             <span>{{ __($myCard->address['city']) }}</span>
-                        </div>
-                    </div>
-                    <div class="preview-list-item">
-                        <div class="preview-list-left">
-                            <div class="preview-list-user-wrapper">
-                                <div class="preview-list-user-icon">
-                                    <i class="las la-city"></i>
-                                </div>
-                                <div class="preview-list-user-content">
-                                    <span>{{ __("State") }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="preview-list-right">
-                            <span>{{ __($myCard->status) }}</span>
                         </div>
                     </div>
                     <div class="preview-list-item">
@@ -331,7 +316,7 @@
                                 @include('admin.components.form.switcher',[
 
                                     'name'          => 'is_active',
-                                    'value'         => old('is_active',@$myCard->status=='active' ),
+                                    'value'         => old('is_active',@$myCard->status=='ACTIVE' ),
                                     'options'       => ['Unblock' => 1,'Block' => 0],
                                     'onload'        => true,
                                     'data_target'   =>@$myCard->id,

@@ -50,6 +50,8 @@ class CardPayementMail extends Notification
         $user = $this->user;
         $data = $this->data;
         $date = Carbon::now();
+        $amount=$data["data"]['amount']/100;
+        $authAmount=$data["data"]['authorization_amount']/100;
         //dump($data);
         //dd($data->request_amount);
         $dateTime = $date->format('Y-m-d h:i:s A');
@@ -60,8 +62,8 @@ class CardPayementMail extends Notification
                     ->line(__("Message")." : ".__("you have made a payment"))
                     ->line(__("card Acceptor Name")." : ". $data["data"]['merchant']['name'])
                     ->line(__("card Acceptor City")." : ". $data["data"]['merchant']['city'])
-                    ->line(__("amount")." : ".$data["data"]['amount']."".$data['data']['currency'])
-                    ->line(__("Authorization Amount")." : ".$data["data"]['authorization_amount']."".$data['data']['currency'])
+                    ->line(__("amount")." : ".$amount."".$data['data']['currency'])
+                    ->line(__("Authorization Amount")." : ".$authAmount."".$data['data']['currency'])
                     //->line(__("Status").": ". $data["data"]['cardStatus'])
                     ->line(__("Date And Time").": " .$dateTime)
                     ->line(__('Thank you for using our application!'));

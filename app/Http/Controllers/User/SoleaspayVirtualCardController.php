@@ -151,8 +151,8 @@ class SoleaspayVirtualCardController extends Controller
             }
         }
         $page_title = __("Virtual Card");
-        $myCards = SoleaspayVirtualCard::where('user_id',auth()->user()->id)->get();
-        $totalCards = SoleaspayVirtualCard::where('user_id',auth()->user()->id)->count();
+        $myCards = SoleaspayVirtualCard::where('user_id',auth()->user()->id)->where('is_deleted',false)->get();
+        $totalCards = SoleaspayVirtualCard::where('user_id',auth()->user()->id)->where('is_deleted',false)->count();
         $cardCharge = TransactionSetting::where('slug','virtual_card_'.auth()->user()->name_api)->where('status',1)->first();
         $cardReloadCharge = TransactionSetting::where('slug','reload_card_'.auth()->user()->name_api)->where('status',1)->first();
         $transactions = Transaction::auth()->virtualCard()->latest()->take(10)->get();
@@ -172,6 +172,16 @@ class SoleaspayVirtualCardController extends Controller
         $cardWithdrawCharge = TransactionSetting::where('slug','withdraw_card_'.auth()->user()->name_api)->where('status',1)->first();
         return view('user.sections.virtual-card-soleaspay.details',compact('page_title','myCard','cardApi','cardWithdrawCharge'));
     }
+    public function deleteCard(Request $request){
+        $myCard = SoleaspayVirtualCard::where('id',$request->card_id)->first();
+        if(!$myCard){
+            return back()->with(['error' => [__('Something Is Wrong In Your Card')]]);
+        }
+        $myCard->is_deleted=true;
+        $myCard->save();
+        return back()->with(['success' => [__('your card has been successfully deleted')]]);
+    }
+    
 
     public function cardBuy(Request $request)
     {
@@ -492,10 +502,11 @@ class SoleaspayVirtualCardController extends Controller
             $token = $response['access_token'];
 
         $response = json_decode(curl_exec($curl), true);
-        if(!isset($response) || !array_key_exists('token', $response)){
+        if(!isset($response) || !array_key_exists('access_token', $response)){
+            //dd($response);
             return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
         }
-        $token = $response['token'];
+        $token = $response['access_token'];
 
         curl_close($curl);
         $curl = curl_init();

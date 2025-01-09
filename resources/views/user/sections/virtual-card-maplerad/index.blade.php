@@ -69,7 +69,7 @@
                                             $stv=strval($myCard->expiry);
                                             $month=substr($stv,0,2);
                                             $annee=substr($stv,2,4);
-                                            $expiration=$month.'/'.$annee;
+                                            $expiration=$month.''.$annee;
                                         @endphp
                                         <div class="card-number">
                                             @foreach($card_pan as $key => $value)
@@ -80,7 +80,7 @@
                                         <div class="end"><span class="end-text">{{__("exp. end")}}:</span><span class="end-date"> {{ $expiration }}</span>
                                         </div>
                                         <div class="card-holder">{{ auth()->user()->fullname }}</div>
-                                        @if($myCard->brand === "Visa")
+                                        @if($myCard->issuer === "VISA")
                                         <div class="master">
                                             <img  src="{{ URL::to('/') }}/public/frontend/images/card/visa-logo.png"/>
                                         </div>
@@ -115,7 +115,7 @@
                             <div class="card-content d-flex justify-content-center mt-3">
                                 @if($myCard->is_penalize)
                                 <div class="card-details">
-                                    <div id="payPenalityModal">
+                                    <div class="payPenalityModal" data-id="{{ $myCard->id }}">
                                         <div class="details-icon">
                                             <i class="fa fa-unlock"></i>
                                         </div>
@@ -150,6 +150,16 @@
                                         </a>
                                     @endif
                                 </div>
+                                @if($myCard->status=="TERMINATED")
+                                <div class="card-details">
+                                    <a href="javascript:void(0)" class="deleteCardModal" data-id="{{ $myCard->id }}">
+                                        <div class="details-icon">
+                                            <i class="fas fa-trash"></i>
+                                        </div>
+                                        <h5 class="title">{{ __("Remove card") }}</h5>
+                                    </a>
+                                </div>
+                                @endif
                                 @if($myCard->status=="ACTIVE")
                                 <div class="card-details">
                                     <a href="javascript:void(0)" class="fundCard" data-id="{{ $myCard->id }}">
@@ -167,6 +177,8 @@
                                         <h5 class="title">{{ __("withdraw") }}</h5>
                                     </a>
                                 </div>
+                               
+                                @endif
                                 <div class="card-details">
                                     <a href="{{  setRoute('user.maplerad.virtual.card.transaction',$myCard->card_id) }}">
                                         <div class="details-icon">
@@ -175,7 +187,6 @@
                                         <h5 class="title">{{__("Transactions")}}</h5>
                                     </a>
                                 </div>
-                                @endif
                             </div>
                         </div>
                     </div>
@@ -230,9 +241,31 @@
             </div>
             <form action="{{setRoute('user.maplerad.virtual.card.pay.penality')}}" method="POST">
                 @csrf
-                <input type="text" value="{{@$myCard->id}}" name="card_id" hidden>
+                <input type="text" value="" name="card_id" hidden>
                 <div class="modal-footer">
                     <button type="submit" id ="payPenality" class="btn btn--base w-100 btn-loading fund-btn">{{ __("Pay the penalty") }} : {{$cardApi->penality_price}} USD</button>
+                </div>
+             </form>
+        </div>
+    </div>
+</div><div class="modal fade" id="removeCardModal" tabindex="-1" aria-labelledby="removeCard-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" id="removeCard-modal">
+                <h4 class="modal-title">{{__("Remove card")}}</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="las la-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <h3>{{__("Information")}}s :</h3>
+                <ol>
+                    <li>{{__("This card is already deleted from the bank. Are you sure you want to permanently remove it from your account? This action is irreversible and all data associated with this card will be deleted from your PayOol™ space.")}}</li>
+                </ol>
+            </div>
+            <form action="{{setRoute('user.maplerad.virtual.card.delete')}}" method="POST">
+                @csrf
+                <input type="text" value="" name="card_id" hidden>
+                <div class="modal-footer">
+                    <button type="submit" id ="deleteCard" class="btn btn--base w-100 btn-loading fund-btn">{{ __("Confirm Deletion") }}</button>
                 </div>
              </form>
         </div>
@@ -311,6 +344,12 @@
                                 <code class="d-block mt-3  text--base fw-bold balance-show limit-show">--</code>
                                 <code class="d-block mt-3  text--base fw-bold balance-show">{{ __(" Balance: ") }} {{ authWalletBalance() }} {{ get_default_currency_code() }}</code>
                                </div>
+                               <div class="col-md-6 col-lg-6">
+                                <div class="form-group" id="b_card" style="display: none;">
+                                    <label>{{ __("Name Business Card") }}<span>*</span></label>
+                                    <input type="text" class="form--control" placeholder="{{ __("Name") }}" name="card_name" value="{{ auth()->user()->lastname }}" required="yes">
+                                </div>
+                            </div>
                             </div>
                             
                             <div class="row">
@@ -369,6 +408,28 @@
                                                                                                    
                                    @endif
                                    <br><br> 
+                                   <div class="col-md-12 col-lg-12  subscription-container">
+                                    <br>
+                                    <div class="d-flex">
+                                        <div class="option">
+                                            <input type="radio" id="oneTime"   name="type_card" value="basic" checked>
+                                            <label for="oneTime">
+                                                <span class="title">${{getAmount($cardCharge->fixed_charge)}} {{__("Personal Card")}}</span>
+                                                <span class="description">{{__("Create a card for your personal needs")}}</span>
+                                            </label>
+                                        </div>
+                                    
+                                        <div class="option">
+                                            <input type="radio" id="monthly"  name="type_card" value="business">
+                                            <label for="monthly">
+                                                <span class="title">${{getAmount($cardCharge->fixed_final_charge)}} {{__("Business Card")}}</span>
+                                                <span class="description">{{__("Create a card for your business")}}.</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                
 
                                 </div>
                         </div>
@@ -521,15 +582,30 @@
             var message     = `Are you sure to <strong>${btnText}</strong> this card?`;
             openAlertModal(actionRoute,target,message,btnText,"POST");
         });
-        $("#payPenalityModal").click(function() {
+        $(".payPenalityModal").on('click', function () {
                          //$("#api_appForm").submit();
                          console.log('ok ici')
+                         
                          //console.log($("#api_method_app").val())
                          //var apiName =$("#api_method_app").val()
                          var modal =$('#unblockCardModal');
+                         modal.find('input[name=card_id]').val($(this).data('id'));
                          $("#payPenality").click(function(){
                             //$("#api_appForm").submit()
                          })
+                         console.log(modal)
+                         //if(method!==apiName)
+                         modal.modal('show')
+        });
+        $(".deleteCardModal").on('click', function () {
+                         //$("#api_appForm").submit();
+                         console.log('ok ici')
+                         
+                         //console.log($("#api_method_app").val())
+                         //var apiName =$("#api_method_app").val()
+                         var modal =$('#removeCardModal');
+                         modal.find('input[name=card_id]').val($(this).data('id'));
+
                          console.log(modal)
                          //if(method!==apiName)
                          modal.modal('show')
@@ -553,6 +629,13 @@
             $('#BuyCardModal').find("input[name=card_amount]").focusout(function(){
                     enterLimit();
             });
+            $('input[type=radio][name=type_card]').change(function() {
+                //var selectedValue = $(this).val();
+                //console.log($('input[type=radio][name=isNonSubscription]:checked').val());
+                getFees();
+                getPreview();
+                //console.log("Valeur sélectionnée : " + selectedValue);
+});
             getFees();
                 getPreview()
             
@@ -588,6 +671,7 @@
                 var currencyFixedCharge = "{{getAmount($cardCharge->fixed_charge)}}";
                 var currencyPercentCharge = "{{getAmount($cardCharge->percent_charge)}}";
                 var cardName ="{{$cardCharge->slug}}";
+                var currencyFixedFinalCharge ="{{getAmount($cardCharge->fixed_final_charge)}}";
                 
                 //console.log(currencyFixedMonthCharge)
 
@@ -599,7 +683,8 @@
                     currencyMaxAmount:currencyMaxAmount,
                     currencyFixedCharge:currencyFixedCharge,
                     currencyPercentCharge:currencyPercentCharge,
-                    cardName:cardName
+                    cardName:cardName,
+                    currencyFixedFinalCharge:currencyFixedFinalCharge,
 
 
                 };
@@ -614,16 +699,24 @@
 
                 var fixed_charge = acceptVar().currencyFixedCharge;
                 var percent_charge = acceptVar().currencyPercentCharge;
+                var final_charge=acceptVar().currencyFixedFinalCharge;
 
                 if ($.isNumeric(percent_charge) && $.isNumeric(fixed_charge) && $.isNumeric(sender_amount)) {
                     // Process Calculation
-                    var optionCharge=$('#BuyCardModal').find('input[type=radio][name=isNonSubscription]:checked').val();
-                    var aversendCharge=0;
-                    //console.log('maplerad charge : ',mapleradCharge)
+                    var optionCharge=$('#BuyCardModal').find('input[type=radio][name=type_card]:checked').val();
+                    var mapleradCharge=0;
+                    //console.log('maplerad charge : ',mapleradCharge)row
+                    if(optionCharge=='business'){
+                        mapleradCharge=final_charge;
+                        //console.log($('#BuyCardModal').find('#b_card'));
+                        $('#BuyCardModal').find('#b_card').css('display','block')
+                    }else{
+                        mapleradCharge=0;
+                    }
                     var fixed_charge_calc = parseFloat(currencyRate * fixed_charge);
 
                     var percent_charge_calc = (parseFloat(sender_amount) / 100) * parseFloat(percent_charge);
-                    var total_charge = parseFloat(fixed_charge_calc) + parseFloat(percent_charge_calc);
+                    var total_charge = parseFloat(fixed_charge_calc) + parseFloat(percent_charge_calc)+parseFloat(mapleradCharge);
                     total_charge = parseFloat(total_charge).toFixed(2);
                     // return total_charge;
                     return {

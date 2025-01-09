@@ -50,6 +50,7 @@ class CardTerminatedMail extends Notification
         $user = $this->user;
         $data = $this->data;
         $date = Carbon::now();
+        $amount =$data['data']['amount']/100;
         //dump($data);
         //dd($data->request_amount);
         $dateTime = $date->format('Y-m-d h:i:s A');
@@ -59,7 +60,7 @@ class CardTerminatedMail extends Notification
                     ->line(__("Card Information").", ".$data["card"]["masked_pan"])
                     ->line(__("Message")." : ".__("your virtual card has been deleted"))
                     ->line(__("Status").": ". __('isTerminated'))
-                    ->line(__("amount").": ".$data['data']['amount'])
+                    ->line(__("amount").": ".$amount)
                     ->line(__("reason").": ". $data['data']['reason'])
                     ->line(__("reference").": ". $data['data']['reference'])
                     ->line(__("Date And Time").": " .$dateTime)

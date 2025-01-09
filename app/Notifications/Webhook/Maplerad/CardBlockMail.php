@@ -50,6 +50,7 @@ class CardBlockMail extends Notification
         $user = $this->user;
         $data = $this->data;
         $date = Carbon::now();
+        $amount =$data["data"]['amount']/100;
         //dump($data);
         //dd($data->request_amount);
         $dateTime = $date->format('Y-m-d h:i:s A');
@@ -63,7 +64,7 @@ class CardBlockMail extends Notification
                     ->line(__("warning").': '.__("Your card has been blocked, you must go to your payool account to pay a fine of to be able to unblock it",['amount'=>$data['amande']]))
                     ->line(__("card Acceptor Name")." : ". $data["data"]['merchant']['name'])
                     ->line(__("card Acceptor City")." : ". $data["data"]['merchant']['city'])
-                    ->line(__("amount")." : ".$data["data"]['amount']."".$data['data']['currency'])
+                    ->line(__("amount")." : ".$amount."".$data['data']['currency'])
                     ->line(__("Authorization Amount")." : ".$data["data"]['authorization_amount']."".$data['data']['currency'])
                     ->line(__("Date And Time").": " .$dateTime)
                     ->line(__('Thank you for using our application!'));

@@ -86,6 +86,9 @@ class User extends Authenticatable
     public function scopeKycVerified($query) {
         return $query->where("kyc_verified",GlobalConst::VERIFIED);
     }
+    public function scopeKycRejected($query) {
+        return $query->where("kyc_verified",GlobalConst::REJECTED);
+    }
 
     public function scopeKycUnverified($query)
     {

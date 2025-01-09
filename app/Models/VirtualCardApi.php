@@ -21,6 +21,7 @@ class VirtualCardApi extends Model
         'is_withdraw'=>'boolean',
         'nb_trx_failled'=>'integer',
         'penality_price'=>'double',
-        'is_activate_penality'=>'boolean'
+        'is_activate_penality'=>'boolean',
+        'substitute_name'=>'string',
     ];
 }
