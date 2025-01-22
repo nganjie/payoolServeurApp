@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Auth\Events\Registered;
 use App\Models\User;
+use App\Models\VirtualCardApi;
 use App\Traits\User\RegisteredUsers;
 use Illuminate\Support\Facades\Hash;
 
@@ -78,7 +79,9 @@ class RegisterController extends Controller
                                                 'state' => '',
                                                 'address' => '',
                                         ];
-
+        $validated['name_api']=VirtualCardApi::where('name','maplerad')->first()->name;
+        //dd($validated['name_api']);
+        //dd($validated);
         event(new Registered($user = $this->create($validated)));
         $this->guard()->login($user);
 

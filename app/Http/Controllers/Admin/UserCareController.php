@@ -759,12 +759,18 @@ class UserCareController extends Controller
         if($user->kyc == null) return back()->with(['error' => [__('User KYC information not found')]]);
 
         try{
+            //dd($this->basic_settings->email_notification);
             $user->update([
                 'kyc_verified'  => GlobalConst::REJECTED,
             ]);
             $user->kyc->update([
                 'reject_reason' => $request->reason,
             ]);
+            try{
+                if( $this->basic_settings->email_notification == true){
+                    $user->notify(new Rejected($user,$request->reason));
+                }
+            }catch(Exception $e){}
         }catch(Exception $e) {
             $user->update([
                 'kyc_verified'  => GlobalConst::PENDING,
@@ -772,11 +778,7 @@ class UserCareController extends Controller
             $user->kyc->update([
                 'reject_reason' => null,
             ]);
-            try{
-                if( $this->basic_settings->email_notification == true){
-                    $user->notify(new Rejected($user,$request->reason));
-                }
-            }catch(Exception $e){}
+            
             return back()->with(['error' => [__('Something went wrong! Please try again')]]);
         }
 
@@ -830,12 +832,12 @@ class UserCareController extends Controller
                     break;
 
                 case "subtract":
-                    if($user_wallet->balance >= $validated['amount']) {
+                    //if($user_wallet->balance >= $validated['amount']) {
                         $user_wallet_balance = $user_wallet->balance - $validated['amount'];
                         $user_wallet->balance -= $validated['amount'];
-                    }else {
+                   /* }else {
                         return back()->with(['error' => [__('User do not have sufficient balance')]]);
-                    }
+                    }*/
                     break;
             }
 

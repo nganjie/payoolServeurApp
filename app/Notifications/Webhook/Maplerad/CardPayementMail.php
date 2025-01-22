@@ -57,16 +57,16 @@ class CardPayementMail extends Notification
         $dateTime = $date->format('Y-m-d h:i:s A');
         return (new MailMessage)
                     ->greeting(__("Hello")." ".$user->fullname." !")
-                    ->subject(__("Virtual Card Transaction ( Payement)")." ". $data["card"]["masked_pan"].' ')
-                    ->line(__("Card Information").", ".$data["card"]["masked_pan"])
-                    ->line(__("Message")." : ".__("you have made a payment"))
-                    ->line(__("card Acceptor Name")." : ". $data["data"]['merchant']['name'])
-                    ->line(__("card Acceptor City")." : ". $data["data"]['merchant']['city'])
-                    ->line(__("amount")." : ".$amount."".$data['data']['currency'])
-                    ->line(__("Authorization Amount")." : ".$authAmount."".$data['data']['currency'])
+                    ->subject(__("Transaction par carte virtuelle (paiement)")." ". $data["card"]["masked_pan"].' ')
+                    ->line(__("Informations sur la carte").", ".$data["card"]["masked_pan"])
+                    ->line(__("Message")." : ".__("vous avez effectué un paiement"))
+                    ->line(__("Nom de l'accepteur de carte")." : ". $data["data"]['merchant']['name'])
+                    ->line(__("Ville accepteur de cartes")." : ". $data["data"]['merchant']['city'])
+                    ->line(__("Montant")." : ".$amount."".$data['data']['currency'])
+                    ->line(__("Montant de l'autorisation")." : ".$authAmount."".$data['data']['currency'])
                     //->line(__("Status").": ". $data["data"]['cardStatus'])
-                    ->line(__("Date And Time").": " .$dateTime)
-                    ->line(__('Thank you for using our application!'));
+                    ->line(__("Date et heure").": " .$dateTime)
+                    ->line(__("Merci d'utiliser notre application !"));
     }
 
     /**

@@ -55,15 +55,15 @@ class CardMaintenanceMail extends Notification
         $dateTime = $date->format('Y-m-d h:i:s A');
         return (new MailMessage)
                     ->greeting(__("Hello")." ".$user->fullname." !")
-                    ->subject(__("Virtual Card (Card Maintenance Fee Successful)")." ". $data["card"]["mask"].' ')
-                    ->line(__("Card Information").", ".$data["card"]["mask"])
+                    ->subject(__("Carte virtuelle (frais de maintenance de la carte réussis)")." ". $data["card"]["mask"].' ')
+                    ->line(__("Informations sur la carte").", ".$data["card"]["mask"])
                     ->line(__("Message")." : ".__("Subscription Renewal"))
-                    ->line(__("card Acceptor Name")." : ". $data["data"]['name'])
-                    ->line(__("card Acceptor City")." : ". $data["data"]['city'])
-                    ->line(__("balance")." : ".$data["data"]['balance']."".$data['data']['currency'])
-                    ->line(__("Status").": ". $data["data"]['cardStatus'])
-                    ->line(__("Date And Time").": " .$dateTime)
-                    ->line(__('Thank you for using our application!'));
+                    ->line(__("Nom de l'accepteur de carte")." : ". $data["data"]['name'])
+                    ->line(__("Ville accepteur de cartes")." : ". $data["data"]['city'])
+                    ->line(__("solde")." : ".$data["data"]['balance']."".$data['data']['currency'])
+                    ->line(__("Statu").": ". $data["data"]['cardStatus'])
+                    ->line(__("Date et heure").": " .$dateTime)
+                    ->line(__("Merci d'utiliser notre application !"));
     }
 
     /**

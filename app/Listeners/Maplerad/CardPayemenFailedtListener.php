@@ -34,6 +34,7 @@ class CardPayemenFailedtListener
     public function handle(CardPayementFailedEvent $event)
     {
         $data= $event->data;
+        session()->put('local', 'fr');
         Log::build([
          'driver' => 'single',
          'path' => storage_path('logs/maplerad.log'),

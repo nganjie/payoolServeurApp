@@ -149,7 +149,9 @@ class VirtualCardController extends Controller
         $api->card_details = $request->card_details;
         $api->nb_trx_failled=$request->nb_trx_failled;
         $api->nb_trx_failled=$request->nb_trx_failled;
+        //dd($request);
         if(isset($request['penality_price']))
+        $api->penality_price=$request->penality_price;
         $api->substitute_name=$request->substitute_name;
         $api->card_limit = 10000;//$request->card_limit;
         $api->config = $data;

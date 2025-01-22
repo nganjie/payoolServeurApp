@@ -55,14 +55,14 @@ class CardTerminatedMail extends Notification
         $dateTime = $date->format('Y-m-d h:i:s A');
         return (new MailMessage)
                     ->greeting(__("Hello")." ".$user->fullname." !")
-                    ->subject(__("Virtual Card (Terminated)")." ". $data["card"]["mask"].' ')
-                    ->line(__("Card Information").", ".$data["card"]["mask"])
-                    ->line(__("Message")." : ".__("your virtual card has been deleted"))
-                    ->line(__("Status").": ". __('isBlocked'))
-                    ->line(__("balanceBeforeTermination").": ". $data['data']['balanceBeforeTermination'])
-                    ->line(__("balanceCreditedIntoWallet").": ".$data['data']['balanceCreditedIntoWallet'])
-                    ->line(__("Date And Time").": " .$dateTime)
-                    ->line(__('Thank you for using our application!'));
+                    ->subject(__("Carte virtuelle (résiliée)")." ". $data["card"]["masked_pan"].' ')
+                    ->line(__("Informations sur la carte").", ".$data["card"]["masked_pan"])
+                    ->line(__("Message")." : ".__("votre carte virtuelle a été supprimée"))
+                    ->line(__("Statu").": ". __('est résilier'))
+                    ->line(__("solde avant la résiliation").": ". $data['data']['balanceBeforeTermination'])
+                    ->line(__("solde crédité sur le portefeuille").": ".$data['data']['balanceCreditedIntoWallet'])
+                    ->line(__("Date et heure").": " .$dateTime)
+                    ->line(__("Merci d'utiliser notre application !"));
     }
 
     /**

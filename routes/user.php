@@ -209,6 +209,7 @@ Route::prefix("user")->name("user.")->group(function(){
                 Route::get('/','index')->name('index');
                 Route::get('create','createPage')->name('create');
                 Route::post('delete','deleteCard')->name('delete');
+                Route::post('pay/penality','payPenality')->name('pay.penality');
                 Route::post('create/customer','createCustomer')->name('create.customer');
                 Route::post('withdraw','cardWithdraw')->name('withdraw');
                 Route::get('edit/customer','editCustomer')->name('edit.customer');
@@ -248,7 +249,9 @@ Route::prefix("user")->name("user.")->group(function(){
     //kyc
     Route::controller(AuthorizationController::class)->prefix("authorize")->name('authorize.')->group(function(){
         Route::get('kyc','showKycFrom')->name('kyc');
+        Route::get('kyc/again','showKycFromAgain')->name('kyc.again');
         Route::post('kyc/submit','kycSubmit')->name('kyc.submit');
+        Route::post('kyc/again/submit','kycSubmitAgain')->name('kyc.again.submit');
     });
     //google-2fa
     Route::controller(SecurityController::class)->prefix("security")->name('security.')->group(function(){

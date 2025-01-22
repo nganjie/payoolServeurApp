@@ -136,6 +136,7 @@ class WithdrawController extends Controller
    public function confirmMoneyOut(Request $request){
     $user = auth()->user();
     $moneyOutData = (object)session()->get('moneyoutData');
+    //dd($moneyOutData);
     $gateway = PaymentGateway::where('id', $moneyOutData->gateway_id)->first();
     $payment_fields = $gateway->input_fields ?? [];
 

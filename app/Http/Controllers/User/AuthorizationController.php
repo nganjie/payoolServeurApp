@@ -4,9 +4,11 @@ namespace App\Http\Controllers\User;
 
 use App\Constants\GlobalConst;
 use App\Http\Controllers\Controller;
+use App\Models\Admin\Admin;
 use App\Models\Admin\SetupKyc;
 use App\Models\UserAuthorization;
 use App\Notifications\User\Auth\SendAuthorizationCode;
+use App\Notifications\User\SendMail;
 use App\Providers\Admin\BasicSettingsProvider;
 use Exception;
 use Illuminate\Http\Request;
@@ -116,6 +118,18 @@ class AuthorizationController extends Controller
         }
         return view('user.sections.verify-kyc',compact("page_title","kyc_fields","user_kyc"));
     }
+    public function showKycFromAgain() {
+        $user = auth()->user();
+        $page_title = __("KYC Verification");
+        $user_kyc = SetupKyc::userKyc()->first();
+        if(!$user_kyc) return back();
+            $kyc_data = $user_kyc->fields;
+            $kyc_fields = [];
+        if($kyc_data) {
+            $kyc_fields = array_reverse($kyc_data);
+        }
+        return view('user.sections.verify-kyc-again',compact("page_title","kyc_fields","user_kyc"));
+    }
 
     public function kycSubmit(Request $request) {
 
@@ -149,9 +163,24 @@ class AuthorizationController extends Controller
             $this->generatedFieldsFilesDelete($get_values);
             return back()->with(['error' => [__('Something went wrong! Please try again')]]);
         }
+        $mailData = (object) [
+            'subject' => 'KYC en attente de validation',
+            'message' => 'L\'utilisateur '.$user->email. ' a soumis son KYC.'
+        ];
+        try{
+            $admin = Admin::where('user_type', 'ADMIN')->first();
+            $admin->notify(new SendMail($mailData));
+            /*foreach ($admins as $admin) {
+                # code...
+                $admin->notify(new SendMail($mailData));
+            }*/
+        }catch(Exception $e) {
+            return back()->with(['error' => [__("Something went wrong! Please try again")]]);
+        }
 
         return redirect()->route("user.authorize.kyc")->with(['success' => [__('KYC information successfully submitted')]]);
     }
+    
 
     public function showGoogle2FAForm() {
         $page_title = __("Authorize Google Two Factor");

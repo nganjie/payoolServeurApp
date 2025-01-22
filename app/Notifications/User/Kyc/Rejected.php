@@ -53,7 +53,7 @@ class Rejected extends Notification
 
         return (new MailMessage)
                     ->greeting(__("Hello")." ".$user->fullname." !")
-                    ->subject(__("KYC Verification"))
+                    ->subject(__("KYC rejected"))
                     ->line(__("Your KYC verification request is rejected by admin"))
                     ->line(__("Rejection Reason").": ". $this->reason)
                     ->line(__("Approved At").": " .$dateTime)

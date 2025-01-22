@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications\Webhook\Maplerad;
+namespace App\Notifications\Webhook\Strowallet;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -55,14 +55,14 @@ class CardTerminatedMail extends Notification
         $dateTime = $date->format('Y-m-d h:i:s A');
         return (new MailMessage)
                     ->greeting(__("Hello")." ".$user->fullname." !")
-                    ->subject(__("Virtual Card (Terminated)")." ". $data["card"]["card_brand"].' ')
-                    ->line(__("Card Information").", ".$data["card"]["card_brand"])
-                    ->line(__("Message")." : ".__("your virtual card has been deleted"))
-                    ->line(__("Status").": ". __('isBlocked'))
-                    ->line(__("amount").": ".$data['data']['amount'])
-                    ->line(__("balanceBeforeTermination").": ". $data['data']['balanceBeforeTermination'])
-                    ->line(__("Date And Time").": " .$dateTime)
-                    ->line(__('Thank you for using our application!'));
+                    ->subject(__("Carte virtuelle (résiliée)")." ". $data["card"]["masked_pan"].' ')
+                    ->line(__("Informations sur la carte").", ".$data["card"]["masked_pan"])
+                    ->line(__("Message")." : ".__("votre carte virtuelle a été supprimée"))
+                    ->line(__("Montant")." : ".$data['amount']." USD")
+                    ->line(__("Statu")." : ". __('est résiliée'))
+                    ->line(__("référence")." : ".$data['reference'])
+                    ->line(__("Date et heure").": " .$dateTime)
+                    ->line(__("Merci d'utiliser notre application !"));
     }
 
     /**

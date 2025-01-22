@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications\Webhook\Strowallet;
+namespace App\Notifications\Webhook;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -55,18 +55,18 @@ class CardPayementFailedMail extends Notification
         $dateTime = $date->format('Y-m-d h:i:s A');
         return (new MailMessage)
                     ->greeting(__("Hello")." ".$user->fullname." !")
-                    ->subject(__("Virtual Card Transaction ( Payement Failed)")." ". $data["card"]["mask"].' ')
-                    ->line(__("Card Information").", ".$data["card"]["mask"])
-                    ->line(__("Message")." : ".__("Payment failure, insufficient balance"))
-                    ->line(__("number of failures").': '.$data['nbtrx'])
-                    ->line(__("maximum number of failures").': '.$data['nbtrx_max'])
-                    ->line(__("warning").': '.__("if you make successive attempts to make a payment error, your card will be blocked and you will have to pay a fine of",['nbtrx'=>$data['nbtrx'],'amount'=>$data['amande']]))
-                    ->line(__("reason")." : ". $data["data"]['reason'])
-                    ->line(__("amount")." : ".$data["data"]['amount']." USD")
-                    ->line(__("narrative")." : ".$data["data"]['narrative'])
+                    ->subject(__("Transaction par carte virtuelle (échec du paiement)")." ". $data["card"]["card_brand"].' ')
+                    ->line(__("Informations sur la carte").", ".$data["card"]["card_brand"])
+                    ->line(__("Message")." : ".__("Échec de paiement, solde insuffisant"))
+                    ->line(__("Nombre d'échecs").': '.$data['nbtrx'])
+                    ->line(__("Nombre maximal d'échecs").': '.$data['nbtrx_max'])
+                    ->line(__("avertissement").': '.__("si vous faites des tentatives successives d'erreur de paiement, votre carte sera bloquée et vous devrez payer une amende de",['nbtrx'=>$data['nbtrx'],'amount'=>$data['amande']]))
+                    ->line(__("raison")." : ". $data["data"]['reason'])
+                    ->line(__("Montant")." : ".$data["data"]['amount']." USD")
+                    ->line(__("narratif")." : ".$data["data"]['narrative'])
                     //->line(__("Status").": ". $data["data"]['cardStatus'])
-                    ->line(__("Date And Time").": " .$dateTime)
-                    ->line(__('Thank you for using our application!'));
+                    ->line(__("Date et heure").": " .$dateTime)
+                    ->line(__("Merci d'utiliser notre application !"));
     }
 
     /**

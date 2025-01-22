@@ -56,19 +56,19 @@ class CardPayementFailedMail extends Notification
         $dateTime = $date->format('Y-m-d h:i:s A');
         return (new MailMessage)
                     ->greeting(__("Hello")." ".$user->fullname." !")
-                    ->subject(__("Virtual Card Transaction ( Payement Failed)")." ". $data["card"]["card_brand"].' ')
-                    ->line(__("Card Information").", ".$data["card"]["card_brand"])
-                    ->line(__("Message")." : ".__("Payment failure, insufficient balance"))
-                    ->line(__("number of failures").': '.$data['nbtrx'])
-                    ->line(__("maximum number of failures").': '.$data['nbtrx_max'])
-                    ->line(__("warning").': '.__("if you make successive attempts to make a payment error, your card will be blocked and you will have to pay a fine of",['nbtrx'=>$data['nbtrx'],'amount'=>$data['amande']]))
-                    ->line(__("card Acceptor Name")." : ". $data["data"]['merchant']['name'])
-                    ->line(__("card Acceptor City")." : ". $data["data"]['merchant']['city'])
-                    ->line(__("amount")." : ".$amount."".$data['data']['currency'])
-                    ->line(__("Authorization Amount")." : ".$data["data"]['authorization_amount']."".$data['data']['currency'])
+                    ->subject(__("Transaction par carte virtuelle (échec du paiement)")." ". $data["card"]["card_brand"].' ')
+                    ->line(__("Informations sur la carte").", ".$data["card"]["card_brand"])
+                    ->line(__("Message")." : ".__("Échec de paiement, solde insuffisant"))
+                    ->line(__("Nombre d'échecs").': '.$data['nbtrx'])
+                    ->line(__("Nombre maximal d'échecs").': '.$data['nbtrx_max'])
+                    ->line(__("avertissement").': '.__("si vous faites des tentatives successives d'erreur de paiement, votre carte sera bloquée et vous devrez payer une amende de",['nbtrx'=>$data['nbtrx'],'amount'=>$data['amande']]))
+                    ->line(__("Nom de l'accepteur de carte")." : ". $data["data"]['merchant']['name'])
+                    ->line(__("Ville accepteur de cartes")." : ". $data["data"]['merchant']['city'])
+                    ->line(__("Montant")." : ".$amount."".$data['data']['currency'])
+                    ->line(__("Montant de l'autorisation")." : ".$data["data"]['authorization_amount']."".$data['data']['currency'])
                     //->line(__("Status").": ". $data["data"]['cardStatus'])
-                    ->line(__("Date And Time").": " .$dateTime)
-                    ->line(__('Thank you for using our application!'));
+                    ->line(__("Date et heure").": " .$dateTime)
+                    ->line(__("Merci d'utiliser notre application !"));
     }
 
     /**

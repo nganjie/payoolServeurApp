@@ -24,6 +24,7 @@ class EversendWebhook extends ProcessWebhookJob
         //http_response_code(200);
         //$data = $dat['payload'];
         //Log::useDailyFiles(storage_path().'/logs/eversend.log');
+        session()->put('local', 'fr');
         Log::build([
           'driver' => 'single',
           'path' => storage_path('logs/eversend.log'),

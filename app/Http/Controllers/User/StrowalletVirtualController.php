@@ -27,6 +27,7 @@ use App\Models\User;
 use App\Notifications\Admin\ActivityNotification;
 use App\Notifications\User\VirtualCard\CreateMail;
 use App\Notifications\User\VirtualCard\Fund;
+use App\Notifications\User\VirtualCard\PayPenalityMail;
 use App\Notifications\User\Withdraw\WithdrawMail;
 use App\Providers\Admin\BasicSettingsProvider;
 use Illuminate\Support\Arr;
@@ -49,7 +50,7 @@ class StrowalletVirtualController extends Controller
     {
         $page_title     = __("Virtual Card");
         $this->api=VirtualCardApi::where('name',Auth::check()?auth()->user()->name_api:Admin::first()->name_api)->first();
-        $myCards        = StrowalletVirtualCard::where('user_id', auth()->user()->id)->latest()->limit($this->card_limit)->get();
+        $myCards        = StrowalletVirtualCard::where('user_id', auth()->user()->id)->where('is_deleted',false)->latest()->limit($this->card_limit)->get();
         $user           = auth()->user();
         $customer_card = '';//$user->strowallet_customer->customerEmail??false;
 
@@ -135,6 +136,70 @@ class StrowalletVirtualController extends Controller
         $myCard->save();
         return back()->with(['success' => [__('your card has been successfully deleted')]]);
     }
+    public function payPenality(Request $request){
+        $request->validate([
+            'card_id' => 'required|integer',
+        ]);
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
+        $user = auth()->user();
+        $myCard =  StrowalletVirtualCard::where('user_id',$user->id)->where('id',$request->card_id)->first();
+        $amount=$this->api->penality_price;
+        $wallet = UserWallet::where('user_id',$user->id)->first();
+        if($amount >$wallet->balance) {
+            return back()->with(['error' => [__('Sorry, insufficient balance')]]);
+        }
+        $baseCurrency = Currency::default();
+        $rate = $baseCurrency->rate;
+        if(!$baseCurrency){
+            return back()->with(['error' => [__('Default Currency Not Setup Yet')]]);
+        }
+        $trx_id = 'CF'.getTrxNum();
+        //dd($request);
+        $sender = $this->insertCardPenality( $trx_id,$user,$wallet,$amount, $myCard ,$amount);
+        $this->insertPenalityCardCharge($user,$sender,$myCard->masked_card,$amount);
+        
+        $card   = StrowalletVirtualCard::where('id',$request->data_target)->first();
+        $client = new \GuzzleHttp\Client();
+        $public_key     = $this->api->config->strowallet_public_key;
+        $base_url       = $this->api->config->strowallet_url;
+
+        $response = $client->request('POST', $base_url.'action/status/?action=unfreeze&card_id='.$myCard->card_id.'&public_key='.$public_key, [
+            'headers' => [
+                'accept' => 'application/json',
+            ],
+        ]);
+        $result = $response->getBody();
+        $data  = json_decode($result, true);
+        if(isset($data['status'])){
+            $myCard->is_penalize=false;
+             $myCard->save();
+            $myCard->status='active';
+            $myCard->save();
+            if($this->basic_settings->email_notification == true){
+                $notifyDataSender = [
+                    'trx_id'  => $trx_id,
+                    'title'  => __("Virtual Card (Card Unbloking)"),
+                    'request_amount'  => getAmount($amount,4).' '.get_default_currency_code(),
+                    'payable'   =>  getAmount($amount,4).' ' .get_default_currency_code(),
+                    'charges'   => getAmount( $amount,2).' ' .get_default_currency_code(),
+                    'card_amount'  => getAmount($myCard->amount,2).' ' .get_default_currency_code(),
+                    'card_pan'  =>    $myCard->masked_card,
+                    'status'  => __("Success"),
+                ];
+                try{
+                    $user->notify(new PayPenalityMail($user,(object)$notifyDataSender));
+                }catch(Exception $e){
+                    dd($e);
+                }
+            }
+                return redirect()->back()->with(['success' => [__('The penalty on your virtual card has been successfully paid.')]]);
+        }else{
+            dd($result);
+            return redirect()->back()->with(['error' => [@$response['message']??__($response['message'])]]);
+        }
+        //return $result;
+        
+}
 
     /**
      * Method for strowallet card buy page
@@ -426,7 +491,7 @@ class StrowalletVirtualController extends Controller
         $strowallet_card->customer_id               = $created_card['data']['customer_id'];
         $strowallet_card->customer_email            = $customer->customerEmail;
         $strowallet_card->save();
-        $card_details   = card_details($strowallet_card->card_id,$this->api->config->strowallet_public_key,$this->api->config->strowallet_url);
+        $card_details   = card_details($created_card['data']['card_id'],$this->api->config->strowallet_public_key,$this->api->config->strowallet_url);
         $strowallet_card->card_status               = $card_details['data']['card_detail']['card_status'];
         $strowallet_card->card_name               = $card_details['data']['card_detail']['card_name'];
         $strowallet_card->card_number               = $card_details['data']['card_detail']['card_number'];
@@ -535,6 +600,69 @@ class StrowalletVirtualController extends Controller
             DB::rollBack();
             throw new Exception(__("Something went wrong! Please try again."));
         }
+    }
+    public function insertPenalityCardCharge($user,$id,$masked_card,$amount) {
+        DB::beginTransaction();
+        try{
+            DB::table('transaction_charges')->insert([
+                'transaction_id'    => $id,
+                'percent_charge'    => 0,
+                'fixed_charge'      =>0,
+                'total_charge'      =>0,
+                'created_at'        => now(),
+            ]);
+            DB::commit();
+
+            //notification
+            $notification_content = [
+                'title'         =>"Card Unbloking",
+                'message'       => __("Unlocking your card successful Card")." : ".$masked_card.' '.getAmount($amount,2).' '.get_default_currency_code(),
+                'image'         => files_asset_path('profile-default'),
+            ];
+
+            UserNotification::create([
+                'type'      => NotificationConst::PAYPENALITY,
+                'user_id'  => $user->id,
+                'message'   => $notification_content,
+            ]);
+            DB::commit();
+        }catch(Exception $e) {
+            DB::rollBack();
+            throw new Exception(__("Something Went Wrong! Please Try Again"));
+        }
+    }
+    public function insertCardPenality( $trx_id,$user,$wallet,$amount, $myCard ,$payable) {
+        $trx_id = $trx_id;
+        $authWallet = $wallet;
+        $afterCharge = ($authWallet->balance - $amount);
+        $details =[
+            'card_info' =>   $myCard??''
+        ];
+        DB::beginTransaction();
+        try{
+            $id = DB::table("transactions")->insertGetId([
+                'user_id'                       => $user->id,
+                'user_wallet_id'                => $authWallet->id,
+                'payment_gateway_currency_id'   => null,
+                'type'                          => PaymentGatewayConst::VIRTUALCARD,
+                'trx_id'                        => $trx_id,
+                'request_amount'                => $amount,
+                'payable'                       => $payable,
+                'available_balance'             => $afterCharge,
+                'remark'                        => ucwords(remove_speacial_char(PaymentGatewayConst::CARD_PAY_PENALITY," ")),
+                'details'                       => json_encode($details),
+                'attribute'                      =>PaymentGatewayConst::RECEIVED,
+                'status'                        => true,
+                'created_at'                    => now(),
+            ]);
+            $this->updateSenderWalletBalance($authWallet,$afterCharge);
+
+            DB::commit();
+        }catch(Exception $e) {
+            DB::rollBack();
+            throw new Exception(__("Something Went Wrong! Please Try Again"));
+        }
+        return $id;
     }
     //update user balance
     public function updateSenderWalletBalance($authWallet,$afterCharge) {

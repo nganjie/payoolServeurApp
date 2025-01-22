@@ -17,6 +17,7 @@ class StrowalletWebhook extends ProcessWebhookJob
     public function handle()
     {
         $dat = json_decode($this->webhookCall, true);
+        session()->put('local', 'fr');
        // Log::info($dat);
         //http_response_code(200);
         //$data = $dat['payload'];

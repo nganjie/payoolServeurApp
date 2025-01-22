@@ -2,11 +2,11 @@
 
 namespace App\Handler;
 
-use App\Events\Eversend\CardAdjustedEvent;
-use App\Events\Eversend\CardMaintenanceEvent;
-use App\Events\Eversend\CardPayementEvent;
-use App\Events\Eversend\CardPayementFailedEvent;
-use App\Events\Eversend\CardTerminatedEvent;
+use App\Events\Soleaspay\CardAdjustedEvent;
+use App\Events\Soleaspay\CardMaintenanceEvent;
+use App\Events\Soleaspay\CardPayementEvent;
+use App\Events\Soleaspay\CardPayementFailedEvent;
+use App\Events\Soleaspay\CardTerminatedEvent;
 use Illuminate\Support\Facades\Log;
 use Spatie\WebhookClient\Jobs\ProcessWebhookJob;
 
@@ -19,10 +19,11 @@ class SoleaspayWebhook extends ProcessWebhookJob
     public function handle()
     {
         $dat = json_decode($this->webhookCall, true);
+        session()->put('local', 'fr');
        // Log::info($dat);
         //http_response_code(200);
         //$data = $dat['payload'];
-        //Log::useDailyFiles(storage_path().'/logs/eversend.log');
+        //Log::useDailyFiles(storage_path().'/logs/Soleaspay.log');
         Log::build([
           'driver' => 'single',
           'path' => storage_path('logs/soleaspay.log'),
@@ -34,15 +35,11 @@ class SoleaspayWebhook extends ProcessWebhookJob
         ])->info($data);
         
     
-       /* if ($data['eventType'] == 'card.adjusted') {
-          $this->cardAjusted($data);
-        }else if($data['eventType'] == 'card.terminated'){
-          $this->cardTerminated($data);
-        }else if($data['eventType'] == 'card.authorization'){
-          $this->cardPayement($data);
-        }else if($data['eventType'] == 'card.authDeclined'){
+        if($data['data']['operation'] == 'CARDTRANSACTION'){
+          //$this->cardPayement($data);
+        }else if($data['data']['operation'] == 'CARDDECLINE'){
           $this->cardPayementFailed($data);
-        }else if($data['eventType'] == 'card.subscriptionRenewal'){
+        }/*else if($data['operation'] == 'card.subscriptionRenewal'){
           $this->cardMaintenance($data);
         }*/
 
@@ -50,9 +47,6 @@ class SoleaspayWebhook extends ProcessWebhookJob
         http_response_code(200);
     }
 
-  public function cardAjusted($data){
-    event(new CardAdjustedEvent($data));
-  }
   public function cardTerminated($data){
     event(new CardTerminatedEvent($data));
   }
@@ -61,8 +55,5 @@ class SoleaspayWebhook extends ProcessWebhookJob
   }
   public function cardPayementFailed($data){
     event(new CardPayementFailedEvent($data));
-  }
-  public function cardMaintenance($data){
-    event(new CardMaintenanceEvent($data));
   }
 }

@@ -37,7 +37,7 @@
     @elseif (auth()->user()->kyc_verified == global_const()::REJECTED)
         <div class="unverified text--danger kyc-text d-flex align-items-center justify-content-between mb-4">
             <div class="title text--warning">{{ __("Your KYC information is rejected.") }}</div>
-            <a href="{{ setRoute('user.authorize.kyc') }}" class="btn--base">{{ __("Verify KYC") }}</a>
+            <a href="{{ setRoute('user.authorize.kyc.again') }}" class="btn--base">{{ __("Verify KYC") }}</a>
         </div>
         <div class="rejected">
             <div class="rejected-reason">{{ auth()->user()->kyc->reject_reason ?? "" }}</div>

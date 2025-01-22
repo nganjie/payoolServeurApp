@@ -50,7 +50,7 @@ class SoleaspayVirtualCardController extends Controller
         //dump($this->api);
         $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         // Update card details
-        $myCards = SoleaspayVirtualCard::where('user_id',auth()->user()->id)->get();
+        $myCards = SoleaspayVirtualCard::where('user_id',auth()->user()->id)->where('is_deleted',false)->get();
         //dump($this->api);
         //dump(Auth::check());
         //dump(auth()->user()->name_api);

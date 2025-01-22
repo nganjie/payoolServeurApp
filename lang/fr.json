@@ -1,6 +1,13 @@
 {
     "Dashboard":"Tableau de bord",
     "change card type":"changer le type de carte",
+    "Rejection Reason":"Motif du rejet",
+    "Your KYC verification request is rejected by admin":"Votre demande de vérification KYC est rejetée par l'administrateur",
+    "KYC rejected":"KYC rejeté",
+    "Approved At":"Approuvé à",
+    "Thank you for using our application!":"Merci d'utiliser notre application !",
+    "KYC Approved":"KYC Approuvé",
+    "Your KYC verification request is approved by admin":"Votre demande de vérification KYC est approuvée par l'administrateur",
 "When you switch from one card type to another, only cards matching the selected type will be visible in your account":"Lorsque vous passez d’un type de carte à un autre, seules les cartes correspondant au type sélectionné seront visibles dans votre compte",
 "is rechargeable":"est rechargeable",
 "card top-up is temporarily disabled for this card type":"la recharge de carte est temporairement désactivé pour ce type de carte",

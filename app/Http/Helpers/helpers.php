@@ -1641,7 +1641,7 @@ if(!function_exists('dateFormat')){
 }
 function virtual_card_system($name)
 {
-    $method = VirtualCardApi::where('name',Auth::check()?auth()->user()->name_api:Admin::first()->name_api)->first();
+    $method = VirtualCardApi::where('name',Auth::check()&&auth()->user()->name_api?auth()->user()->name_api:Admin::first()->name_api)->first();
     //dump($method);
     //dump($name);
     //dump(( $method->config->name == $name));

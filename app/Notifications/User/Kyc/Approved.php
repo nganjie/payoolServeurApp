@@ -52,7 +52,7 @@ class Approved extends Notification
 
         return (new MailMessage)
                     ->greeting(__("Hello")." ".$user->fullname." !")
-                    ->subject(__("KYC Verification"))
+                    ->subject(__("KYC Approved"))
                     ->line(__("Your KYC verification request is approved by admin"))
                     ->line(__("Approved At").": " .$dateTime)
                     ->line(__('Thank you for using our application!'));

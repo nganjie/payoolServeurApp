@@ -240,6 +240,7 @@ function card_details($card_id,$public_key,$base_url){
             'data'          => $result['response'],
         ];
     }else{
+        dump($data);
         dd($result);
         $data =[
             'status'        => false,

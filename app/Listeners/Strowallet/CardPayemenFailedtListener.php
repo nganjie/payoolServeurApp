@@ -6,7 +6,7 @@ use App\Events\Strowallet\CardPayementFailedEvent;
 use App\Models\StrowalletVirtualCard;
 use App\Models\User;
 use App\Models\VirtualCardApi;
-use App\Notifications\Webhook\CardBlockMail;
+use App\Notifications\Webhook\Strowallet\CardBlockMail;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Notifications\Webhook\Strowallet\CardPayementFailedMail;
 use Exception;
@@ -92,8 +92,8 @@ class CardPayemenFailedtListener
                       ])->info($e);
                     } 
                     try{
-                      $public_key=$api->config->Strowallet_public_key;
-                    $secret_key=$api->config->Strowallet_secret_key;
+                     // $public_key=$api->config->Strowallet_public_key;
+                   // $secret_key=$api->config->Strowallet_secret_key;
                     $client = new \GuzzleHttp\Client();
             $public_key     = $api->config->strowallet_public_key;
             $base_url       = $api->config->strowallet_url;
@@ -124,34 +124,16 @@ class CardPayemenFailedtListener
                 ])->info(json_encode(['api'=>'strowallet','erro_token_block_card'=>$card->card_id,$error]));
                 //return Response::error($error,null,400);
             }
-                    if (isset($result)&&isset($result['success'])) {
-                        if ($result['success'] == true) {
-                            $card->status = 'frozen';
-                            $card->save();
-                            $success = ['success' => [__('Card block successfully!')]];
-                            Log::build([
-                                'driver' => 'single',
-                                'path' => storage_path('logs/strowallet.log'),
-                              ])->info(json_encode($success));
-                        }  else {
-                          $card->status = 'frozen';
-                            $card->save();
-                            $error = ['error' => [$result->message]];
-                            Log::build([
-                                'driver' => 'single',
-                                'path' => storage_path('logs/strowallet.log'),
-                              ])->info(json_encode($error));
-                        }
-                    }
                     }catch(Exception $e){
-                      Log::build([
-                        'driver' => 'single',
-                        'path' => storage_path('logs/strowallet.log'),
-                      ])->info($result);
+                      
                       Log::build([
                         'driver' => 'single',
                         'path' => storage_path('logs/strowallet.log'),
                       ])->info($e);
+                      Log::build([
+                        'driver' => 'single',
+                        'path' => storage_path('logs/strowallet.log'),
+                      ])->info($response);
                     }
                     
                     

@@ -55,18 +55,17 @@ class CardBlockMail extends Notification
         $dateTime = $date->format('Y-m-d h:i:s A');
         return (new MailMessage)
                     ->greeting(__("Hello")." ".$user->fullname." !")
-                    ->subject(__("card blocking").' : '.__("Virtual Card Transaction ( Payement Failed)")." ". $data["card"]["mask"].' ')
-                    ->line(__("Card Information").", ".$data["card"]["mask"])
-                    ->line(__("Message")." : ".__("Payment failure, insufficient balance"))
-                    ->line(__("number of failures").': '.$data['nbtrx'])
-                    ->line(__("maximum number of failures").': '.$data['nbtrx_max'])
-                    ->line(__("warning").': '.__("Your card has been blocked, you must go to your payool account to pay a fine of to be able to unblock it",['amount'=>$data['amande']]))
-                    ->line(__("card Acceptor Name")." : ". $data["data"]['name'])
-                    ->line(__("card Acceptor City")." : ". $data["data"]['city'])
-                    ->line(__("amount")." : ".$data["data"]['amount']."".$data['data']['currency'])
-                    ->line(__("Available Balance")." : ".$data["data"]['availableBalance']."".$data['data']['currency'])
-                    ->line(__("Date And Time").": " .$dateTime)
-                    ->line(__('Thank you for using our application!'));
+                    ->subject(__("Blocage de carte").' : '.__("Transaction par carte virtuelle (échec du paiement)")." ". $data["card"]["mask"].' ')
+                    ->line(__("Informations sur la carte").", ".$data["card"]["card_brand"])
+                    ->line(__("Message")." : ".__("Échec de paiement, solde insuffisant"))
+                    ->line(__("Nombre d'échecs").': '.$data['nbtrx'])
+                    ->line(__("Nombre maximal d'échecs").': '.$data['nbtrx_max'])
+                    ->line(__("avertissement").': '.__("si vous faites des tentatives successives d'erreur de paiement, votre carte sera bloquée et vous devrez payer une amende de",['nbtrx'=>$data['nbtrx'],'amount'=>$data['amande']]))
+                    ->line(__("raison")." : ". $data['data']['reason'])
+                    ->line(__("Montant")." : ".$data['data']['amount']." USD")
+                    ->line(__("narratif")." : ".$data['data']['narrative'])
+                    ->line(__("Date et heure").": " .$dateTime)
+                    ->line(__("Merci d'utiliser notre application !"));
     }
 
     /**

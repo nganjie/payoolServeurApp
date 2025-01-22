@@ -110,6 +110,7 @@ class MoneyOutController extends Controller
         $data = Transaction::where('id',$request->id)->where('status',2)->where('type', PaymentGatewayConst::WITHDRAWMONEY)->first();
         $up['status'] = 1;
         try{
+           // dd($request->id);
            $approved = $data->fill($up)->save();
            if( $approved){
                 $notification_content = [
