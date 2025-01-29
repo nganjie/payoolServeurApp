@@ -50,7 +50,7 @@ class CardPayementMail extends Notification
         $user = $this->user;
         $data = $this->data;
         $date = Carbon::now();
-        $amount=$data["data"]['amount']/100;
+        $amount=$data["data"]['amount'];
         $authAmount=$data["data"]['authorization_amount']/100;
         //dump($data);
         //dd($data->request_amount);
@@ -60,8 +60,8 @@ class CardPayementMail extends Notification
                     ->subject(__("Transaction par carte virtuelle (paiement)")." ". $data["card"]["masked_pan"].' ')
                     ->line(__("Informations sur la carte").", ".$data["card"]["masked_pan"])
                     ->line(__("Message")." : ".__("vous avez effectué un paiement"))
-                    ->line(__("Nom de l'accepteur de carte")." : ". $data["extra_data"]['merchant']['name'])
-                    ->line(__("Ville accepteur de cartes")." : ". $data["extra_data"]['merchant']['city'])
+                    ->line(__("Nom de l'accepteur de carte")." : ". $data["data"]["extra_data"]['merchant']['name'])
+                    ->line(__("Ville accepteur de cartes")." : ". $data["data"]["extra_data"]['merchant']['city'])
                     ->line(__("Montant")." : ".$amount."".$data['data']['currency'])
                     ->line(__("Montant de l'autorisation")." : ".$authAmount."".$data['data']['currency'])
                     //->line(__("Status").": ". $data["data"]['cardStatus'])

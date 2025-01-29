@@ -151,7 +151,7 @@ class SoleaspayVirtualCardController extends Controller
             }
         }
         $page_title = __("Virtual Card");
-        $myCards = SoleaspayVirtualCard::where('user_id',auth()->user()->id)->where('is_deleted',false)->get();
+        $myCards = SoleaspayVirtualCard::where('user_id',auth()->user()->id)->where('is_deleted',false)->latest()->get();
         $totalCards = SoleaspayVirtualCard::where('user_id',auth()->user()->id)->where('is_deleted',false)->count();
         $cardCharge = TransactionSetting::where('slug','virtual_card_'.auth()->user()->name_api)->where('status',1)->first();
         $cardReloadCharge = TransactionSetting::where('slug','reload_card_'.auth()->user()->name_api)->where('status',1)->first();

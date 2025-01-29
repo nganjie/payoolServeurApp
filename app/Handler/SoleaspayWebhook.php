@@ -24,20 +24,36 @@ class SoleaspayWebhook extends ProcessWebhookJob
         //http_response_code(200);
         //$data = $dat['payload'];
         //Log::useDailyFiles(storage_path().'/logs/Soleaspay.log');
-        Log::build([
-          'driver' => 'single',
-          'path' => storage_path('logs/soleaspay.log'),
-        ])->info($dat);
         $data = $dat['payload'];
         Log::build([
           'driver' => 'single',
           'path' => storage_path('logs/soleaspay.log'),
         ])->info($data);
+        Log::build([
+          'driver' => 'single',
+          'path' => storage_path('logs/soleaspay.log'),
+        ])->info("card DATA");
+        Log::build([
+          'driver' => 'single',
+          'path' => storage_path('logs/soleaspay.log'),
+        ])->info($data['data']);
+        Log::build([
+          'driver' => 'single',
+          'path' => storage_path('logs/soleaspay.log'),
+        ])->info("card AMOUNT");
+        Log::build([
+          'driver' => 'single',
+          'path' => storage_path('logs/soleaspay.log'),
+        ])->info($data['data']['amount']);
         
     
         if($data['data']['operation'] == 'CARDTRANSACTION'){
           //$this->cardPayement($data);
         }else if($data['data']['operation'] == 'CARDDECLINE'){
+          Log::build([
+            'driver' => 'single',
+            'path' => storage_path('logs/soleaspay.log'),
+          ])->info("card DECLINE");
           $this->cardPayementFailed($data);
         }/*else if($data['operation'] == 'card.subscriptionRenewal'){
           $this->cardMaintenance($data);

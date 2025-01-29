@@ -50,7 +50,7 @@ class CardPayementFailedMail extends Notification
         $user = $this->user;
         $data = $this->data;
         $date = Carbon::now();
-        $amount =$data["data"]['amount']/100;
+        $amount =$data["data"]["data"]['amount'];
         //dump($data);
         //dd($data->request_amount);
         $dateTime = $date->format('Y-m-d h:i:s A');
@@ -62,8 +62,8 @@ class CardPayementFailedMail extends Notification
                     ->line(__("Nombre d'échecs").': '.$data['nbtrx'])
                     ->line(__("Nombre maximal d'échecs").': '.$data['nbtrx_max'])
                     ->line(__("avertissement").': '.__("si vous faites des tentatives successives d'erreur de paiement, votre carte sera bloquée et vous devrez payer une amende de",['nbtrx'=>$data['nbtrx'],'amount'=>$data['amande']]))
-                    ->line(__("Nom de l'accepteur de carte")." : ". $data["extra_data"]['merchant']['name'])
-                    ->line(__("Ville accepteur de cartes")." : ". $data["extra_data"]['merchant']['city'])
+                    ->line(__("Nom de l'accepteur de carte")." : ". $data["data"]["extra_data"]['merchant']['name'])
+                    ->line(__("Ville accepteur de cartes")." : ". $data["data"]["extra_data"]['merchant']['city'])
                     ->line(__("Montant")." : ".$amount."USD")
                     //->line(__("Montant de l'autorisation")." : ".$data["data"]['authorization_amount']."".$data['data']['currency'])
                     //->line(__("Status").": ". $data["data"]['cardStatus'])

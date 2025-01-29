@@ -50,7 +50,7 @@ class CardTerminatedMail extends Notification
         $user = $this->user;
         $data = $this->data;
         $date = Carbon::now();
-        $amount =$data['data']['amount'];
+        $amount =$data['extra_data']['amount'];
         //dump($data);
         //dd($data->request_amount);
         $dateTime = $date->format('Y-m-d h:i:s A');

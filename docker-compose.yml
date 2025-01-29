@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  
+  payool:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    dns:
+      - 8.8.8.8  # Utilisation du DNS de Google
+      - 1.1.1.1  # DNS de Cloudflare
+    ports: 
+     - 5035:80
+     - 443:443
+    container_name: payool_app
+    volumes:
+      - .:/var/www/html
+    environment:
+      - APP_ENV="production"
+      - APP_NAME="PayOol"
+      - APP_KEY="base64:XKYVDObkNN+ScglQBDGprdv5z2cplCDPcuBsB+PSUdo="
+      - APP_DEBUG=false
+      - APP_URL="https://payool.net"
+      - APP_MODE="live"
+      - LOG_CHANNEL="stack"
+      - LOG_DEPRECATIONS_CHANNEL=null
+      - LOG_LEVEL="debug"
+      - DB_CONNECTION="mysql"
+      - DB_HOST="payool_db_host"
+      - DB_PORT="3306"
+      - DB_DATABASE="payool_test_db"
+      - DB_USERNAME="root"
+      - DB_PASSWORD="PayOol.2024"
+      - BROADCAST_DRIVER="pusher"
+      - CACHE_DRIVER="file"
+      - FILESYSTEM_DISK="local"
+      - QUEUE_CONNECTION="sync"
+      - SESSION_DRIVER="file"
+      - SESSION_LIFETIME="120"
+      - MEMCACHED_HOST="https://payool.net"
+      - REDIS_HOST="127.0.0.1"
+      - REDIS_PASSWORD=null
+      - REDIS_PORT="6379"
+      - MAIL_MAILER="smtp"
+      - MAIL_HOST="smtp.hostinger.com"
+      - MAIL_PORT="465"
+      - MAIL_USERNAME="support@payool.net"
+      - MAIL_PASSWORD="Jujutsu180@"
+      - MAIL_ENCRYPTION="ssl"
+      - MAIL_FROM_ADDRESS="support@payool.net"
+      - MAIL_FROM_NAME="PayOol™"
+      - AWS_ACCESS_KEY_ID=""
+      - AWS_SECRET_ACCESS_KEY=""
+      - AWS_DEFAULT_REGION="us-east-1"
+      - AWS_BUCKET=""
+      - AWS_USE_PATH_STYLE_ENDPOINT=false
+      - PUSHER_APP_ID="1574360"
+      - PUSHER_APP_KEY="971ccaa6176db78407bf"
+      - PUSHER_APP_SECRET="a30a6f1a61b97eb8225a"
+      - PUSHER_HOST=""
+      - PUSHER_PORT="443"
+      - PUSHER_SCHEME="https"
+      - PUSHER_APP_CLUSTER="ap2"
+      - VITE_PUSHER_APP_KEY=""
+      - VITE_PUSHER_HOST=""
+      - VITE_PUSHER_PORT="443"
+      - VITE_PUSHER_SCHEME="https"
+      - VITE_PUSHER_APP_CLUSTER="mt1"
+      - SHELL_VERBOSITY="0"
+
+    restart: unless-stopped 
+    networks:
+      - payool_network
+    depends_on:
+      - payool_db_host  
+networks:
+  payool_network:
+
+volumes:
+  db_data:
+

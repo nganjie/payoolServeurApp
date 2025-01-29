@@ -77,6 +77,22 @@ class CardPayemenFailedtListener
                     'driver' => 'single',
                     'path' => storage_path('logs/soleaspay.log'),
                   ])->info("second method");
+                  Log::build([
+                    'driver' => 'single',
+                    'path' => storage_path('logs/soleaspay.log'),
+                  ])->info("card DATA 1");
+                  Log::build([
+                    'driver' => 'single',
+                    'path' => storage_path('logs/soleaspay.log'),
+                  ])->info($data['data']);
+                  Log::build([
+                    'driver' => 'single',
+                    'path' => storage_path('logs/soleaspay.log'),
+                  ])->info("card AMOUNT 1");
+                  Log::build([
+                    'driver' => 'single',
+                    'path' => storage_path('logs/soleaspay.log'),
+                  ])->info($data['data']['amount']);
                     $card->is_penalize=true;
                     $card->save();
                     
@@ -145,7 +161,7 @@ class CardPayemenFailedtListener
               $card->is_active = 0;
               $card->save();        
           }  else {
-              $error = ['error' => [$result->message]];
+              $error = ['error' => $result['message']];
               Log::build([
                 'driver' => 'single',
                 'path' => storage_path('logs/soleaspay.log'),

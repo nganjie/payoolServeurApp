@@ -62,6 +62,12 @@ class EventServiceProvider extends ServiceProvider
         \App\Events\Maplerad\CardPayementFailedEvent::class=>[
             \App\Listeners\Maplerad\CardPayemenFailedtListener::class,
         ],
+        \App\Events\Soleaspay\CardPayementEvent::class=>[
+            \App\Listeners\Soleaspay\CardPayementListener::class,
+        ],
+        \App\Events\Soleaspay\CardPayementFailedEvent::class=>[
+            \App\Listeners\Soleaspay\CardPayemenFailedtListener::class,
+        ],
     ];
 
     /**

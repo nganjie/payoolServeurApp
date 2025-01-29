@@ -350,7 +350,7 @@ class UserCareController extends Controller
                 //dd($token);
                 $curl = curl_init();
                     curl_setopt_array($curl, array(
-                        CURLOPT_URL => $api->config->soleaspay_url.$request->card_code,
+                        CURLOPT_URL => $api->config->soleaspay_url.'0'.'?reference='.$request->card_code,
                         CURLOPT_RETURNTRANSFER => true,
                         CURLOPT_ENCODING => '',
                         CURLOPT_MAXREDIRS => 10,

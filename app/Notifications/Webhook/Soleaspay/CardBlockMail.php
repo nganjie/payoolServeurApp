@@ -50,7 +50,7 @@ class CardBlockMail extends Notification
         $user = $this->user;
         $data = $this->data;
         $date = Carbon::now();
-        $amount =$data["data"]['amount']/100;
+        $amount =$data["data"]["data"]['amount'];
         //dump($data);
         //dd($data->request_amount);
         $dateTime = $date->format('Y-m-d h:i:s A');
@@ -62,9 +62,9 @@ class CardBlockMail extends Notification
                     ->line(__("Nombre d'échecs").': '.$data['nbtrx'])
                     ->line(__("Nombre maximal d'échecs").': '.$data['nbtrx_max'])
                     ->line(__("avertissement").': '.__("Votre carte a été bloquée, vous devez vous rendre sur votre compte payool pour payer une amende de pour pouvoir la débloquer",['amount'=>$data['amande']]))
-                    ->line(__("Nom de l'accepteur de carte")." : ". $data["extra_data"]['merchant']['name'])
-                    ->line(__("Ville accepteur de cartes")." : ". $data["extra_data"]['merchant']['city'])
-                    ->line(__("Montant")." : ".$amount."".$data['data']['currency'])
+                    ->line(__("Nom de l'accepteur de carte")." : ". $data["data"]["extra_data"]['merchant']['name'])
+                    ->line(__("Ville accepteur de cartes")." : ". $data["data"]["extra_data"]['merchant']['city'])
+                    ->line(__("Montant")." : ".$amount." USD")
                     //->line(__("Authorization Amount")." : ".$data["data"]['authorization_amount']."".$data['data']['currency'])
                     ->line(__("Date et heure").": " .$dateTime)
                     ->line(__("Merci d'utiliser notre application !"));

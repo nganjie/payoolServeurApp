@@ -17,10 +17,6 @@ class SoleaspaySignature implements SignatureValidator
        //if(isset(response(en)))
        //$dat=['signame'=>$config->signatureHeaderName,'content'=>$request->getContent(),'signature'=>$signature,'computeSignature'=>$computedSignature];
         //$d=json_encode($dat);
-        Log::build([
-            'driver' => 'single',
-            'path' => storage_path('logs/soleaspay.log'),
-          ])->info($request);
         return true;
         $signature = $request->header($config->signatureHeaderName);
         /*if (!$signature) {
