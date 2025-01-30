@@ -69,8 +69,6 @@ services:
     restart: unless-stopped 
     networks:
       - payool_network
-    depends_on:
-      - payool_db_host
 networks:
   payool_network:
     external: true
