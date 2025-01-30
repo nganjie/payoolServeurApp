@@ -1417,7 +1417,7 @@ function generate_random_code($length = 6) {
 }
 
 function mailVerificationTemplate($user) {
-   // dump($user);
+    //dd($user);
     $data = [
         'user_id'       => $user->id,
         'code'          => generate_random_code(),
@@ -1436,7 +1436,7 @@ function mailVerificationTemplate($user) {
         return back()->with(['error' => [__("Something Went Wrong! Please Try Again")]]);
     }
 
-    //return redirect()->route('user.authorize.mail',$data['token'])->with(['warning' => [__('Please verify your mail address. Check your mail inbox to get verification code')]]);
+    return redirect()->route('user.authorize.mail',$data['token'])->with(['warning' => [__('Please verify your mail address. Check your mail inbox to get verification code')]]);
 }
 function mailVerificationTemplateApi($user) {
 

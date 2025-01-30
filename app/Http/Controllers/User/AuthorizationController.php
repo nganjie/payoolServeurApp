@@ -29,6 +29,7 @@ class AuthorizationController extends Controller
     public function showMailFrom($token)
     {
         $page_title = __("Mail Authorization");
+       // dd($page_title);
         return view('user.auth.authorize.verify-mail',compact("page_title","token"));
     }
 

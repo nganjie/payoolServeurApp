@@ -3,6 +3,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Admin;
 use App\Models\Admin\Currency;
+use App\Models\Admin\ExchangeRate;
 use App\Models\GiftCard;
 use App\Models\Transaction;
 use App\Models\User;
@@ -35,7 +36,8 @@ class DashboardController extends Controller
         $virtualCards = activeCardData()['active_cards'];
         $totalGiftCards = GiftCard::auth()->count();
         //session(['test'=>120]);
-        $ses =Session::get('user_id');
+
+        $rate = ExchangeRate::where('currency_code','XAF')->first();
         $active_tickets = UserSupportTicket::authTickets()->active()->count();
         //dd($ses);
 
@@ -48,7 +50,8 @@ class DashboardController extends Controller
             'totalAddMoney',
             'virtualCards',
             'active_tickets',
-            'totalGiftCards'
+            'totalGiftCards',
+            'rate'
         ));
     }
     public function changeApi(Request $request){

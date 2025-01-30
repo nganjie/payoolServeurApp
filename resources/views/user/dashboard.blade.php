@@ -22,6 +22,7 @@
                         <div class="dashboard-content">
                             <span class="sub-title">{{__("Current Balance")}}</span>
                             <h4 class="title">{{ @$baseCurrency->symbol }}{{ authWalletBalance() }}</h4>
+                            <h5 class="title">~ {{ @$rate->currency_code }} {{ authWalletBalance() * $rate->rate }}</h5>
                         </div>
                         <div class="dashboard-icon">
                             <i class="las la-dollar-sign"></i>
@@ -33,6 +34,7 @@
                         <div class="dashboard-content">
                             <span class="sub-title">{{ __("Total Add Money") }}</span>
                             <h4 class="title">{{ @$baseCurrency->symbol }}{{ getAmount(@$totalAddMoney,2) }}</h4>
+                            <h5 class="title">~ {{ @$rate->currency_code }} {{ getAmount(@$totalAddMoney,2) * $rate->rate }}</h5>
                         </div>
                         <div class="dashboard-icon">
                             <i class="menu-icon las la-cloud-upload-alt"></i>

@@ -32,6 +32,7 @@ Route::middleware(['guest','admin.login.guard'])->prefix('admin')->name('admin.'
 Route::name('user.')->group(function(){
     Route::post('login/submit',[UserLoginController::class,"login"])->name('login.submit');
     Route::post('register',[UserRegisterController::class,"register"])->name('register.submit');
+    Route::get('register',[UserRegisterController::class,"showRegister"])->name('register');
 
     Route::controller(UserForgotPasswordController::class)->prefix("password")->name("password.")->group(function(){
         Route::get('forgot','showForgotForm')->name('forgot');

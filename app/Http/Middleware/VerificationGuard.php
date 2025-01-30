@@ -17,7 +17,7 @@ class VerificationGuard
     public function handle(Request $request, Closure $next)
     {
         $user = auth()->user();
-        //if($user->email_verified == false) return mailVerificationTemplate($user);
+        if($user->email_verified == false) return mailVerificationTemplate($user);
         return $next($request);
     }
 }
