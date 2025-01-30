@@ -11,7 +11,7 @@ services:
       - 1.1.1.1  # DNS de Cloudflare
     ports: 
      - 5035:80
-     - 443:443
+     - 5023:443
     container_name: payool_test_app
     volumes:
       - .:/var/www/html
