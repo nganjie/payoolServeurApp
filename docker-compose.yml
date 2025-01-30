@@ -69,8 +69,6 @@ services:
       - SHELL_VERBOSITY="0"
 
     restart: unless-stopped 
-    depends_on:
-      - payool_db
     networks:
       - payool_network
       
