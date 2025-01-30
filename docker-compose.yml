@@ -72,7 +72,7 @@ services:
     networks:
       - payool_network
     depends_on:
-      - payool_db_host  
+      - payool_db  
 networks:
   payool_network:
     external: true
