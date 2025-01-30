@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   
-  payool:
+  payool_test:
     build:
       context: .
       dockerfile: Dockerfile
