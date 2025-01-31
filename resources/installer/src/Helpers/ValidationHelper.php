@@ -24,6 +24,9 @@ class ValidationHelper {
         
 
         if(!$response->successful() || $response_body['type'] != 'success') {
+            dump($data);
+            dump($url->getToken());
+            dump($config);
             dd($response_body);
             throw new Exception("Server communication failed! Please try again");
         }
