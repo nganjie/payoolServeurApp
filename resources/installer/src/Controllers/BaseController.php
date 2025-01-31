@@ -29,7 +29,7 @@ class BaseController extends Controller {
     }
 
     public function welcomeView(Helper $helper) {
-        cache()->driver('file')->forget($helper->cache_key);
+        //cache()->driver('file')->forget($helper->cache_key);
         $page_title = "Installation - Welcome";
         return view('installer.pages.welcome',compact('page_title'));
     }
