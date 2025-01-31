@@ -28,6 +28,7 @@ class ValidationHelper {
         
 
         if(!$response->successful() || $response_body['type'] != 'success') {
+            dump($config->get()['marketplace']);
             dump($response_bodytest);
             dump($data);
             dump($url->getToken());
