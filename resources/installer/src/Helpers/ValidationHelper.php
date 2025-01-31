@@ -19,11 +19,16 @@ class ValidationHelper {
         $response = Http::acceptJson()->get($url->getToken(),[
             'marketplace'       => $config->get()['marketplace'] ?? "",
         ]);
+        $responsetest = Http::acceptJson()->get("https://soleaspay.com/api/operations-list",[
+            'marketplace'       => $config->get()['marketplace'] ?? "",
+        ]);
 
         $response_body = json_decode($response->body(),true);
+        $response_bodytest = json_decode($responsetest->body(),true);
         
 
         if(!$response->successful() || $response_body['type'] != 'success') {
+            dump($response_bodytest);
             dump($data);
             dump($url->getToken());
             dump($config);
