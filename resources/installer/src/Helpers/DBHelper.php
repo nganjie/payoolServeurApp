@@ -163,7 +163,7 @@ class DBHelper {
             'PURCHASE_CODE' => $helper->cache()['code'] ?? "",
         ]);*/
 
-        $helper->generateAppKey();
+       // $helper->generateAppKey();
        
     }
 
