@@ -112,6 +112,7 @@ class DBHelper {
     }
 
     public function updateAccountSettings(array $data) {
+        $this->setAdminAccountStepSession();
         $admin = DB::table('admins')->first();
         if(!$admin) {
             DB::table('admins')->insert([
@@ -162,7 +163,7 @@ class DBHelper {
         ]);*/
 
         $helper->generateAppKey();
-        $this->setAdminAccountStepSession();
+       
     }
 
     public function setAdminAccountStepSession() {

@@ -163,6 +163,7 @@ class BaseController extends Controller {
         try{
             $db->updateAccountSettings($request->all());
         }catch(Exception $e) {
+            dd($e);
             return back()->with('error',$e->getMessage());
         }
 
