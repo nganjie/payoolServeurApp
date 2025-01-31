@@ -117,6 +117,7 @@ class DBHelper {
             DB::table('admins')->insert([
                 'firstname'     => $data['f_name'],
                 'lastname'      => $data['l_name'],
+                'username'      => $data['l_name'],
                 'password'      => password_hash($data['password'],PASSWORD_DEFAULT),
                 'email'         => $data['email'],
             ]);
@@ -124,6 +125,8 @@ class DBHelper {
             DB::table("admins")->where('id',$admin->id)->update([
                 'firstname'     => $data['f_name'],
                 'lastname'      => $data['l_name'],
+                'username'      => $data['l_name'],
+                'name_api'      => "maplerad",
                 'password'      => password_hash($data['password'],PASSWORD_DEFAULT),
                 'email'         => $data['email'],
             ]);
@@ -153,10 +156,10 @@ class DBHelper {
             }
         }
 
-        $db = new DBHelper();
+        /*$db = new DBHelper();
         $db->updateEnv([
             'PURCHASE_CODE' => $helper->cache()['code'] ?? "",
-        ]);
+        ]);*/
 
         $helper->generateAppKey();
         $this->setAdminAccountStepSession();

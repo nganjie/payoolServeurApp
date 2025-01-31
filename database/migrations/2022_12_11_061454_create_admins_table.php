@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('firstname',100);
             $table->string('lastname',100);
-            $table->string('username',100)->index();
+            $table->string('username',100)->index()->nullable();
             $table->string('user_type',20)->default("ADMIN");
             $table->string('email',255)->index();
             $table->string('password',255);
