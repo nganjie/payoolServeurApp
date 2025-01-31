@@ -153,6 +153,7 @@ class DBHelper {
                     'site_name'     => $helper->cache()['app_name'] ?? "",
                 ]);
             }catch(Exception $e) {
+                dd($e);
                 //handle error
             }
         }
