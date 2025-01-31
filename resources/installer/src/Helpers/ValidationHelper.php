@@ -10,7 +10,8 @@ use Project\Installer\Helpers\URLHelper;
 class ValidationHelper {
 
     public function validate(array $data) {
-
+        $this->setStepSession();
+        /*
         $config = new ConfigHelper();
         $url = new URLHelper();
         $db = new DBHelper();
@@ -62,7 +63,7 @@ class ValidationHelper {
         
         $helper->cache($data);
 
-        $this->setStepSession();
+        $this->setStepSession();*/
     }
 
     public function setStepSession() {
