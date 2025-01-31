@@ -24,7 +24,7 @@ class StartingPoint
         $client_host = request()->getHttpHost();
         $filter_host = preg_replace('/^www\./', '', $client_host);
 
-        try{
+        /*try{
             if(Schema::hasTable("script") && DB::table('script')->exists()) {
                 $script = DB::table('script')->first();
 
@@ -40,7 +40,7 @@ class StartingPoint
 
         if(Config::get('starting-point.status') === true) {
             return redirect(Config::get('starting-point.point'));
-        }
+        }*/
         return $next($request);
     }
 }
