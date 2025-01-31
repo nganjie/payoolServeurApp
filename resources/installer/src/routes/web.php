@@ -36,9 +36,9 @@ Route::prefix('project/install')->name('project.install.')->withoutMiddleware([S
 });
 
 Route::get('project/install/reset',function(DBHelper $db) {
-    $db->updateEnv([
+    /*$db->updateEnv([
         "PURCHASE_CODE" => "",
-    ]);
+    ]);*/
     sleep(1);
     return redirect()->route('project.install.welcome');
 });
