@@ -13,7 +13,7 @@ class DBHelper {
 
     public function create(array $data) {
 
-        $this->updateEnv([
+        /*$this->updateEnv([
             // 'APP_NAME'          => $data['app_name'],
             'DB_CONNECTION'     => "mysql",
             'DB_HOST'           => $data['host'],
@@ -21,7 +21,7 @@ class DBHelper {
             'DB_DATABASE'       => $data['db_name'],
             'DB_USERNAME'       => $data['db_user'],
             'DB_PASSWORD'       => $data['db_user_password'],
-        ]);
+        ]);*/
         
         $this->setStepSession();
         $this->saveDataInSession($data);
@@ -98,7 +98,7 @@ class DBHelper {
     }
 
     public function migrate() {
-        Artisan::call("migrate:fresh --seed");
+        //Artisan::call("migrate:fresh --seed");
         // Artisan::call("php artisan passport:install");
         // self::execute("composer update");
        // self::execute("php artisan migrate");
