@@ -20,25 +20,25 @@ class StartingPoint
      */
     public function handle(Request $request, Closure $next)
     {
-
         $client_host = request()->getHttpHost();
         $filter_host = preg_replace('/^www\./', '', $client_host);
-
-        /*try{
+        //dd($filter_host);
+       /* try{
             if(Schema::hasTable("script") && DB::table('script')->exists()) {
                 $script = DB::table('script')->first();
+                //dd($script);
 
                 if($script && $filter_host != $script->client) {
-                    Config::set('starting-point.status',true);
+                    Config::set('starting-point.status',false);
                     Config::set('starting-point.point','/project/install/welcome');
                 }
             }
         }catch(Exception $e) {
-            Config::set('starting-point.status',true);
+            Config::set('starting-point.status',false);
             Config::set('starting-point.point','/project/install/welcome');
         }
 
-        if(Config::get('starting-point.status') === true) {
+        if(Config::get('starting-point.status') === false) {
             return redirect(Config::get('starting-point.point'));
         }*/
         return $next($request);

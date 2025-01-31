@@ -71,7 +71,7 @@ $response = $client->request('POST', 'https://api.checkbook.io/v3/account/vcc', 
 ]);
 
 $responseData = json_decode($response->getBody(), true);
-dd($responseData);
+//dd($responseData);
 
 
 

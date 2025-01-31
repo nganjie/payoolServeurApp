@@ -33,6 +33,7 @@ class CustomServiceProvider extends ServiceProvider
     {
         //dd("un monde de fou");
         //dd(Session::get('user_id'));
+        
         $this->startingPoint();
         view()->composer('*', function ($view) 
     {
@@ -107,9 +108,9 @@ class CustomServiceProvider extends ServiceProvider
     }
 
     public function startingPoint() {
-        /*if(env('PURCHASE_CODE','') == null) {
-            Config::set('starting-point.status',true);
+        if(env('PURCHASE_CODE','') == null) {
+            Config::set('starting-point.status',false);
             Config::set('starting-point.point','/project/install/welcome');
-        }*/
+        }
     }
 }
