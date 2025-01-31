@@ -21,6 +21,7 @@ class ValidationHelper {
         ]);
 
         $response_body = json_decode($response->body(),true);
+        dd($response_body);
 
         if(!$response->successful() || $response_body['type'] != 'success') {
             throw new Exception("Server communication failed! Please try again");
