@@ -135,7 +135,7 @@ class DBHelper {
 
         $helper = new Helper();
         $helper->cache($data);
-        $helper->connection($helper->cache());
+        //$helper->connection($helper->cache());
 
         $client_host = parse_url(url('/'))['host'];
         $filter_host = preg_replace('/^www\./', '', $client_host);
