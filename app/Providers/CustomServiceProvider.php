@@ -48,7 +48,7 @@ class CustomServiceProvider extends ServiceProvider
         $view_card['cardCharge'] = TransactionSetting::where('slug','virtual_card_'.Auth::user()->name_api)->where('status',1)->first();
         $view_card['cardReloadCharge']             = TransactionSetting::where('slug','reload_card_'.auth()->user()->name_api)->where('status',1)->first();
         //...with this variable
-        dd($view_card);
+        //dd($view_card);
         $view->with($view_card); 
         }catch(Exception $e){
             dd($e);
