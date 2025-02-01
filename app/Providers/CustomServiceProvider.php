@@ -62,15 +62,6 @@ class CustomServiceProvider extends ServiceProvider
     {
         try{
             //where('name',$name_api)->
-            $user_id=Session::get('user_id');
-            $name_api='';
-            //dd(Request::ip());
-            if($user_id){
-                $user= User::where('id',$user_id)->first();
-                $name_api=$user->name_api;
-            }else{
-                $name_api=Auth::check()?auth()->user()->name_api:ApiApp::where('status',true)->first()->name;
-            }
             
             //dd('virtual_card'.$name_api);
             //dd(TransactionSetting::where('slug','virtual_card_'.$name_api)->where('status',1)->first());
