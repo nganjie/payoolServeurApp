@@ -37,7 +37,7 @@ Route::prefix("user")->name("user.")->group(function(){
         Route::get('change/password','changePassword')->name('change.password')->middleware('app.mode');
         Route::put('password/update','passwordUpdate')->name('password.update')->middleware('app.mode');
     });
-    Route::controller(UserNoticeController::class)->prefix("notice")->name("notice.")->group(function(){
+    Route::controller(UserNoticeController::class)->prefix("notice")->middleware('kyc.verification.guard')->name("notice.")->group(function(){
         Route::get('/','index')->name('index');
         Route::get('create','showCreate')->name('create');
         Route::get('update/{user_notice}','showUpdate')->name('update-notice');
@@ -174,7 +174,7 @@ Route::prefix("user")->name("user.")->group(function(){
         });
     });
     Route::middleware('virtual_card_method:eversend')->group(function(){
-        Route::controller(EversendVirtualCardController::class)->prefix('eversend-virtual-card')->name('eversend.virtual.card.')->group(function(){
+        Route::controller(EversendVirtualCardController::class)->prefix('eversend-virtual-card')->middleware('kyc.verification.guard')->name('eversend.virtual.card.')->group(function(){
             Route::get('/','index')->name('index');
             Route::post('create','cardBuy')->name('create');
             Route::post('delete','deleteCard')->name('delete');
@@ -189,7 +189,7 @@ Route::prefix("user")->name("user.")->group(function(){
         });
     });
     Route::middleware('virtual_card_method:maplerad')->group(function(){
-        Route::controller(MapleradVirtualCardController::class)->prefix('maplerad-virtual-card')->name('maplerad.virtual.card.')->group(function(){
+        Route::controller(MapleradVirtualCardController::class)->prefix('maplerad-virtual-card')->middleware('kyc.verification.guard')->name('maplerad.virtual.card.')->group(function(){
             Route::get('/','index')->name('index');
             Route::post('create','cardBuy')->name('create');
             Route::post('delete','deleteCard')->name('delete');
