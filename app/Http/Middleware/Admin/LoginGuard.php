@@ -19,6 +19,7 @@ class LoginGuard
     {
 
         $guards = config('auth.guards');
+        dump($guards);
 
         foreach($guards as $guard => $values) {
             if(Auth::guard($guard)->check() == true) {
