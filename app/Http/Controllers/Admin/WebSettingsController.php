@@ -51,10 +51,10 @@ class WebSettingsController extends Controller
 
         try {
             $basic_settings->update($validated);
-            modifyEnv([
+            /*modifyEnv([
                 "APP_NAME" => $validated['site_name'],
                 "APP_TIMEZONE"  => $validated['timezone'],
-            ]);
+            ]);*/
         } catch (Exception $e) {
             return back()->with(['error' => [__('Something went wrong! Please try again')]]);
         }
