@@ -43,12 +43,8 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware(['web', 'auth:admin', 'app.mode', 'admin.role.guard','admin.google.two.factor'])
                 ->group(base_path('routes/admin.php'));
 
-                if(file_exists(base_path('routes/auth.php'))){
-                    Route::middleware(['web','system.maintenance'])
+             Route::middleware(['web','system.maintenance'])
                 ->group(base_path('routes/auth.php'));
-                }else{
-                    echo 'un monde de merde';
-                }
 
             Route::middleware(['web','system.maintenance'])
                 ->group(base_path('routes/global.php'));
