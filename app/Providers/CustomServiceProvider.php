@@ -54,8 +54,6 @@ class CustomServiceProvider extends ServiceProvider
             dd($e);
         }
           
-       }else{
-        dd("user not connect");
        }
          
     });
