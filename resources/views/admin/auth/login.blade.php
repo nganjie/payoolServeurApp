@@ -1,6 +1,5 @@
 @extends('admin.auth.layouts.auth-master')
 @php
-dd('un monde de fous')
     $app_mode = strtolower(env('APP_MODE'));
 @endphp
 @section('section')

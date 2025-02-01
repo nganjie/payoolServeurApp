@@ -26,7 +26,7 @@ class AppModeGuard
             $request_path = array_shift($request_path);
             $request_path = explode("/",$request_path);
             $request_path = array_pop($request_path);
-            //dd($request_path);
+            dump($request_path);
 
             if(!in_array($request_path,$ignore_routes)) {
                 if(env("APP_MODE") != 'live') {
