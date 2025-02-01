@@ -32,6 +32,7 @@ class LoginController extends Controller
         //dump(BasicSettings::first());
         //$name_api=Auth::check()?auth()->user()->name_api:ApiApp::where('status',true)->first()->name;
         //dump($name_api);
+        dd(BasicSettings::first());
         return view('admin.auth.login');
     }
 
