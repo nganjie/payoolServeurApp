@@ -28,12 +28,13 @@ class LoginController extends Controller
      * @return view
      */
     public function showLoginForm() {
+        $basic_settings=BasicSettings::first();
         //dump(auth()->user());
         //dump(BasicSettings::first());
         //$name_api=Auth::check()?auth()->user()->name_api:ApiApp::where('status',true)->first()->name;
         //dump($name_api);
         //dd(view('admin.auth.login'));
-        return view('admin.auth.login');
+        return view('admin.auth.login',compact('basic_settings'));
     }
 
 
