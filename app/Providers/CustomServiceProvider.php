@@ -40,14 +40,19 @@ class CustomServiceProvider extends ServiceProvider
        // $cart = Cart::where('user_id', Auth::user()->id);
        if(Auth::check())
        {
-        $view_card=[];
+        try{
+            $view_card=[];
         $view_card['card_details']= VirtualCardApi::where('name',Auth::user()->name_api)->first();
         $view_card['card_limit'] = VirtualCardApi::where('name',Auth::user()->name_api)->first()->card_limit;
         $view_card['card_api'] = VirtualCardApi::where('name',Auth::user()->name_api)->first();
         $view_card['cardCharge'] = TransactionSetting::where('slug','virtual_card_'.Auth::user()->name_api)->where('status',1)->first();
         $view_card['cardReloadCharge']             = TransactionSetting::where('slug','reload_card_'.auth()->user()->name_api)->where('status',1)->first();
         //...with this variable
-        $view->with($view_card);   
+        $view->with($view_card); 
+        }catch(Exception $e){
+            dd($e);
+        }
+          
        }
          
     });
