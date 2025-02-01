@@ -34,7 +34,7 @@ class CustomServiceProvider extends ServiceProvider
         //dd("un monde de fou");
         //dd(Session::get('user_id'));
         
-        $this->startingPoint();
+       // $this->startingPoint();
         view()->composer('*', function ($view) 
     {
        // $cart = Cart::where('user_id', Auth::user()->id);
@@ -103,7 +103,7 @@ class CustomServiceProvider extends ServiceProvider
                 return new CurrencyProvider($view_share['default_currency']);
             });
         }catch(Exception $e) {
-            //
+            dd($e);
         }
     }
 
