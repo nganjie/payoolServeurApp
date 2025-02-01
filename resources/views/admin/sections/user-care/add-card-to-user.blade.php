@@ -34,9 +34,6 @@
                         <select class="form--control selectpicker"  id="select-country" data-live-search="true" name="user">
                             @foreach($users as $user)
                             <option data-tokens="{{$user->username}}" value="{{$user->id}}">{{$user->username}}</option>
-                            <option data-tokens="china">China</option>
-                  <option data-tokens="malayasia">Malayasia</option>
-                  <option data-tokens="singapore">Singapore</option>
                             @endforeach
 
                         </select>

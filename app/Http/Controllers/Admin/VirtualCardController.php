@@ -59,9 +59,6 @@ class VirtualCardController extends Controller
             return back()->withErrors($validator)->withInput();
         }
         $admin->name_api=$request->api_method_app;
-        $apiMeth=ApiApp::where('status',true)->first();
-        $apiMeth->status=false;
-        $apiMeth->update();
         $apiMethode=ApiApp::where('name',$request->api_method_app)->first();
         if(!$apiMethode){
             $newapi=new ApiApp();

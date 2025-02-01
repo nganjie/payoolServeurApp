@@ -3,6 +3,7 @@
 /public/hot
 /public/storage
 /storage/debugbar
+/storage/framework/sessions
 /storage/*.key
 /vendor
 .env
