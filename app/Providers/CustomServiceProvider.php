@@ -85,7 +85,7 @@ class CustomServiceProvider extends ServiceProvider
             //$view_share['basic_settings']               = BasicSettings::first();
 
             view()->share($view_share);
-            dd($view_share);
+            //dd($view_share);
 
             $this->app->bind(BasicSettingsProvider::class, function () use ($view_share) {
                 return new BasicSettingsProvider($view_share['basic_settings']);
