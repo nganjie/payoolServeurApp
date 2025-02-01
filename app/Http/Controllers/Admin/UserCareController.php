@@ -235,7 +235,7 @@ class UserCareController extends Controller
                 $users = User::kycVerified()->get();
                 break;
             case "kyc_unverified";
-                $users = User::kycUnerified()->get();
+                $users = User::kycUnverified()->get();
                 break;
             case "kyc_pending";
                 $users = User::KycPending()->get();
@@ -284,7 +284,7 @@ class UserCareController extends Controller
                 $users = User::kycVerified()->get();
                 break;
             case "kyc_unverified";
-                $users = User::kycUnerified()->get();
+                $users = User::kycUnverified()->get();
                 break;
             case "kyc_pending";
                 $users = User::KycPending()->get();
