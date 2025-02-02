@@ -15,9 +15,9 @@
         <div class="container">
             <div class="row justify-content-center">
         {{-- create card customer  --}}
-        @if($user->strowallet_customer == null)
+       <!-- @if($user->strowallet_customer == null)
             @include('user.sections.virtual-card-strowallet.component.create-customer')
-        @endif
+        @endif-->
         {{-- check and update for customer  --}}
        <!-- @if(isset($user->strowallet_customer) )
             @if(isset($user->strowallet_customer->status) && $user->strowallet_customer->status ==  global_const()::CARD_UNDER_STATUS || $user->strowallet_customer->status ==  global_const()::CARD_LOW_KYC_STATUS)

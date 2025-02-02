@@ -62,14 +62,17 @@ class StrowalletVirtualController extends Controller
         if(count($myCards)>0){
             foreach($myCards as $myCard){
                 $card_details   = card_details($myCard->card_id,$this->api->config->strowallet_public_key,$this->api->config->strowallet_url);
-                $myCard->card_status               = $card_details['data']['card_detail']['card_status'];
-            $myCard->card_name               = $card_details['data']['card_detail']['card_name'];
-            $myCard->card_number               = $card_details['data']['card_detail']['card_number'];
-            $myCard->last4                     = $card_details['data']['card_detail']['last4'];
-            $myCard->cvv                       = $card_details['data']['card_detail']['cvv'];
-            $myCard->expiry                    = $card_details['data']['card_detail']['expiry'];
-            $myCard->balance                    = $card_details['data']['card_detail']['balance'];
-            $myCard->save();
+                if($card_details['status']){
+                    $myCard->card_status               = $card_details['data']['card_detail']['card_status'];
+                    $myCard->card_name               = $card_details['data']['card_detail']['card_name'];
+                    $myCard->card_number               = $card_details['data']['card_detail']['card_number'];
+                    $myCard->last4                     = $card_details['data']['card_detail']['last4'];
+                    $myCard->cvv                       = $card_details['data']['card_detail']['cvv'];
+                    $myCard->expiry                    = $card_details['data']['card_detail']['expiry'];
+                    $myCard->balance                    = $card_details['data']['card_detail']['balance'];
+                    $myCard->save();
+                }
+               
             }
         }
         $myCards        = StrowalletVirtualCard::where('user_id', auth()->user()->id)->where('is_deleted',false)->latest()->limit($this->card_limit)->get();
@@ -451,7 +454,7 @@ class StrowalletVirtualController extends Controller
         if($payable > $wallet->balance ){
             return back()->with(['error' => [__('Sorry, insufficient balance')]]);
         }
-        $customer = $user->strowallet_customer;
+        /*$customer = $user->strowallet_customer;
         if(!$customer){
             return back()->with(['error' => [__("Something went wrong! Please try again.")]]);
         }
@@ -466,7 +469,7 @@ class StrowalletVirtualController extends Controller
 
         if($customer_card >= $this->card_limit){
             return back()->with(['error' => [__("Sorry! You can not create more than")." ".$this->card_limit ." ".__("card using the same email address.")]]);
-        }
+        }*/
 
         // for live code
         $created_card = create_strowallet_virtual_card($user,$request->card_amount,$customer_email,$this->api->config->strowallet_public_key,$this->api->config->strowallet_url,$formData);
@@ -489,7 +492,7 @@ class StrowalletVirtualController extends Controller
         $strowallet_card->reference                 = $created_card['data']['reference'];
         $strowallet_card->card_status               = $created_card['data']['card_status'];
         $strowallet_card->customer_id               = $created_card['data']['customer_id'];
-        $strowallet_card->customer_email            = $customer->customerEmail;
+        $strowallet_card->customer_email            = auth()->user()->email;//$customer->customerEmail;
         $strowallet_card->save();
         $card_details   = card_details($created_card['data']['card_id'],$this->api->config->strowallet_public_key,$this->api->config->strowallet_url);
         $strowallet_card->card_status               = $card_details['data']['card_detail']['card_status'];

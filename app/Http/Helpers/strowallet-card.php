@@ -240,8 +240,8 @@ function card_details($card_id,$public_key,$base_url){
             'data'          => $result['response'],
         ];
     }else{
-        dump($data);
-        dd($result);
+        //dump($data);
+        //dd($result);
         $data =[
             'status'        => false,
             'message'       => $result['message'] ?? 'Your Card Is Pending!Please Contact With Admin',
