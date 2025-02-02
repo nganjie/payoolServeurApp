@@ -155,7 +155,7 @@ class MapleradVirtualCardController extends Controller
                 'first_name'        => ['required', 'string', 'regex:/^[^0-9\W]+$/'],
                 'last_name'         => ['required', 'string', 'regex:/^[^0-9\W]+$/'],
                 'email'    => 'required|string',
-                'id_number' => 'required|numeric',
+                'id_number' => 'required|string',
                 'dob' => 'required|string',
                 'type_card'=>'required|string'
             ], [
