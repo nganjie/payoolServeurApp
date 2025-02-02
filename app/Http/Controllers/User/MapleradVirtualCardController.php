@@ -818,7 +818,7 @@ class MapleradVirtualCardController extends Controller
                     $success = ['success' => [__('Card block successfully!')]];
                     return Response::success($success,null,200);
                 }  else {
-                    $error = ['error' => [$result->message]];
+                    $error = ['error' => $result["message"]];
                     return Response::error($error, null, 404);
                 }
             }
@@ -852,7 +852,7 @@ class MapleradVirtualCardController extends Controller
         ));
 
         $result = json_decode(curl_exec($curl), true);
-        return $result;
+        //return $result;
         curl_close($curl);
         //return $result;
         
