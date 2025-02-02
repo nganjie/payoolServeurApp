@@ -157,8 +157,6 @@ class MapleradVirtualCardController extends Controller
                 'email'    => 'required|string',
                 'id_number' => 'required|numeric',
                 'dob' => 'required|string',
-                'phone_code' => 'required|string',
-                'phone' => 'required|string',
                 'type_card'=>'required|string'
             ], [
                 'first_name.regex'  => 'The First Name field should only contain letters and cannot start with a number or special character.',

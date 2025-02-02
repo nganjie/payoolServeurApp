@@ -388,23 +388,6 @@
                                             <input type="date" class="form--control" placeholder="{{__("Birth Date")}}" name="dob" required="yes">
                                         </div>
                                     </div>
-                                    <div class="col-xl-6 col-lg-6 form-group">
-                                        <label>{{ __("Phone") }}</label>
-                                        <div class="input-group">
-                                            <div class="input-group-text phone-code">+{{ auth()->user()->mobile_code }}</div>
-                                            <input class="phone-code" type="hidden" name="phone_code" value="{{ auth()->user()->mobile_code }}" />
-                                            <input type="text" class="form--control" placeholder="{{ __("Enter Phone") }}" name="phone" value="{{ old('phone',auth()->user()->mobile) }}">
-                                        </div>
-
-                                    </div>
-                                    <div class="col-md-12 col-lg-12">
-                                        @include('admin.components.form.input',[
-                                            'label'         => __("Numéro Pièce D'identité (Le premier chiffre)"),
-                                            'name'          => "id_number",
-                                            'placeholder'   =>__("Entrez Numéro Pièce D'identité"),
-                                            'required'       => true,
-                                        ])
-                                    </div>
                                                                                                    
                                    @endif
                                    <br><br> 
