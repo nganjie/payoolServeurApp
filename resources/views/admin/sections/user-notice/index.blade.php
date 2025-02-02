@@ -41,7 +41,7 @@
                     <div class="col-xl-12 col-lg-12">
                         <div class="product-tab">
                             <div class="tab-content" id="nav-tabContent">
-                                <div class="tab-pane @if (get_default_language_code() == language_const()::NOT_REMOVABLE) fade show active @endif" id="english" role="tabpanel" aria-labelledby="english-tab">
+                                <div class="tab-pane  fade show active" id="english" role="tabpanel" aria-labelledby="english-tab">
                                     <div class="form-group">
                                         @include('admin.components.form.input',[
                                             'label'     => __("Limit Notice")."*",
