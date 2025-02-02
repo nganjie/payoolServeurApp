@@ -26,6 +26,7 @@
                     @php
                     $datar=["admin.users.kyc.unverified","admin.users.kyc.verified","admin.users.kyc.pending","admin.users.kyc.rejected"];
                     $isKyc=in_array(Route::currentRouteName(),$datar);
+                    //dd($isKyc);
                     @endphp
                     @if ($isKyc)
                         <span class="{{ $item->kycStringStatus->class }}">{{ __($item->kycStringStatus->value) }}</span>
@@ -34,7 +35,7 @@
                     @endif
                 </td>
                 <td>
-                    @if (Route::currentRouteName() == "admin.users.kyc.unverified"||Route::currentRouteName() == "admin.users.kyc.pendind")
+                    @if ($isKyc)
                         @include('admin.components.link.info-default',[
                             'href'          => setRoute('admin.users.kyc.details', $item->username),
                             'permission'    => "admin.users.kyc.details",
