@@ -15,7 +15,7 @@ services:
       - .:/var/www/html
     environment:
       - APP_ENV="production"
-      - APP_NAME="PayOol"
+      - APP_NAME="PayOol™"
       - APP_KEY="base64:XKYVDObkNN+ScglQBDGprdv5z2cplCDPcuBsB+PSUdo="
       - APP_TIMEZONE="Africa/Douala"
       - APP_DEBUG=true
