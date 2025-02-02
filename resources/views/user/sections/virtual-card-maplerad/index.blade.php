@@ -388,6 +388,14 @@
                                             <input type="date" class="form--control" placeholder="{{__("Birth Date")}}" name="dob" required="yes">
                                         </div>
                                     </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        @include('admin.components.form.input',[
+                                            'label'         => __("Numéro Pièce D'identité (Le premier chiffre)"),
+                                            'name'          => "id_number",
+                                            'placeholder'   =>__("Entrez Numéro Pièce D'identité"),
+                                            'required'       => true,
+                                        ])
+                                    </div>
                                                                                                    
                                    @endif
                                    <br><br> 
