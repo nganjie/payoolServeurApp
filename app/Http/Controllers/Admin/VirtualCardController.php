@@ -141,8 +141,8 @@ class VirtualCardController extends Controller
             $api=new VirtualCardApi();
             $api->admin_id=auth()->user()->id;
         }
-        
-        //dump($api);
+        dump($api);
+        dd($request);
         $api->card_details = $request->card_details;
         $api->nb_trx_failled=$request->nb_trx_failled;
         $api->nb_trx_failled=$request->nb_trx_failled;

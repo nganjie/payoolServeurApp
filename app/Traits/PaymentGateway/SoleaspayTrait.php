@@ -47,7 +47,7 @@ trait SoleaspayTrait
 
         $data = [
             'shopName'      => $basic_setting->site_name,
-            'area'          => $output['currency']['currency_code'] ?? "USD",
+            'area'          =>$output['currency']['currency_code'] ?? "USD",
             'amount'        => $amount,
             'email'         => $user_email,
             'orderId'     => $reference,
@@ -63,6 +63,7 @@ trait SoleaspayTrait
             ],
             'line' => "UP"
         ];
+        //dd($data);
 
         $payment = $this->initializeSoleaspayPayment($data);
 
@@ -75,6 +76,7 @@ trait SoleaspayTrait
         if ($payment['success'] == false) {
             return;
         }
+        //dd($payment);
 
         return redirect($payment['link']);
     }

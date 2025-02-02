@@ -1837,8 +1837,8 @@ function activeCardSystem(){
         $inactive_cards = SoleaspayVirtualCard::where('user_id',auth()->user()->id)->where('is_active',0)->count();
     }elseif(virtual_card_system('eversend') == "eversend"){
         $virtual_cards = EversendVirtualCard::where('user_id',auth()->user()->id)->count();
-        $active_cards =  EversendVirtualCard::where('user_id',auth()->user()->id)->where('is_non_subscription',1)->count();
-        $inactive_cards = EversendVirtualCard::where('user_id',auth()->user()->id)->where('is_non_subscription',0)->count();
+        $active_cards =  EversendVirtualCard::where('user_id',auth()->user()->id)->where('status','active')->count();
+        $inactive_cards = EversendVirtualCard::where('user_id',auth()->user()->id)->where('status','!=','active')->count();
     }elseif(virtual_card_system('maplerad') == "maplerad"){
         $virtual_cards = MapleradVirtualCard::where('user_id',auth()->user()->id)->count();
         $active_cards =  MapleradVirtualCard::where('user_id',auth()->user()->id)->where('status','active')->count();
