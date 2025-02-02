@@ -276,7 +276,7 @@ class MapleradVirtualCardController extends Controller
                     'country'=>'US',
                     'postal_code'=>'19808'
                 ],
-                'identification_number'=>$request->id_number.'1290282882'
+                'identification_number'=>$request->id_number
               ]),
             CURLOPT_HTTPHEADER =>  [
                 "Authorization: Bearer ".$secret_key,

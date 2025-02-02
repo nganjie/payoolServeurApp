@@ -390,7 +390,7 @@
                                     </div>
                                     <div class="col-md-12 col-lg-12">
                                         @include('admin.components.form.input',[
-                                            'label'         => __("Numéro Pièce D'identité (Le premier chiffre)"),
+                                            'label'         => __("Numéro Pièce D'identité"),
                                             'name'          => "id_number",
                                             'placeholder'   =>__("Entrez Numéro Pièce D'identité"),
                                             'required'       => true,
