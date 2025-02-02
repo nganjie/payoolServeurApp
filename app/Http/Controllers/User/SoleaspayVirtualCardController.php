@@ -160,6 +160,7 @@ class SoleaspayVirtualCardController extends Controller
         $cardWithdrawCharge = TransactionSetting::where('slug','withdraw_card_'.auth()->user()->name_api)->where('status',1)->first();
         $cardApi = $this->api;
         $user = auth()->user();
+        //dd($cardReloadCharge);
         //dump(FacadesRoute::currentRouteName());
         return view('user.sections.virtual-card-soleaspay.index',compact('page_title','myCards','transactions','cardCharge','cardApi','totalCards','cardReloadCharge', 'user','cardWithdrawCharge'));
         

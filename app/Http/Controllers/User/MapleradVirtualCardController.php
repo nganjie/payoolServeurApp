@@ -775,6 +775,8 @@ class MapleradVirtualCardController extends Controller
             $error = ['error' => $validator->errors()];
             return Response::error($error,null,400);
         }
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
+       // return $this->api->config;
         $public_key=$this->api->config->maplerad_public_key;
         $secret_key=$this->api->config->maplerad_secret_key;
         $validated = $validator->safe()->all();

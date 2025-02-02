@@ -675,7 +675,7 @@ class StrowalletVirtualController extends Controller
      */
 
     public function cardBlockUnBlock(Request $request) {
-
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         $validator = Validator::make($request->all(),[
             'status'                    => 'required|boolean',
             'data_target'               => 'required|string',

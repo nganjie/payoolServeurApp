@@ -48,6 +48,7 @@ class TrxSettingsController extends Controller
     public function trxChargeUpdate(Request $request) {
         $admin =Admin::where('id',auth()->user()->id)->first();
         $slug =$request->slug;
+        dd($request);
         
         if(Str::contains($request->slug,"virtual_card")||$request->slug==='reload_card')
         {

@@ -170,14 +170,14 @@
                                         <h5 class="title">{{ __("Fund") }}</h5>
                                     </a>
                                 </div>
-                                <div class="card-details">
+                               <!-- <div class="card-details">
                                     <a href="javascript:void(0)" class="withdrawCard" data-id="{{ $myCard->id }}" data-amount="{{$myCard->amount}}">
                                         <div class="details-icon">
                                             <i class="las la-coins"></i>
                                         </div>
                                         <h5 class="title">{{ __("withdraw") }}</h5>
                                     </a>
-                                </div>
+                                </div>-->
                                 <div class="card-details">
                                     <a href="{{  setRoute('user.soleaspay.virtual.card.transaction',$myCard->card_id) }}">
                                         <div class="details-icon">

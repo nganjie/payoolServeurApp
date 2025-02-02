@@ -882,6 +882,7 @@ class EversendVirtualCardController extends Controller
 
     public function cardBlockUnBlock(Request $request) {
        // dd($request);
+       $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         $validator = Validator::make($request->all(),[
             'status'                    => 'required|boolean',
             'data_target'               => 'required|string',
@@ -890,9 +891,11 @@ class EversendVirtualCardController extends Controller
             $error = ['error' => $validator->errors()];
             return Response::error($error,null,400);
         }
+        
         $public_key=$this->api->config->eversend_public_key;
         $secret_key=$this->api->config->eversend_secret_key;
         $validated = $validator->safe()->all();
+        
         //return $validated;
         if($request->status == 1 ){
             $card = EversendVirtualCard::where('id',$request->data_target)->first();
@@ -951,16 +954,15 @@ class EversendVirtualCardController extends Controller
 
         $result = json_decode(curl_exec($curl), true);
         curl_close($curl);
-        //return $result;
         
             if (isset($result)) {
-                if ($result['success'] == true) {
+                if ($result['status'] !== 400) {
                     $card->status = 'frozen';
                     $card->save();
                     $success = ['success' => [__('Card block successfully!')]];
                     return Response::success($success,null,200);
                 }  else {
-                    $error = ['error' => [$result->message]];
+                    $error = ['error' => [$result["message"]]];
                     return Response::error($error, null, 404);
                 }
             }
@@ -1030,7 +1032,7 @@ class EversendVirtualCardController extends Controller
                 $success = ['success' => [__('Card unblock successfully!')]];
                 return Response::success($success,null,200);
             } else{
-                $error = ['error' => [$result->message]];
+                $error = ['error' => [$result["message"]]];
                 return Response::error($error, null, 404);
             }
         }
