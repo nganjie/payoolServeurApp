@@ -92,7 +92,7 @@
                                     <div class="back">
                                         <div class="strip-black"></div>
                                         <div class="ccv">
-                                            @if($myCard->is_disabled)
+                                            @if($myCard->is_active)
                                             <label>{{ __("ccv") }}</label>
                                             <div>{{ $myCard->cvv }}</div>
                                             @endif

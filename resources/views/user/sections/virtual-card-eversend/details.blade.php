@@ -282,7 +282,7 @@
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span>{{ __($myCard->status) }}</span>
+                            <span>{{ __($myCard->billing_address["state"]) }}</span>
                         </div>
                     </div>
                     <div class="preview-list-item">
