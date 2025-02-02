@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Http;
 use App\Constants\PaymentGatewayConst;
 use App\Models\Admin\AdminNotification;
 use App\Models\Admin\BasicSettings;
-use App\Models\User;
 use App\Notifications\User\AddMoney\ApprovedMail;
 use Illuminate\Support\Facades\Config;
 use Jenssegers\Agent\Agent;
@@ -31,6 +30,8 @@ trait SoleaspayTrait
         $reference = $this->generateSoleaspayReference();
 
         $amount = $output['amount']->total_amount ? number_format($output['amount']->total_amount, 2, '.', '') : 0;
+        $amount =round($amount);
+        //dd($amount);
 
         if(auth()->guard(get_auth_guard())->check()){
             $user = auth()->guard(get_auth_guard())->user();
@@ -88,7 +89,6 @@ trait SoleaspayTrait
         $creator_id = auth()->guard(get_auth_guard())->user()->id;
         $wallet_table = $output['wallet']->getTable();
         $wallet_id = $output['wallet']->id;
-        //dd(json_decode(json_encode($output['amount']), true));
 
         $data = [
             'gateway'      => $output['gateway']->id,
@@ -101,7 +101,7 @@ trait SoleaspayTrait
             'creator_id'    => $creator_id,
             'creator_guard' => get_auth_guard(),
         ];
-        //dd($response['orderId']);
+
         Session::put('identifier', $response['orderId']);
         Session::put('output', $output);
 
@@ -154,7 +154,7 @@ trait SoleaspayTrait
     public function createTransactionSoleaspay($output)
     {
         $basic_setting = BasicSettings::first();
-        $user = User::where('id',auth()->user()->id)->first();
+        $user = auth()->user();
         $trx_id = 'AM'.getTrxNum();
         $inserted_id = $this->insertRecordSoleaspay($output, $trx_id);
         $this->insertChargesSoleaspay($output, $inserted_id);

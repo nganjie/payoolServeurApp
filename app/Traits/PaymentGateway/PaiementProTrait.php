@@ -32,6 +32,7 @@ trait PaiementProTrait
         $paiementmode=$output['paiementmode']?$output['paiementmode']:'AIRTELNG';
 
         $amount = $output['amount']->total_amount ? number_format($output['amount']->total_amount, 2, '.', '') : 0;
+        $amount =round($amount);
 
         if(auth()->guard(get_auth_guard())->check()){
             $user = auth()->guard(get_auth_guard())->user();
