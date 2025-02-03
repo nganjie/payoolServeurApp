@@ -303,7 +303,7 @@
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span>{{ $myCard->user->strowallet_customer->state }}</span>
+                            <span>{{ @$myCard->user->strowallet_customer->state }}</span>
                         </div>
                     </div>
 
