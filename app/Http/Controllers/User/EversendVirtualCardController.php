@@ -407,12 +407,12 @@ class EversendVirtualCardController extends Controller
                 $v_card->billingAddress = $card['billingAddress'];
          
             // $v_card->charge =  $total_charge;
-            if ($card['is_Physical']) {
+            if (isset($card['is_Physical'])) {
                 $v_card->is_Physical = 1;
             } else {
                 $v_card->isPhysical = 0;
             }
-            if ($card['isNonSubscription']) {
+            if (isset($card['isNonSubscription'])) {
                 $v_card->isNonSubscription = 1;
             } else {
                 $v_card->isNonSubscription = 0;
