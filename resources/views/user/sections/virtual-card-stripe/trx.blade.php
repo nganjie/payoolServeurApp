@@ -35,7 +35,7 @@
                                     </div>
                                     <div class="dashboard-list-user-content">
                                         <h4 class="title">{{ __("TRX ID") }}: {{ @$value['id'] }}</h4>
-                                        <span class="sub-title text--danger"> <span class="badge badge--<?=$value['status']!=="success"?'danger':'sucess'?> ms-2">{{ ucwords(@$value['type']) }}</span></span>
+                                        <span class="sub-title text--danger"> <span class="badge badge--<?=$value['type']!=="success"?'danger':'success'?> ms-2">{{ ucwords(@$value['type']) }}</span></span>
                                     </div>
                                 </div>
                             </div>

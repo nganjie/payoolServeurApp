@@ -35,7 +35,7 @@
                                     </div>
                                     <div class="dashboard-list-user-content">
                                         <h4 class="title">TRX: {{ @$value['id'] }}</h4>
-                                        <span class="sub-title text--danger"> <span class="badge badge--<?=$value['status']!=="success"?'danger':'sucess'?> ms-2">{{ @$value['status'] }}</span></span>
+                                        <span class="sub-title text--danger"> <span class="badge badge--<?=$value['status']!=="success"?'danger':'success'?> ms-2">{{ @$value['status'] }}</span></span>
                                     </div>
                                 </div>
                             </div>
