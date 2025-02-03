@@ -968,6 +968,7 @@ class SoleaspayVirtualCardController extends Controller
     public function cardTransaction($card_id) {
         $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         $user = auth()->user();
+        //dd($this->api);
         $card = SoleaspayVirtualCard::where('user_id',$user->id)->where('card_id', $card_id)->first();
         $page_title = __("Virtual Card Transaction");
         $id = $card->card_id;
@@ -1025,7 +1026,7 @@ class SoleaspayVirtualCardController extends Controller
             return back()->with(['error' => [__("Something went wrong! Please try again.")]]);
         }
         $card_truns = array("data"=>$response['data']['transactions']);
-        return view('user.sections.virtual-card.trx',compact('page_title','card','card_truns'));
+        return view('user.sections.virtual-card-soleaspay.trx',compact('page_title','card','card_truns'));
 
 
     }

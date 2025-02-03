@@ -878,6 +878,7 @@ class StrowalletVirtualController extends Controller
             'id' => 'required|integer',
             'fund_amount' => 'required|numeric|gt:0',
         ]);
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         $user = User::where('id',auth()->user()->id)->first();
         $myCard =  StrowalletVirtualCard::where('user_id',$user->id)->where('id',$request->id)->first();
         if(!$myCard){
@@ -1101,6 +1102,7 @@ class StrowalletVirtualController extends Controller
      */
     public function cardTransaction($card_id) {
         $user = auth()->user();
+        $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
         $card = StrowalletVirtualCard::where('user_id',$user->id)->where('card_id', $card_id)->first();
         $page_title = __("Virtual Card Transaction");
         $id = $card->card_id;

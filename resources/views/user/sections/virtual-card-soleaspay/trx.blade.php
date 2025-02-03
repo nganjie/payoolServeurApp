@@ -40,7 +40,7 @@
                                 </div>
                             </div>
                             <div class="dashboard-list-right">
-                                <h4 class="main-money text--base">{{ @$value['amount']  }} {{ @$value['currency'] }}</h4>
+                                <h4 class="main-money text--base">{{ @$value['amount']/100  }} {{ @$value['currency'] }}</h4>
                                 <h6 class="exchange-money">{{ date("M-d-Y",strtotime($value['created_at'])) }}</h6>
                             </div>
                         </div>
@@ -67,57 +67,12 @@
                                             <i class="las la-qrcode"></i>
                                         </div>
                                         <div class="preview-list-user-content">
-                                            <span>{{__("Payment Details")}}</span>
+                                            <span>{{__("status")}}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="preview-list-right">
-                                    <span>{{ @$value['product'] }}</span>
-                                </div>
-                            </div>
-                            <div class="preview-list-item">
-                                <div class="preview-list-left">
-                                    <div class="preview-list-user-wrapper">
-                                        <div class="preview-list-user-icon">
-                                            <i class="las la-user-tag"></i>
-                                        </div>
-                                        <div class="preview-list-user-content">
-                                            <span>{{ __("Amount") }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="preview-list-right">
-                                    <span>{{ @$value['amount']  }} {{ @$value['currency'] }}</span>
-                                </div>
-                            </div>
-                            <div class="preview-list-item">
-                                <div class="preview-list-left">
-                                    <div class="preview-list-user-wrapper">
-                                        <div class="preview-list-user-icon">
-                                            <i class="las la-user-tag"></i>
-                                        </div>
-                                        <div class="preview-list-user-content">
-                                            <span>{{ __("Reference") }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="preview-list-right">
-                                    <span>{{ @$value['reference']  }} </span>
-                                </div>
-                            </div>
-                            <div class="preview-list-item">
-                                <div class="preview-list-left">
-                                    <div class="preview-list-user-wrapper">
-                                        <div class="preview-list-user-icon">
-                                            <i class="las la-user-tag"></i>
-                                        </div>
-                                        <div class="preview-list-user-content">
-                                            <span>{{ __("Gateway Reference") }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="preview-list-right">
-                                    <span>{{ @$value['gateway_reference']  }} </span>
+                                    <span>{{ @$value['status'] }}</span>
                                 </div>
                             </div>
                             <div class="preview-list-item">
@@ -132,9 +87,70 @@
                                     </div>
                                 </div>
                                 <div class="preview-list-right">
-                                    <span>{{ @$value['response_message']  }} </span>
+                                    <span>{{ @$value['description']  }} </span>
                                 </div>
                             </div>
+                            <div class="preview-list-item">
+                                <div class="preview-list-left">
+                                    <div class="preview-list-user-wrapper">
+                                        <div class="preview-list-user-icon">
+                                            <i class="las la-qrcode"></i>
+                                        </div>
+                                        <div class="preview-list-user-content">
+                                            <span>{{__("type")}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="preview-list-right">
+                                    <span>{{ @$value['type'] }}</span>
+                                </div>
+                            </div>
+                            <div class="preview-list-item">
+                                <div class="preview-list-left">
+                                    <div class="preview-list-user-wrapper">
+                                        <div class="preview-list-user-icon">
+                                            <i class="las la-user-tag"></i>
+                                        </div>
+                                        <div class="preview-list-user-content">
+                                            <span>{{ __("Amount") }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="preview-list-right">
+                                    <span>{{ @$value['amount']/100  }} {{ @$value['currency'] }}</span>
+                                </div>
+                            </div>
+                            <div class="preview-list-item">
+                                <div class="preview-list-left">
+                                    <div class="preview-list-user-wrapper">
+                                        <div class="preview-list-user-icon">
+                                            <i class="las la-user-tag"></i>
+                                        </div>
+                                        <div class="preview-list-user-content">
+                                            <span>{{ __("Reference") }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="preview-list-right">
+                                    <span>{{ @$value['merchant']['name']  }} </span>
+                                </div>
+                            </div>
+                            <div class="preview-list-item">
+                                <div class="preview-list-left">
+                                    <div class="preview-list-user-wrapper">
+                                        <div class="preview-list-user-icon">
+                                            <i class="las la-user-tag"></i>
+                                        </div>
+                                        <div class="preview-list-user-content">
+                                            <span>{{ __("Gateway Reference") }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="preview-list-right">
+                                    <span>{{ @$value['merchant']['city']  }} </span>
+                                </div>
+                            </div>
+                            
                             
                         </div>
                     </div>
