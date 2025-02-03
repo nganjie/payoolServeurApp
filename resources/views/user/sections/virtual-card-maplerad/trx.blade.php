@@ -22,6 +22,7 @@
     </div>
     <div class="dashboard-list-area mt-20">
         <div class="dashboard-list-wrapper">
+            
            
             @if(isset($card_truns) && $card_truns['data'] != null)
                 @if(array_key_exists('data', $card_truns ))
@@ -35,7 +36,16 @@
                                     </div>
                                     <div class="dashboard-list-user-content">
                                         <h4 class="title">TRX: {{ @$value['id'] }}</h4>
-                                        <span class="sub-title text--danger"> <span class="badge badge--<?=$value['status']!=="SUCCESS"?'danger':'success'?> ms-2">{{ @$value['status'] }}</span></span>
+                                        <?php 
+                                        $status ='';
+                                        if($value['status']==="SUCCESS")
+                                           $status='success';
+                                        else if($value['status']==="FAILED")
+                                           $status='danger';
+                                        else 
+                                           $status='warning';
+                                        ?>
+                                        <span class="sub-title text--danger"> <span class="badge badge--<?= $status?> ms-2">{{ @$value['status'] }}</span></span>
                                     </div>
                                 </div>
                             </div>

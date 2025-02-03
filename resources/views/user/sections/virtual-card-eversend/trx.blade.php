@@ -35,7 +35,16 @@
                                     </div>
                                     <div class="dashboard-list-user-content">
                                         <h4 class="title">TRX: {{ @$value['id'] }}</h4>
-                                        <span class="sub-title text--danger"> <span class="badge badge--<?=$value['status']!=="successful"?'danger':'success'?> ms-2">{{ @$value['status'] }}</span></span>
+                                        <?php 
+                                        $status ='';
+                                        if($value['status']==="successful")
+                                           $status='success';
+                                        else if($value['status']==="failed")
+                                           $status='danger';
+                                        else 
+                                           $status='warning';
+                                        ?>
+                                        <span class="sub-title text--danger"> <span class="badge badge--<?= $status?> ms-2">{{ @$value['status'] }}</span></span>
                                     </div>
                                 </div>
                             </div>
