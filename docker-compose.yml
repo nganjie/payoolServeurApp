@@ -8,7 +8,7 @@ services:
       - 8.8.8.8  # Utilisation du DNS de Google
       - 1.1.1.1  # DNS de Cloudflare
     ports: 
-     - 5035:80
+     - 80:80
      - 5023:443
     container_name: payool_app
     volumes:
