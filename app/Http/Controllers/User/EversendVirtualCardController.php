@@ -955,9 +955,10 @@ class EversendVirtualCardController extends Controller
 
         $result = json_decode(curl_exec($curl), true);
         curl_close($curl);
+
         
             if (isset($result)) {
-                if ($result['status'] !== 400) {
+                if (isset($result['success'])&&$result['success'] == true ) {
                     $card->status = 'frozen';
                     $card->save();
                     $success = ['success' => [__('Card block successfully!')]];
@@ -1027,7 +1028,7 @@ class EversendVirtualCardController extends Controller
         //return $result;
         
         if (isset($result)&&isset($result['success'])) {
-            if ( $result['success'] == true ) {
+            if (isset($result['success'])&&$result['success'] == true ) {
                 $card->status='active';
                 $card->save();
                 $success = ['success' => [__('Card unblock successfully!')]];
