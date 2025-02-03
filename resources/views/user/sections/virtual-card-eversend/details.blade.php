@@ -53,9 +53,9 @@
                                         <path d="M7.584 11.438c.227.031.438.144.594.312 2.953 2.863 4.781 6.875 4.781 11.313 0 4.433-1.828 8.449-4.781 11.312-.398.387-1.035.383-1.422-.016-.387-.398-.383-1.035.016-1.421 2.582-2.504 4.187-5.993 4.187-9.875 0-3.883-1.605-7.372-4.187-9.875-.321-.282-.426-.739-.266-1.133.164-.395.559-.641.984-.617h.094zM1.178 15.531c.121.02.238.063.344.125 2.633 1.414 4.437 4.215 4.437 7.407 0 3.195-1.797 5.996-4.437 7.406-.492.258-1.102.07-1.36-.422-.257-.492-.07-1.102.422-1.359 2.012-1.075 3.375-3.176 3.375-5.625 0-2.446-1.371-4.551-3.375-5.625-.441-.204-.676-.692-.551-1.165.122-.468.567-.785 1.051-.742h.094z"></path>
                                     </svg>
                                     @php
-                                     $card_pan = str_split($myCard->number, 4);
-                                     //$expiration=str_split($myCard->expirayion, 2);
-                                     $stv=strval($myCard->expiration);
+                                     $card_pan = str_split(@$myCard->number, 4);
+                                     //$expiration=str_split(@$myCard->expirayion, 2);
+                                     $stv=strval(@$myCard->expiration);
                                      $month=substr($stv,0,2);
                                      $annee=substr($stv,2,4);
                                      $expiration=$month.'/'.$annee;
@@ -69,7 +69,7 @@
                                     <div class="end"><span class="end-text">{{__("exp. end")}}:</span><span class="end-date"> {{ $expiration }}</span>
                                     </div>
                                     <div class="card-holder">{{ auth()->user()->fullname }}</div>
-                                    @if($myCard->brand === "Visa")
+                                    @if(@$myCard->brand === "Visa")
                                         <div class="master">
                                             <img  src="{{ URL::to('/') }}/public/frontend/images/card/visa-logo.png"/>
                                         </div>
@@ -84,7 +84,7 @@
                                     <div class="strip-black"></div>
                                     <div class="ccv">
                                         <label>{{ __("ccv") }}</label>
-                                        <div>{{ $myCard->security_code }}</div>
+                                        <div>{{ @$myCard->security_code }}</div>
                                     </div>
                                     <div class="terms">
                                         @php
@@ -96,9 +96,9 @@
                         </div>
                     </div>
                     <div class="card-content text-center d-flex justify-content-center mt-3">
-                        @if($myCard->status=="active")
+                        @if(@$myCard->status=="active")
                         <div class="card-details">
-                            <a href="javascript:void(0)" class="fundCard" data-id="{{ $myCard->id }}">
+                            <a href="javascript:void(0)" class="fundCard" data-id="{{ @$myCard->id }}">
                                 <div class="details-icon">
                                     <i class="las la-coins"></i>
                                 </div>
@@ -106,7 +106,7 @@
                             </a>
                         </div>
                         <div class="card-details">
-                            <a href="javascript:void(0)" class="withdrawCard" data-id="{{ $myCard->id }}" data-amount="{{$myCard->amount}}">
+                            <a href="javascript:void(0)" class="withdrawCard" data-id="{{ @$myCard->id }}" data-amount="{{@$myCard->amount}}">
                                 <div class="details-icon">
                                     <i class="las la-coins"></i>
                                 </div>
@@ -114,7 +114,7 @@
                             </a>
                         </div>
                         <div class="card-details">
-                            <a href="{{  setRoute('user.eversend.virtual.card.transaction',$myCard->card_id) }}">
+                            <a href="{{  setRoute('user.eversend.virtual.card.transaction',@$myCard->card_id) }}">
                                 <div class="details-icon">
                                     <i class="menu-icon las la-recycle"></i>
                                 </div>
@@ -141,7 +141,7 @@
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span class="text--base">{{ getAmount(@$myCard->amount,2) }} {{ get_default_currency_code() }}</span>
+                            <span class="text--base">{{ getAmount(@@$myCard->amount,2) }} {{ get_default_currency_code() }}</span>
                         </div>
                     </div>
                     <div class="preview-list-item">
@@ -156,7 +156,7 @@
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span class="text--warning">{{ __((ucwords(@$myCard->brand))) }}</span>
+                            <span class="text--warning">{{ __((ucwords(@@$myCard->brand))) }}</span>
                         </div>
                     </div>
                     <div class="preview-list-item">
@@ -171,7 +171,7 @@
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span>{{ @$myCard->card_id }}</span>
+                            <span>{{ @@$myCard->card_id }}</span>
                         </div>
                     </div>
                     <div class="preview-list-item">
@@ -186,7 +186,7 @@
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span>{{ @$myCard->owner_id }}</span>
+                            <span>{{ @@$myCard->owner_id }}</span>
                         </div>
                     </div>
                     <div class="preview-list-item">
@@ -202,7 +202,7 @@
                         </div>
                         <div class="preview-list-right">
                             @php
-                            $card_pan = str_split($myCard->number, 4);
+                            $card_pan = str_split(@$myCard->number, 4);
                            @endphp
                                @foreach($card_pan as $key => $value)
                                <span>{{ @$value }}</span>
@@ -221,7 +221,7 @@
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span>{{ @$myCard->mask }}</span>
+                            <span>{{ @@$myCard->mask }}</span>
                         </div>
                     </div>
 
@@ -237,7 +237,7 @@
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span>{{ __(@$myCard->security_code) }}</span>
+                            <span>{{ __(@@$myCard->security_code) }}</span>
                         </div>
                     </div>
                     <div class="preview-list-item">
@@ -267,7 +267,7 @@
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span>{{ __($myCard->billing_address['city']) }}</span>
+                            <span>{{ __(@$myCard['billing_address']['city']) }}</span>
                         </div>
                     </div>
                     <div class="preview-list-item">
@@ -282,7 +282,7 @@
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span>{{ __($myCard->billing_address["state"]) }}</span>
+                            <span>{{ __(@$myCard['billing_address']["state"]) }}</span>
                         </div>
                     </div>
                     <div class="preview-list-item">
@@ -297,7 +297,7 @@
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span>{{ __($myCard->billing_address["address"]) }}</span>
+                            <span>{{ __(@$myCard['billing_address']["address"]) }}</span>
                         </div>
                     </div>
                     <div class="preview-list-item">
@@ -312,7 +312,7 @@
                             </div>
                         </div>
                         <div class="preview-list-right">
-                            <span>{{ __($myCard->billing_address["zipCode"]) }}</span>
+                            <span>{{ __(@$myCard['billing_address']["zipCode"]) }}</span>
                         </div>
                     </div>
                     <div class="preview-list-item">
@@ -331,10 +331,10 @@
                                 @include('admin.components.form.switcher',[
 
                                     'name'          => 'is_active',
-                                    'value'         => old('is_active',@$myCard->status=='active' ),
+                                    'value'         => old('is_active',@@$myCard->status=='active' ),
                                     'options'       => ['Unblock' => 1,'Block' => 0],
                                     'onload'        => true,
-                                    'data_target'   =>@$myCard->id,
+                                    'data_target'   =>@@$myCard->id,
                                 ])
                             </div>
                         </div>

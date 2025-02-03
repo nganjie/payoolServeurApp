@@ -46,7 +46,7 @@ class EversendVirtualCardController extends Controller
     {
         // Update card details
         $this->api=VirtualCardApi::where('name',auth()->user()->name_api)->first();
-        $myCards = EversendVirtualCard::where('user_id',auth()->user()->id)->where('status','terminating')->get();
+        $myCards = EversendVirtualCard::where('user_id',auth()->user()->id)->get();
         if( count($myCards) >0){
             // Get Token
             $public_key=$this->api->config->eversend_public_key;
@@ -144,6 +144,7 @@ class EversendVirtualCardController extends Controller
                 }
            }
         }
+        //dd($myCards);
         $page_title = __("Virtual Card");
         $myCards = EversendVirtualCard::where('user_id',auth()->user()->id)->where('is_deleted',false)->get();
         $totalCards = EversendVirtualCard::where('user_id',auth()->user()->id)->where('is_deleted',false)->count();
