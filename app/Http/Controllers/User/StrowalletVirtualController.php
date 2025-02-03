@@ -496,14 +496,18 @@ class StrowalletVirtualController extends Controller
         $strowallet_card->customer_email            = auth()->user()->email;//$customer->customerEmail;
         $strowallet_card->save();
         $card_details   = card_details($created_card['data']['card_id'],$this->api->config->strowallet_public_key,$this->api->config->strowallet_url);
-        $strowallet_card->card_status               = $card_details['data']['card_detail']['card_status'];
+        if($card_details['status']){
+            $strowallet_card->card_status               = $card_details['data']['card_detail']['card_status'];
         $strowallet_card->card_name               = $card_details['data']['card_detail']['card_name'];
         $strowallet_card->card_number               = $card_details['data']['card_detail']['card_number'];
         $strowallet_card->last4                     = $card_details['data']['card_detail']['last4'];
         $strowallet_card->cvv                       = $card_details['data']['card_detail']['cvv'];
         $strowallet_card->expiry                    = $card_details['data']['card_detail']['expiry'];
         $strowallet_card->balance                   = $amount;
-        $strowallet_card->save();
+        $strowallet_card->update();
+        }
+        
+        
 
         $trx_id =  'CB'.getTrxNum();
         try{

@@ -178,7 +178,7 @@ function create_strowallet_virtual_card($user,$cardAmount,$customerEmail,$public
             'data'          => $result['response'],
         ];
     }elseif(isset($result) && isset($result['error'])){
-        dd($result);
+       // dd($result);
         $data =[
             'status'        => false,
             'message'       => "Contact With Strowallet Account Administration, ".$result['error']??"",
@@ -186,7 +186,7 @@ function create_strowallet_virtual_card($user,$cardAmount,$customerEmail,$public
         ];
 
     }else{
-        dd($result);
+        //dd($result);
         $data =[
             'status'        => false,
             'message'       => "Contact With Strowallet Account Administration, ".$result['message']??"",
