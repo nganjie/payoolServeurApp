@@ -35,7 +35,7 @@
                                     </div>
                                     <div class="dashboard-list-user-content">
                                         <h4 class="title"> {{ @$value['narrative'] }}</h4>
-                                        <span class="sub-title text--danger"> <span class="badge badge--<?=$value['status']!=="success"?'danger':'success'?> ms-2">{{ __(@$value['status']) }}123</span></span>
+                                        <span class="sub-title text--danger"> <span class="badge badge--<?=$value['status']!=="success"?'danger':'success'?> ms-2">{{ __(@$value['status']) }}</span></span>
                                     </div>
                                 </div>
                             </div>
