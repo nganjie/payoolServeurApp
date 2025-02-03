@@ -70,33 +70,6 @@ services:
     restart: unless-stopped 
     networks:
       - payool_network
-  payool_db_host:
-    image: mysql:8.0
-    container_name: payool_db
-    environment:
-      MYSQL_ROOT_PASSWORD: PayOol.2024
-      MYSQL_DATABASE: payool_db
-      MYSQL_USER: mysoleas
-      MYSQL_PASSWORD: PayOol)2024
-    ports:
-      - "3306:3306"
-    volumes:
-      - db_data:/var/lib/mysql
-    networks:
-      - payool_network
-
-  phpmyadmin_payool:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin_payool
-    environment:
-      PMA_HOST: payool_db_host
-      MYSQL_ROOT_PASSWORD: PayOol.2024
-    ports:
-      - "8094:80"
-    depends_on:
-      - payool_db_host
-    networks:
-      - payool_network
 networks:
   payool_network:
     external: true
