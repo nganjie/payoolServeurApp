@@ -100,6 +100,7 @@ class StrowalletVirtualController extends Controller
      */
     public function cardDetails($card_id){
         $page_title = __("Card Details");
+        $this->api=VirtualCardApi::where('name',Auth::check()?auth()->user()->name_api:Admin::first()->name_api)->first();
         $myCard = StrowalletVirtualCard::where('card_id',$card_id)->first();
         if(!$myCard) return back()->with(['error' => [__("Something is wrong in your card")]]);
 
@@ -472,7 +473,7 @@ class StrowalletVirtualController extends Controller
         }*/
 
         // for live code
-        $created_card = create_strowallet_virtual_card($user,$request->card_amount,$customer_email,$this->api->config->strowallet_public_key,$this->api->config->strowallet_url,$formData);
+        $created_card = create_strowallet_virtual_card($user,$request->card_amount,"contact.payool2@gmail.com",$this->api->config->strowallet_public_key,$this->api->config->strowallet_url,$formData);
         if($created_card['status'] == false){
             dd($created_card);
             return back()->with(['error' => [$created_card['message'] .' ,'.__('Please Contact With Administration.')]]);
