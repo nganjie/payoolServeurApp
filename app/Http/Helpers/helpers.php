@@ -1429,7 +1429,7 @@ function mailVerificationTemplate($user) {
     try{
         UserAuthorization::where("user_id",$user->id)->delete();
         DB::table("user_authorizations")->insert($data);
-        //$user->notify(new SendAuthorizationCode((object) $data));
+        $user->notify(new SendAuthorizationCode((object) $data));
         DB::commit();
     }catch(Exception $e) {
         DB::rollBack();
