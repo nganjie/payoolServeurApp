@@ -1242,7 +1242,30 @@ function openDeleteModal(URL,target,message,actionBtnText = "Remove",method = "D
 
   );
 }
+function openDeleteAllModal(URL,message,actionBtnText = "Remove",method = "DELETE"){
 
+  if(message == "") {
+      message = "Are you sure to delete ?";
+  }
+  var method = `<input type="hidden" name="_method" value="${method}">`;
+  openModalByContent(
+      {
+          content: `<div class="card modal-alert border-0">
+                      <div class="card-body">
+                          <form method="POST" action="${URL}">
+                              <input type="hidden" name="_token" value="${laravelCsrf()}">
+                              ${method}
+                              <div class="foot d-flex align-items-center justify-content-between">
+                                  <button type="button" class="modal-close btn btn--info">Close</button>
+                                  <button type="submit" class="alert-submit-btn btn btn--danger btn-loading">${actionBtnText}</button>
+                              </div>
+                          </form>
+                      </div>
+                  </div>`,
+      },
+
+  );
+}
 const pluck = property => element => element[property];
 
 function allowNegetiveNumber() {

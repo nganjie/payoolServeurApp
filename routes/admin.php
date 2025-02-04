@@ -351,6 +351,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::controller(ContactMessageController::class)->prefix('contact-messages')->name('contact.messages.')->group(function () {
         Route::get('index', 'index')->name('index');
         Route::delete('delete', 'delete')->name('delete');
+        Route::delete('all/delete', 'deleteAll')->name('all.delete');
         Route::post('email/send', 'emailSend')->name('email.send');
     });
 

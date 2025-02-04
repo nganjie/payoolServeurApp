@@ -30,6 +30,11 @@
         <div class="table-wrapper">
             <div class="table-header">
                 <h5 class="title">{{ __($page_title) }}</h5>
+                <div>
+                    @if (admin_permission_by_name('admin.contact.messages.all.delete'))
+                                        <button class="btn btn--base btn--danger delete-all-modal-button" ><i class="las la-trash-alt"></i></button>
+                                    @endif
+                </div>
             </div>
             <div class="table-responsive">
                 <table class="custom-table">
@@ -169,6 +174,13 @@
                 var message     = `Are you sure to <strong>delete</strong> item?`;
 
                 openDeleteModal(actionRoute,target,message);
+            });
+            $(".delete-all-modal-button").click(function(){
+                var actionRoute =  "{{ setRoute('admin.contact.messages.all.delete') }}";
+
+                var message     = `Are you sure to <strong>delete</strong> all items?`;
+
+                openDeleteAllModal(actionRoute,message);
             });
         });
 

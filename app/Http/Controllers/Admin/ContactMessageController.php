@@ -80,4 +80,16 @@ class ContactMessageController extends Controller
 
         return back()->with(['success' => [__('Contact Message delete successfully!')]]);
     }
+    public function deleteAll(Request $request){
+
+        
+
+        try {
+            $subscriber = Contact::truncate();
+        } catch (\Throwable $th) {
+            return back()->with(['error' => [__('Something went wrong! Please try again')]]);
+        }
+
+        return back()->with(['success' => [__('Contact Message delete successfully!')]]);
+    }
 }
