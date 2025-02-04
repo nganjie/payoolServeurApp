@@ -43,7 +43,6 @@ trait SoleaspayTrait
         $success_url = route('user.add.money.soleaspay.success');
         $fails_url = route('user.add.money.soleaspay.fails');
         $basic_setting = BasicSettings::first();
-        
 
         $data = [
             'shopName'      => $basic_setting->site_name,

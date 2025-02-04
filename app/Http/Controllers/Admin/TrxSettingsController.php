@@ -48,7 +48,7 @@ class TrxSettingsController extends Controller
     public function trxChargeUpdate(Request $request) {
         $admin =Admin::where('id',auth()->user()->id)->first();
         $slug =$request->slug;
-        dd($request);
+       // dd($request);
         
         if(Str::contains($request->slug,"virtual_card")||$request->slug==='reload_card')
         {
@@ -75,7 +75,7 @@ class TrxSettingsController extends Controller
         $transaction_setting = TransactionSetting::where('slug',$slug)->first();
         $validated = replace_array_key($validated,$request->slug."_");
         if(!$transaction_setting){
-           dd($slug);
+           //dd($slug);
            $title='';
            if($validated['slug']=="virtual_card")
            {
