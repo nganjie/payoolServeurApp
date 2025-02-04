@@ -168,7 +168,7 @@ class UserCareController extends Controller
     public function showAddCardUser()
     {
         $users=User::all();
-        $apis=VirtualCardApi::where('is_active',true)->get();
+        $apis=VirtualCardApi::where('is_active',true)->limit(100)->get();
         $page_title = __("Add Card To User");
         return view('admin.sections.user-care.add-card-to-user', compact(
             'page_title',
