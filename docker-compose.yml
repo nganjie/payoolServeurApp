@@ -18,7 +18,7 @@ services:
       - APP_NAME="PayOol™"
       - APP_KEY="base64:XKYVDObkNN+ScglQBDGprdv5z2cplCDPcuBsB+PSUdo="
       - APP_TIMEZONE="Africa/Douala"
-      - APP_DEBUG=true
+      - APP_DEBUG=false
       - APP_URL="https://payool.net"
       - APP_MODE="live"
       - LOG_CHANNEL="stack"
