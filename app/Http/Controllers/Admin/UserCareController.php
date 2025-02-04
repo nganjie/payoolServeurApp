@@ -802,6 +802,22 @@ class UserCareController extends Controller
             'users',
         ));
     }
+    public function searchSelect(Request $request) {
+        $validator = Validator::make($request->all(),[
+            'text'  => 'required|string',
+        ]);
+
+        if($validator->fails()) {
+            $error = ['error' => $validator->errors()];
+            return Response::error($error,null,400);
+        }
+
+        $validated = $validator->validate();
+        $users = User::search($validated['text'])->limit(10)->get();
+        return view('admin.components.data-table.user-select',compact(
+            'users',
+        ));
+    }
     public function walletBalanceUpdate(Request $request,$username) {
         $validator = Validator::make($request->all(),[
             'type'      => "required|string|in:add,subtract",

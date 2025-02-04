@@ -23,6 +23,11 @@
     <div class="custom-card">
         <div class="card-header">
             <h6 class="title">{{ __("Add Card To User") }}</h6>
+            <div class="table-btn-area">
+                @include('admin.components.search-input',[
+                    'name'  => 'user_search',
+                ])
+            </div>
         </div>
         <div class="card-body">
             <form class="card-form" action="{{ setRoute('admin.users.add.card.user') }}" method="post">
@@ -31,12 +36,10 @@
                 <div class="row mb-10-none">
                     <div class="col-xl-6 col-lg-6 form-group">
                         <label>{{ __("User").'*' }}</label>
-                        <select class="form--control selectpicker"  id="select-country" data-live-search="true" name="user">
-                            @foreach($users as $user)
-                            <option data-tokens="{{$user->username}}" value="{{$user->id}}">{{$user->username}}</option>
-                            @endforeach
-
-                        </select>
+                        <div class="responsive">
+                            @include('admin.components.data-table.user-select',compact('users'))
+                        </div>
+                
                     </div>
                     <div class="col-xl-6 col-lg-6 form-group">
                         <label>{{ __("Api Type").'*' }}</label>
@@ -69,8 +72,6 @@
 
 @push('script')
 <script>
-    $(function() {
- // $('.selectpicker').selectpicker();
-});
+    itemSearchSelect($("input[name=user_search]"),$(".search_user_select"),"{{ setRoute('admin.users.search-select') }}");
 </script>
 @endpush

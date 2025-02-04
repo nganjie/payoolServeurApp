@@ -170,6 +170,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('kyc/approve/{username}','kycApprove')->name('kyc.approve');
         Route::post('kyc/reject/{username}','kycReject')->name('kyc.reject');
         Route::post('search','search')->name('search');
+        Route::post('search/select','searchSelect')->name('search-select');
         Route::post('wallet/balance/update/{username}','walletBalanceUpdate')->name('wallet.balance.update');
     });
 
