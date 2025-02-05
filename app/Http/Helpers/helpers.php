@@ -455,6 +455,9 @@ function files_path($slug)
         'language-file'     => [
             'path'          => 'backend/files/language',
         ],
+        'prod'     => [
+            'path'          => 'backend/files/prod',
+        ],
         'site-section'         => [
             'path'          => 'frontend/images/site-section',
         ],
@@ -1180,6 +1183,7 @@ function get_first_file_from_dir($dir) {
 
 function language_file_exists() {
     $file_path = get_files_path('language-file');
+    //dd($file_path);
     $files = scandir($file_path);
     if(is_array($files) && count($files) > 2) return true;
     return false;

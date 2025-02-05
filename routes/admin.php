@@ -244,7 +244,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('import','import')->name('import');
         Route::delete('delete','delete')->name('delete');
         Route::post('switch','switch')->name('switch');
-        Route::get('download','download')->name('download');
+       Route::get('download','download')->name('download');
     });
 
     // Setup Email Section
