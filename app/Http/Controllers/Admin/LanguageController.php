@@ -336,7 +336,7 @@ class LanguageController extends Controller
     }
 
 
-    /*public function download() {
+    public function download() {
         $file_path = get_files_path('language-file');
         dd($file_path);
         $file_name = get_first_file_from_dir($file_path);
@@ -345,5 +345,5 @@ class LanguageController extends Controller
         }
         $file_link = $file_path . '/' . $file_name;
         return response()->download($file_link);
-    }*/
+    }
 }
