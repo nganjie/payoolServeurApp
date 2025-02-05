@@ -20,6 +20,53 @@ use Illuminate\Support\Facades\Storage;
 
 class LanguageController extends Controller
 {
+    public $proden=[
+        "Dashboard"=>"Dashboard",
+    "change card type"=>"change card type",
+    "When you switch from one card type to another, only cards matching the selected type will be visible in your account"=>"When you switch from one card type to another, only cards matching the selected type will be visible in your account",
+    "is rechargeable"=>"is rechargeable",
+    "card top-up is temporarily disabled for this card type"=>"card top-up is temporarily disabled for this card type",
+    "Add Card To User"=>"Add Card To User",
+    "Send Card To User"=>"Send Card To User",
+    "Card Code"=>"Card Code",
+    "Api Type"=>"Api Type",
+    "Card Withdraw"=>"Card Withdraw",
+    "Withdraw successful Money of card"=>"Withdraw successful Money of card",
+    "Withdrawed Money Successfully of the card"=>"Withdrawed Money Successfully of the card",
+    "Total Withdraw"=>"Total Withdraw",
+    " Withdraw Money card"=>" Withdraw Money card",
+    "Virtual Card Money withdraw Charges"=>"Virtual Card Money withdraw Charges",
+    "Virtual Card (Withdraw Amount)"=>"Virtual Card (Withdraw Amount)",
+    "Account Amount"=>"Account Amount",
+    "amount to withdraw"=>"amount to withdraw",
+    "New Ticket User"=>"New Ticket User",
+    "you have new ticket for User"=>"you have new ticket for User",
+    "User Support Ticket Message"=>"User Support Ticket Message",
+    "Support Ticket Solved"=>"Support Ticket Solved",
+    "withdraw  money card"=>"withdraw  money card",
+    "withdrawal of money from the card is temporarily disabled for this type of card"=>"withdrawal of money from the card is temporarily disabled for this type of card",
+    "User Notice updated successfully!"=>"User Notice updated successfully!",
+    "Add New Notice"=>"Add New Notice",
+    "User Notice created successfully!"=>"User Notice created successfully!",
+    "Update  User Notice"=>"Update  User Notice",
+    "User Limit Notice updated successfully!"=>"User Limit Notice updated successfully!",
+    "Please follow the notice limit"=>"Please follow the notice limit",
+    "leave a review"=>"Leave A Review",
+    "User Notice"=>"User Notice",
+    "Carte - Suspendue"=>"Carte - Suspendue",
+    "Card - Inactive"=>"Card - Inactive",
+    "Virtual Card (Adjusted)"=>"Virtual Card (Adjusted)",
+    "your virtual card has been deleted"=>"your virtual card has been deleted",
+    "Virtual Card (Terminated)"=>"Virtual Card (Terminated)",
+    "Card - Deleted"=>"Card - Deleted",
+    "Virtual Card Transaction (Payement)"=>"Virtual Card Transaction (Payement)","you have made a payment"=>"you have made a payment","card Acceptor Name"=>"card Acceptor Name","card Acceptor City"=>"card Acceptor City","Virtual Card Transaction ( Payement Failed)"=>"Virtual Card Transaction ( Payement Failed)","Payment failure, insufficient balance"=>"Payment failure, insufficient balance","Subscription Renewal"=>"Subscription Renewal",
+    "Virtual Card (Card Maintenance Fee Successful)"=>"Virtual Card (Card Maintenance Fee Successful)","Card - Active"=>"Card - Active","Webhook Url"=>"Webhook Url","number of failed transaction attempts"=>"number of failed transaction attempts","Price of The Penalty"=>"Price of The Penalty","Activate The Penalty"=>"Activate The Penalty",
+    "number of failures"=>"Number Of Failures",
+    "maximum number of failures"=>"maximum number of failures",
+    "warning"=>"warning",
+    "if you make successive attempts to make a payment error, your card will be blocked and you will have to pay a fine of"=>"if you make =>nbtrx successive attempts to make a payment error, your card will be blocked and you will have to pay a fine of =>amount USD","card blocking"=>"Card Blocking","Your card has been blocked, you must go to your payool account to pay a fine of to be able to unblock it"=>"Your card has been blocked, you must go to your payool account to pay a fine of =>amount usd to be able to unblock it","Unlocking your card"=>"Unlocking your card","will be charged from your wallet as a penalty to unblock your card"=>":amount USD will be charged from your wallet as a penalty to unblock your card","Please note that after unblocking, it is imperative to top up your card in order to make your payments. Without topping up, your card may be permanently deleted."=>"Please note that after unblocking, it is imperative to top up your card in order to make your payments. Without topping up, your card may be permanently deleted.","Pay the penalty"=>"Pay the penalty","your card has been successfully deleted"=>"your card has been successfully deleted","Remove card"=>"Remove Card","Confirm Deletion"=>"Confirm Deletion","This card is already deleted from the bank. Are you sure you want to permanently remove it from your account? This action is irreversible and all data associated with this card will be deleted from your PayOol™ space."=>"This card is already deleted from the bank. Are you sure you want to permanently remove it from your account? This action is irreversible and all data associated with this card will be deleted from your PayOol™ space.","Response Message"=>"Response Message","Reference"=>"Reference","Gateway Reference"=>"Gateway Reference","unblock"=>"unblock","KYC Rejected"=>"KYC Rejected","Copy mail Users"=>"Copy mail Users","Create a card for your personal needs"=>"Create a card for your personal needs","Personal Card"=>"Personal Card","Business Card"=>"Business Card","Create a card for your business"=>"Create a card for your business",
+    "Previous cards will no longer be accessible unless you revert to the other type of card"=>"Previous cards will no longer be accessible unless you revert to the other type of card","This shift implies that"=>"This shift implies that","the card purchase is temporary deactivate for this type of card"=>"the card purchase is temporary deactivate for this type of card","Carte Premium"=>"Premium Card","Carte Basique"=>"Basic card","Subscription Type"=>"Subscription Type","One-time Payment"=>"One-time Payment","Monthly Fee"=>"Monthly Fee","Pay a one-time fee for unlimited card use with no monthly charges"=>"Pay a one-time fee for unlimited card use with no monthly charges","Pay a small 1 USD fee each month for ongoing card management"=>"Pay a small 1 USD fee each month for ongoing card management",
+    ];
     public $prod=[
         "Dashboard"=>"Tableau de bord",
         "change card type"=>"changer le type de carte",
@@ -69,7 +116,7 @@ class LanguageController extends Controller
     "Virtual Card Transaction ( Payement Failed)"=>"Transaction par carte virtuelle (échec du paiement)",
     "Payment failure, insufficient balance"=>"Échec de paiement, solde insuffisant","Subscription Renewal"=>"Renouvellement d'abonnement","Virtual Card (Card Maintenance Fee Successful)"=>"Carte virtuelle (frais de maintenance de la carte réussis)","Card - Active"=>"Carte - Active","Webhook Url"=>"URL du webhook","number of failed transaction attempts"=>"nombre de tentatives de transaction ayant échoué","Price of The Penalty"=>"Prix ​​de la pénalité","Activate The Penalty"=>"Activer la pénalité",
     "number of failures"=>"Nombre D'échecs","maximum number of failures"=>"Nombre Maximum D'échecs ",
-    "warning"=>"Avertissement","if you make successive attempts to make a payment error, your card will be blocked and you will have to pay a fine of"=>"si vous faite =>nbtrx tentative successive d'erreur de payement, votre carte sera bloquer et vous devrier payer une amande de =>amount USD","card blocking"=>"Blocage De Carte","Your card has been blocked, you must go to your payool account to pay a fine of to be able to unblock it"=>"Votre carte a été bloquée, vous devez vous rendre sur votre compte payool pour payer une amende de =>amount USD pour pouvoir la débloquer","Unlocking your card"=>"Déblocage de votre carte","will be charged from your wallet as a penalty to unblock your card"=>"=>amount USD sera prélevé dans votre portefeuille en guise de pénalités pour débloquer votre carte"
+    "warning"=>"Avertissement","if you make successive attempts to make a payment error, your card will be blocked and you will have to pay a fine of"=>"si vous faite =>nbtrx tentative successive d'erreur de payement, votre carte sera bloquer et vous devrier payer une amande de =>amount USD","card blocking"=>"Blocage De Carte","Your card has been blocked, you must go to your payool account to pay a fine of to be able to unblock it"=>"Votre carte a été bloquée, vous devez vous rendre sur votre compte payool pour payer une amende de =>amount USD pour pouvoir la débloquer","Unlocking your card"=>"Déblocage de votre carte","will be charged from your wallet as a penalty to unblock your card"=>":amount USD sera prélevé dans votre portefeuille en guise de pénalités pour débloquer votre carte"
     ,"Please note that after unblocking, it is imperative to top up your card in order to make your payments. Without topping up, your card may be permanently deleted."=>"Veuillez noter qu’après le déblocage, il est impératif de recharger votre carte afin de pouvoir effectuer vos paiements. Sans recharge, votre carte risque d’être définitivement supprimée.","Pay the penalty"=>"Payer la pénalité","PAY-PENALITY"=>"PAIEMENT-PENALITÉ","PAY-PENALITY-VIRTUAL-CARD"=>"PAIEMENT-PENALITÉ-CARTE-VIRTUELLE","The penalty on your virtual card has been successfully paid."=>"La pénalité sur votre carte virtuelle a été payée avec succès.","Virtual Card (Card Unbloking)"=>"Carte virtuelle (Déblocage de carte)","Card Unbloking Success"=>"Succès du déblocage de la carte","narrative"=>"narratif","reason"=>"raison",
     "your card has been successfully deleted"=>"votre carte à ete supprimer avec succès","Remove card"=>"Supprimer la carte","Confirm Deletion"=>"Confirmer la Suppression","This card is already deleted from the bank. Are you sure you want to permanently remove it from your account? This action is irreversible and all data associated with this card will be deleted from your PayOol™ space."=>"Cette carte est déjà supprimée auprès de la banque. Êtes-vous sûr(e) de vouloir la retirer définitivement de votre compte ? Cette action est irréversible et toutes les données associées à cette carte seront supprimées de votre espace PayOol™.","Response Message"=>"Message de réponse","Reference"=>"Référence","Gateway Reference"=>"Référence de la passerelle","unblock"=>"Débloquer","KYC Rejected"=>"KYC Rejeté","Copy mail Users"=>"Copier le courrier des utilisateurs","Create a card for your personal needs"=>"Créez une carte pour vos besoins personnels","Personal Card"=>"Carte Personnelle","Business Card"=>"Carte Business","Create a card for your business"=>"Créer une carte pour votre activité professionnelle",
     "Previous cards will no longer be accessible unless you revert to the other type of card"=>"Les cartes précédentes ne seront plus accessibles, sauf si vous revenez à l’autre type de carte","This shift implies that"=>"Ce basculement implique que","the card purchase is temporary deactivate for this type of card"=>"l'achat de carte est temporaire desactiver pour se type de carte","Carte Premium"=>"Carte Premium","Carte Basique"=>"Carte Basique","Subscription Type"=>"Mode De Subscription","One-time Payment"=>"Paiement unique","Monthly Fee"=>"Frais mensuels","Pay a one-time fee for unlimited card use with no monthly charges"=>"Payez des frais uniques pour une utilisation illimitée de la carte sans frais mensuels","Pay a small 1 USD fee each month for ongoing card management"=>"Payez des frais minimes de 1 USD chaque mois pour la gestion continue de la carte",    
@@ -291,11 +338,10 @@ class LanguageController extends Controller
 
             $json_format = json_encode($item);
             if($code=='fr'){
-                $file_path = get_files_path('prod');
-            
-                
-                $file_name = get_first_file_from_dir($file_path);
                 $mergedArray = array_merge($item, $this->prod);
+                $json_format=json_encode($mergedArray);
+            }else if($code=='en'){
+                $mergedArray = array_merge($item, $this->proden);
                 $json_format=json_encode($mergedArray);
             }
 
