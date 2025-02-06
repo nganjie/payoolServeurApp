@@ -55,7 +55,7 @@ class SoleaspayVirtualCardController extends Controller
         //dump($this->api);
         //dump(Auth::check());
         //dump(auth()->user()->name_api);
-        if( count($myCards) > 15){
+        if( count($myCards) > 0){
             // Get Token
             $curl = curl_init();
 
