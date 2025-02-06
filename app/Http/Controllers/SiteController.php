@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Helpers\Response;
+use App\Models\Admin\Admin;
 use App\Models\Admin\BasicSettings;
 use App\Models\Admin\Language;
 use App\Models\Admin\SetupPage;
 use App\Models\Blog;
 use App\Models\BlogCategory;
 use App\Models\Contact;
+use App\Notifications\User\ContactHomeMessageMail;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 
 class SiteController extends Controller
@@ -75,7 +78,9 @@ class SiteController extends Controller
             $validated = $validator->safe()->all();
 
             try {
+                $admin =Admin::first();
                 Contact::create($validated);
+                Notification::send($admin,new ContactHomeMessageMail($validated));
             } catch (\Exception $th) {
                 $error = ['error' => __('Something went wrong! Please try again')];
                 return Response::error($error, null, 500);
