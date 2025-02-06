@@ -356,7 +356,8 @@ class LanguageController extends Controller
 
         try{
             if($request->hasFile('file')) {
-                $file_name = 'language-'.Carbon::parse(now())->format("Y-m-d") . "." .$validated['file']->getClientOriginalExtension();
+                //$file_name = 'language-'.Carbon::parse(now())->format("Y-m-d") . "." .$validated['file']->getClientOriginalExtension();
+                $file_name = 'language-'."langue." .$validated['file']->getClientOriginalExtension();
                 $file_link = get_files_path('language-file') . '/' . $file_name;
                 (new Filesystem)->cleanDirectory(get_files_path('language-file'));
                 File::move($validated['file'],$file_link);
