@@ -372,6 +372,7 @@ class UserCareController extends Controller
     
                         $card = $response['data']['card'];
                         $myCard = new SoleaspayVirtualCard();
+                        $myCard->card_id=$card['id'];
                         $myCard->user_id=$user->id;
                         $myCard->grade = $card['grade'];
                         $myCard->category = $card['category'];
@@ -385,7 +386,7 @@ class UserCareController extends Controller
                         $myCard->expiration = $card['expired_at'];
                         $myCard->amount =  $card['balance'];
                         $myCard->currency = $card['currency'];
-                        $myCard->card_id=$user->id;
+                       // $myCard->card_id=$user->id;
                         if ($card['active']) {
                             $myCard->is_active = 1;
                         } else {

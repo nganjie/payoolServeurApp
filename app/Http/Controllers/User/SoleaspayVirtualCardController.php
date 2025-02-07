@@ -1023,6 +1023,8 @@ class SoleaspayVirtualCardController extends Controller
         //dd($response);
         curl_close($curl);
         if(!isset($response) || !array_key_exists('data', $response)) {
+            //dump($card);
+            //dd($response);
             return back()->with(['error' => [__("Something went wrong! Please try again.")]]);
         }
         $card_truns = array("data"=>$response['data']['transactions']);
