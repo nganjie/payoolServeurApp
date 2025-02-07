@@ -6,6 +6,7 @@
 /storage/debugbar
 /storage/framework/sessions
 /storage/*.key
+/lang
 /vendor
 .env
 .env.backup
