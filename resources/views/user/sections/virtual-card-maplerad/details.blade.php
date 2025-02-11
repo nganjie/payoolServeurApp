@@ -304,6 +304,21 @@
                         <div class="preview-list-left">
                             <div class="preview-list-user-wrapper">
                                 <div class="preview-list-user-icon">
+                                    <i class="las la-file-archive"></i>
+                                </div>
+                                <div class="preview-list-user-content">
+                                    <span>{{__("postal code")}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preview-list-right">
+                            <span>{{ __($myCard->address["postal_code"]) }}</span>
+                        </div>
+                    </div>
+                    <div class="preview-list-item">
+                        <div class="preview-list-left">
+                            <div class="preview-list-user-wrapper">
+                                <div class="preview-list-user-icon">
                                     <i class="las la-battery-half"></i>
                                 </div>
                                 <div class="preview-list-user-content">

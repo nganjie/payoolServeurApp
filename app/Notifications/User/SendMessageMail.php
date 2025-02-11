@@ -53,10 +53,11 @@ class SendMessageMail extends Notification
                     ->subject(__("mise à jour de votre solde"))
                     ->line('type : '.$data['type'])
                     ->line('message : '.$data['message'])
+                    ->line(__("Remarque").' : '.new HtmlString($data['remark']))
                     ->line(__("date").' : '.$dateTime)
                     ->line(__("Montant")." : ".$data['amount'].' USD')
-                    ->line(__("solde disponible").' : '.$data['available_balance'])
-                    ->line(new HtmlString($data['message']));
+                    ->line(__("solde disponible").' : '.$data['available_balance']);
+                    
     }
 
     /**

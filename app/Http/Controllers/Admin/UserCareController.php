@@ -982,6 +982,7 @@ class UserCareController extends Controller
                 'title'         => "Update Balance",
                 'type'          =>$type,
                 'message'       => "Le solde de votre portefeuille (".$user_wallet->currency->code.") a été mis à jour par l'administrateur",
+                'remark'         =>$validated["remark"],
                 'date'          => Carbon::now()->diffForHumans(),
                 'amount'         => $validated['amount'],
                 'available_balance'=>$user_wallet_balance

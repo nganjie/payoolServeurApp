@@ -19,7 +19,7 @@
                     @endphp
                     {{$item['channel']}}
                 </td>
-                <td><span>{{ $item['fee']}}</span></td>
+                <td><span>{{ $item['fee']/100}}</span></td>
                 <td>{{ $item['card_id'] }}</td>
                 <td>
                     {{$item['card_transaction_id']}}
