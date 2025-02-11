@@ -49,14 +49,14 @@ class SendMessageMail extends Notification
         $dateTime = $date->format('Y-m-d h:i:s A');
 
         return (new MailMessage)
-                    ->greeting("mise à jour de votre solde par l'administration")
-                    ->subject(__("mise à jour de votre solde"))
-                    ->line('type : '.$data['type'])
-                    ->line('message : '.$data['message'])
-                    ->line(__("Remarque").' : '.new HtmlString($data['remark']))
-                    ->line(__("date").' : '.$dateTime)
+                    ->greeting("Mise à jour de votre solde par l'administration")
+                    ->subject(__("Mise à jour de votre solde"))
+                    ->line('Type : '.ucwords($data['type']))
+                    ->line('Message : '.ucwords($data['message']))
+                    ->line(__("Remarque").' : '.new HtmlString(ucwords($data['remark'])))
+                    ->line(__("Date").' : '.$dateTime)
                     ->line(__("Montant")." : ".$data['amount'].' USD')
-                    ->line(__("solde disponible").' : '.$data['available_balance']);
+                    ->line(__("Solde Disponible").' : '.$data['available_balance']);
                     
     }
 

@@ -307,7 +307,7 @@
                                     <i class="las la-file-archive"></i>
                                 </div>
                                 <div class="preview-list-user-content">
-                                    <span>{{__("postal code")}}</span>
+                                    <span>{{__("Postal Code")}}</span>
                                 </div>
                             </div>
                         </div>
