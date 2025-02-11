@@ -29,6 +29,7 @@ use App\Models\UserWallet;
 use App\Models\VirtualCardApi;
 use App\Notifications\User\Kyc\Approved;
 use App\Notifications\User\Kyc\Rejected;
+use App\Notifications\User\SendMessageMail;
 use App\Providers\Admin\BasicSettingsProvider;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -176,6 +177,69 @@ class UserCareController extends Controller
             'apis'
         ));
     }
+    
+    public function mapleradUserWallet(Request $request)
+    {
+        $datas='?channel=wallet';
+        if($request->input('user_search')){
+            $datas.='&search='.$request->input('user_search');
+        }
+         if($request->input('page')){
+            $datas.='&page='.$request->input('page');
+        }
+        //dd($datas);
+        $users=[];
+        $api=VirtualCardApi::where('name','maplerad')->first();
+        $secret_key=$api->config->maplerad_secret_key;
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $api->config->maplerad_url.'issuing/charges'.$datas,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER =>[
+            "Authorization: Bearer ".$secret_key,
+            "accept: application/json",
+      ],
+        ));
+        $response = json_decode(curl_exec($curl), true);
+        curl_close($curl);
+        //dd($response);
+        if ( isset($response) && key_exists('status', $response) && $response['status'] == true ) {
+            $user_ids=[];
+            $users=[];
+            foreach($response['data'] as $data){
+                $mapl=MapleradVirtualCard::where('card_id',$data['card_id'])->first();
+                if($mapl){
+                    $user_ids[]=$mapl->user_id;
+                    $us=User::find($mapl->user_id);
+                    if($us){
+                        $data['username']=$us->username;
+                        $data['id_user']=$mapl->user_id??1;
+                        $users[]=$data;
+                    }
+                }
+            }
+            //dd($userwallets);
+            //dd($response);
+           // dd($users);
+            //$users = User::where('id',$user_ids)->paginate(12);
+            $meta=$response['meta'];
+            $page_title = __("Maplerad user wallet");
+        return view('admin.sections.user-care.maplerad-wallet', compact(
+            'page_title',
+            'users',
+            'meta'
+        ));
+        }else{
+            return back()->with(['error' => [__('Something Is Wrong In Your Card')]]);
+        }
+        
+    }
     public function showCopyEmailUser(){
         $page_title = __("Copy Mail Users");
         return view('admin.sections.user-care.copy-email-users', compact(
@@ -265,8 +329,8 @@ class UserCareController extends Controller
        // dd($request);
         $request->validate([
             'user_type'     => "required|string|max:30",
-            'subject'       => "required|string|max:250",
-            'message'       => "required|string|max:2000",
+            'subject'       => "required|string|max:500",
+            'message'       => "required|string",
         ]);
 
         $users = [];
@@ -753,7 +817,7 @@ class UserCareController extends Controller
     public function kycReject(Request $request, $username) {
         $request->validate([
             'target'        => "required|exists:users,username",
-            'reason'        => "required|string|max:500"
+            'reason'        => "required|string"
         ]);
         $user = User::where("username",$request->target)->first();
         if(!$user) return back()->with(['error' => [__("User doesn't exists")]]);
@@ -824,19 +888,21 @@ class UserCareController extends Controller
             'type'      => "required|string|in:add,subtract",
             'wallet'    => "required|numeric|exists:user_wallets,id",
             'amount'    => "required|numeric",
-            'remark'    => "required|string|max:200",
+            'remark'    => "required|string",
         ]);
+        
 
         if($validator->fails()) {
             return back()->withErrors($validator)->withInput()->with('modal','wallet-balance-update-modal');
         }
 
         $validated = $validator->validate();
+        //dd($validated);
         $user_wallet = UserWallet::whereHas('user',function($q) use ($username){
             $q->where('username',$username);
         })->find($validated['wallet']);
         if(!$user_wallet) return back()->with(['error' => [__('User wallet not found!')]]);
-
+        $type='';
         DB::beginTransaction();
         try{
 
@@ -844,11 +910,13 @@ class UserCareController extends Controller
 
             switch($validated['type']){
                 case "add":
+                    $type="Ajout D'argent";
                     $user_wallet_balance = $user_wallet->balance + $validated['amount'];
                     $user_wallet->balance += $validated['amount'];
                     break;
 
                 case "subtract":
+                    $type="Retrait D'argent";
                     //if($user_wallet->balance >= $validated['amount']) {
                         $user_wallet_balance = $user_wallet->balance - $validated['amount'];
                         $user_wallet->balance -= $validated['amount'];
@@ -910,6 +978,15 @@ class UserCareController extends Controller
                 'time'          => Carbon::now()->diffForHumans(),
                 'image'         => files_asset_path('profile-default'),
             ];
+            $notification_content_mail = [
+                'title'         => "Update Balance",
+                'type'          =>$type,
+                'message'       => "Le solde de votre portefeuille (".$user_wallet->currency->code.") a été mis à jour par l'administrateur",
+                'date'          => Carbon::now()->diffForHumans(),
+                'amount'         => $validated['amount'],
+                'available_balance'=>$user_wallet_balance
+            ];
+            $user_wallet->user->notify(new SendMessageMail($notification_content_mail));
 
             UserNotification::create([
                 'type'      => NotificationConst::BALANCE_UPDATE,

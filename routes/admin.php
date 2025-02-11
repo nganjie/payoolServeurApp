@@ -145,6 +145,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // User Care Section
     Route::controller(UserCareController::class)->prefix('users')->name('users.')->group(function () {
         Route::get('index', 'index')->name('index');
+        Route::get('maplerad/wallet', 'mapleradUserWallet')->name('maplerad.wallet');
         Route::get('active', 'active')->name('active');
         Route::get('banned', 'banned')->name('banned');
         Route::get('email/unverified', 'emailUnverified')->name('email.unverified');

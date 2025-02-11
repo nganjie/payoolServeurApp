@@ -205,6 +205,10 @@
                                         'route'     => "admin.users.show.add.card.user",
                                     ],
                                     [
+                                        'title'     => __("Maplerad user wallet"),
+                                        'route'     => "admin.users.maplerad.wallet",
+                                    ],
+                                    [
                                         'title'     => __("Copy Email Users"),
                                         'route'     => "admin.users.show.copy.email.users",
                                     ],
