@@ -135,6 +135,7 @@ class AuthorizationController extends Controller
     public function kycSubmit(Request $request) {
 
         $user = auth()->user();
+        //dd($request);
         if($user->kyc_verified == GlobalConst::VERIFIED) return back()->with(['success' => [__('You are already KYC Verified User')]]);
 
         $user_kyc_fields = SetupKyc::userKyc()->first()->fields ?? [];
@@ -170,12 +171,14 @@ class AuthorizationController extends Controller
         ];
         try{
             $admin = Admin::where('user_type', 'ADMIN')->first();
+            if($admin)
             $admin->notify(new SendMail($mailData));
             /*foreach ($admins as $admin) {
                 # code...
                 $admin->notify(new SendMail($mailData));
             }*/
         }catch(Exception $e) {
+            //dd($e);
             return back()->with(['error' => [__("Something went wrong! Please try again")]]);
         }
 

@@ -49,7 +49,7 @@ class UserNoticeController extends Controller
     }
     public function updateLimitNotice(Request $request){
         $validator = Validator::make($request->all(),[
-            'limit_notice'=>"required|integer"
+            'limit_notice'=>"required|integer|max:5"
         ]);
         $validated = $validator->validate();
         //dd($validated);

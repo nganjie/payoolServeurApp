@@ -56,7 +56,7 @@ class CardPayementFailedMail extends Notification
         $dateTime = $date->format('Y-m-d h:i:s A');
         return (new MailMessage)
                     ->greeting(__("Hello")." ".$user->fullname." !")
-                    ->subject(__("Transaction par carte virtuelle (échec du paiement)")." ". $data["card"]["card_brand"].' ')
+                    ->subject(__("Transaction par carte virtuelle (échec du paiement)")." ". $data["card"]["card_number"].' ')
                     ->line(__("Informations sur la carte").", ".$data["card"]["card_brand"])
                     ->line(__("Message")." : ".__("Échec de paiement, solde insuffisant"))
                     ->line(__("Nombre d'échecs").': '.$data['nbtrx'])
