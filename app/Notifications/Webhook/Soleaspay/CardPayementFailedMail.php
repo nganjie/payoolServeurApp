@@ -58,7 +58,7 @@ class CardPayementFailedMail extends Notification
                     ->greeting(__("Hello")." ".$user->fullname." !")
                     ->subject(__("Transaction par carte virtuelle (échec du paiement)")." ". $data["card"]["card_brand"].' ')
                     ->line(__("Informations sur la carte").", ".$data["card"]["card_brand"])
-                    ->line(__("Message")." : ".__("Échec de paiement, solde insuffisant"))
+                    ->line(__("Message")." : ".__("Échec de paiement"))
                     ->line(__("Nombre d'échecs").': '.$data['nbtrx'])
                     ->line(__("Nombre maximal d'échecs").': '.$data['nbtrx_max'])
                     ->line(__("avertissement").': '.__("si vous faites des tentatives successives d'erreur de paiement, votre carte sera bloquée et vous devrez payer une amende de",['nbtrx'=>$data['nbtrx'],'amount'=>$data['amande']]))

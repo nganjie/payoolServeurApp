@@ -58,7 +58,7 @@ class CardBlockMail extends Notification
                     ->greeting(__("Hello")." ".$user->fullname." !")
                     ->subject(__("blocage de carte").' : '.__("Transaction par carte virtuelle (échec du paiement)")." ". $data["card"]["card_number"].' ')
                     ->line(__("Informations sur la carte").", ".$data["card"]["masked_pan"])
-                    ->line(__("Message")." : ".__("Échec de paiement, solde insuffisant"))
+                    ->line(__("Message")." : ".__("Échec de paiement"))
                     ->line(__("Nombre d'échecs").': '.$data['nbtrx'])
                     ->line(__("Nombre maximal d'échecs").': '.$data['nbtrx_max'])
                     ->line(__("avertissement").': '.__("Votre carte a été bloquée, vous devez vous rendre sur votre compte payool pour payer une amende de pour pouvoir la débloquer",['amount'=>$data['amande']]))
